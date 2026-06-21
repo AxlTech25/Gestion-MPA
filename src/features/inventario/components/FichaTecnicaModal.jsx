@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, Save, FileText, Cpu, HardDrive, Monitor, Wifi, Key, Package } from 'lucide-react';
+import { downloadPdf } from '../../../lib/api';
 import { fichaTecnicaService } from '../services/fichaTecnicaService';
 
 const Field = ({ label, icon: Icon, children }) => (
@@ -20,6 +21,10 @@ export const FichaTecnicaModal = ({ equipoId, onClose }) => {
   const [saving, setSaving]   = useState(false);
   const [form, setForm]       = useState({});
   const [saved, setSaved]     = useState(false);
+
+  // Tipos que requieren especificaciones técnicas de cómputo
+  const TECHNICAL_TYPES = ['CPU', 'Laptop', 'PC'];
+  const isTechnical = data ? TECHNICAL_TYPES.some(t => data.tipo_equipo?.toLowerCase().includes(t.toLowerCase())) : false;
 
   useEffect(() => {
     const load = async () => {
@@ -69,8 +74,12 @@ export const FichaTecnicaModal = ({ equipoId, onClose }) => {
     }
   };
 
-  const handlePDF = () => {
-    window.open(`/backend/api/v2/reportes/equipo/${equipoId}`, '_blank');
+  const handlePDF = async () => {
+    try {
+      await downloadPdf(`/reportes/equipo/${equipoId}`);
+    } catch {
+      alert('No se pudo generar el PDF.');
+    }
   };
 
   return (
@@ -128,73 +137,83 @@ export const FichaTecnicaModal = ({ equipoId, onClose }) => {
                 </div>
               </div>
 
-              {/* Sección 2: Hardware */}
-              <div>
-                <h3 className="text-sm font-bold text-slate-700 mb-3 pb-1 border-b border-slate-100 flex items-center gap-2">
-                  <Cpu size={16} className="text-blue-500" /> Hardware
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Procesador" icon={Cpu}>
-                    <input name="procesador" value={form.procesador} onChange={handleChange}
-                      className={inputCls} placeholder="Ej: Intel Core i7-12700" />
-                  </Field>
-                  <Field label="Memoria RAM (GB)" icon={HardDrive}>
-                    <input type="number" name="ram_gb" value={form.ram_gb} onChange={handleChange}
-                      className={inputCls} placeholder="Ej: 16" />
-                  </Field>
-                  <Field label="Almacenamiento (GB)" icon={HardDrive}>
-                    <div className="flex gap-2">
-                      <input type="number" name="almacenamiento_gb" value={form.almacenamiento_gb}
-                        onChange={handleChange} className="w-20 px-2 py-2 border border-slate-200 rounded-lg outline-none text-sm" placeholder="GB" />
-                      <select name="tipo_disco" value={form.tipo_disco} onChange={handleChange}
-                        className="flex-1 px-2 py-2 border border-slate-200 rounded-lg bg-white text-sm outline-none">
-                        <option>SSD</option><option>NVMe</option><option>HDD</option>
-                      </select>
+              {/* Secciones 2-4: Solo para CPU y Laptop */}
+              {isTechnical ? (
+                <>
+                  {/* Hardware */}
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-700 mb-3 pb-1 border-b border-slate-100 flex items-center gap-2">
+                      <Cpu size={16} className="text-blue-500" /> Hardware
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Field label="Procesador" icon={Cpu}>
+                        <input name="procesador" value={form.procesador} onChange={handleChange}
+                          className={inputCls} placeholder="Ej: Intel Core i7-12700" />
+                      </Field>
+                      <Field label="Memoria RAM (GB)" icon={HardDrive}>
+                        <input type="number" name="ram_gb" value={form.ram_gb} onChange={handleChange}
+                          className={inputCls} placeholder="Ej: 16" />
+                      </Field>
+                      <Field label="Almacenamiento (GB)" icon={HardDrive}>
+                        <div className="flex gap-2">
+                          <input type="number" name="almacenamiento_gb" value={form.almacenamiento_gb}
+                            onChange={handleChange} className="w-20 px-2 py-2 border border-slate-200 rounded-lg outline-none text-sm" placeholder="GB" />
+                          <select name="tipo_disco" value={form.tipo_disco} onChange={handleChange}
+                            className="flex-1 px-2 py-2 border border-slate-200 rounded-lg bg-white text-sm outline-none">
+                            <option>SSD</option><option>NVMe</option><option>HDD</option>
+                          </select>
+                        </div>
+                      </Field>
                     </div>
-                  </Field>
-                </div>
-              </div>
+                  </div>
 
-              {/* Sección 3: Software */}
-              <div>
-                <h3 className="text-sm font-bold text-slate-700 mb-3 pb-1 border-b border-slate-100 flex items-center gap-2">
-                  <Monitor size={16} className="text-blue-500" /> Software
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Sistema Operativo" icon={Monitor}>
-                    <select name="sistema_operativo" value={form.sistema_operativo} onChange={handleChange} className={selectCls}>
-                      <option value="">— Sin SO —</option>
-                      <option>Windows 7</option><option>Windows 8</option>
-                      <option>Windows 8.1</option><option>Windows 10</option><option>Windows 11</option>
-                    </select>
-                  </Field>
-                  <Field label="Licencia SO" icon={Key}>
-                    <input name="licencia_so" value={form.licencia_so} onChange={handleChange}
-                      className={inputCls} placeholder="Clave de producto..." />
-                  </Field>
-                  <Field label="Software Instalado" icon={Package}>
-                    <textarea name="software_base" value={form.software_base} onChange={handleChange} rows={3}
-                      className={inputCls} placeholder="Ej: Office 2021, Antivirus..." />
-                  </Field>
-                </div>
-              </div>
+                  {/* Software */}
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-700 mb-3 pb-1 border-b border-slate-100 flex items-center gap-2">
+                      <Monitor size={16} className="text-blue-500" /> Software
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Field label="Sistema Operativo" icon={Monitor}>
+                        <select name="sistema_operativo" value={form.sistema_operativo} onChange={handleChange} className={selectCls}>
+                          <option value="">— Sin SO —</option>
+                          <option>Windows 7</option><option>Windows 8</option>
+                          <option>Windows 8.1</option><option>Windows 10</option><option>Windows 11</option>
+                        </select>
+                      </Field>
+                      <Field label="Licencia SO" icon={Key}>
+                        <input name="licencia_so" value={form.licencia_so} onChange={handleChange}
+                          className={inputCls} placeholder="Clave de producto..." />
+                      </Field>
+                      <Field label="Software Instalado" icon={Package}>
+                        <textarea name="software_base" value={form.software_base} onChange={handleChange} rows={3}
+                          className={inputCls} placeholder="Ej: Office 2021, Antivirus..." />
+                      </Field>
+                    </div>
+                  </div>
 
-              {/* Sección 4: Red */}
-              <div>
-                <h3 className="text-sm font-bold text-slate-700 mb-3 pb-1 border-b border-slate-100 flex items-center gap-2">
-                  <Wifi size={16} className="text-blue-500" /> Red y Conectividad
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Dirección MAC" icon={Wifi}>
-                    <input name="mac_address" value={form.mac_address} onChange={handleChange}
-                      className={inputCls} placeholder="Ej: AA:BB:CC:DD:EE:FF" />
-                  </Field>
-                  <Field label="IP Asignada" icon={Wifi}>
-                    <input name="ip_asignada" value={form.ip_asignada} onChange={handleChange}
-                      className={inputCls} placeholder="Ej: 192.168.1.100 o DHCP" />
-                  </Field>
+                  {/* Red */}
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-700 mb-3 pb-1 border-b border-slate-100 flex items-center gap-2">
+                      <Wifi size={16} className="text-blue-500" /> Red y Conectividad
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Field label="Dirección MAC" icon={Wifi}>
+                        <input name="mac_address" value={form.mac_address} onChange={handleChange}
+                          className={inputCls} placeholder="Ej: AA:BB:CC:DD:EE:FF" />
+                      </Field>
+                      <Field label="IP Asignada" icon={Wifi}>
+                        <input name="ip_asignada" value={form.ip_asignada} onChange={handleChange}
+                          className={inputCls} placeholder="Ej: 192.168.1.100 o DHCP" />
+                      </Field>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm text-slate-500 flex items-center gap-3">
+                  <span className="text-2xl">ℹ️</span>
+                  <span>Las especificaciones técnicas de hardware y software no aplican para equipos de tipo <strong className="text-slate-700">{data.tipo_equipo}</strong>.</span>
                 </div>
-              </div>
+              )}
 
               {/* Sección 5: Estado */}
               <div>

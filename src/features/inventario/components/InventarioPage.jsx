@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { downloadPdf } from '../../../lib/api';
 import { equiposService } from '../services/equiposService';
 import { PlusCircle, Search, FileText, Settings } from 'lucide-react';
 import { EquipoForm } from './EquipoForm';
@@ -33,8 +34,12 @@ export const InventarioPage = () => {
     }
   };
 
-  const handleDescargarPDF = (id) => {
-    window.open(`/backend/api/v2/reportes/equipo/${id}`, '_blank');
+  const handleDescargarPDF = async (id) => {
+    try {
+      await downloadPdf(`/reportes/equipo/${id}`);
+    } catch {
+      console.error('No se pudo descargar el PDF');
+    }
   };
 
   const filteredEquipos = equipos.filter(eq => {

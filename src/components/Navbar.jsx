@@ -32,7 +32,7 @@ const Navbar = () => {
         <div className="flex items-center gap-6">
           <div className="hidden lg:block text-right pr-4 border-r border-slate-700">
             <p className="text-[10px] uppercase tracking-tighter text-slate-400 font-bold">Sesión activa</p>
-            <p className="text-sm font-semibold text-white">{user?.nombre || 'Administrador'}</p>
+            <p className="text-sm font-semibold text-white">{user?.nombre_completo || 'Administrador'}</p>
           </div>
           
           <button 

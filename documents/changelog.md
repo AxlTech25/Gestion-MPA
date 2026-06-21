@@ -6,6 +6,20 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ## [Unreleased] - Sprints Finales
 
+## [0.6.0] - Migración V2 y Dashboard
+### Añadido
+- **Auth JWT:** Login con token Bearer (`firebase/php-jwt`), middleware aplicado a todas las rutas excepto `/auth`.
+- **Frontend:** Cliente Axios centralizado en `src/lib/api.js` con interceptores de autenticación.
+- **Dashboard:** Endpoint `/api/v2/dashboard` con métricas operativas y UI en `DashboardPage.jsx`.
+- Usuario administrador seed en `v2_estructura.sql` (`admin` / `admin123`).
+
+### Eliminado
+- Código huérfano V1: `ModalFichaTecnica.jsx`, `GenerarFichaPDF.js`, módulos legacy y endpoints PHP V1.
+
+### Cambiado
+- `AuthContext` reemplaza Zustand como gestor de sesión (token + usuario).
+- Descarga de PDF autenticada vía blob en lugar de `window.open` directo.
+
 ## [0.5.0] - Sprint 5 (Completado)
 ### Añadido
 - **Backend API:** Modelos, Controladores y Rutas (`/api/v2/areas`, `/api/v2/usuarios`) para el CRUD Organizacional. Encriptación BCRYPT para nuevo personal.

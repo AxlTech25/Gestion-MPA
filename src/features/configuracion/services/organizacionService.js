@@ -1,46 +1,23 @@
-import axios from 'axios';
-
-const AREAS_URL = '/backend/api/v2/areas';
-const USUARIOS_URL = '/backend/api/v2/usuarios';
+import api from '../../../lib/api';
 
 export const organizacionService = {
   getAreas: async () => {
-    try {
-      const response = await axios.get(AREAS_URL);
-      return response.data;
-    } catch (error) {
-      console.error('Error obteniendo áreas:', error);
-      throw error;
-    }
+    const response = await api.get('/areas');
+    return response.data;
   },
 
   createArea: async (data) => {
-    try {
-      const response = await axios.post(AREAS_URL, data, { headers: { 'Content-Type': 'application/json' }});
-      return response.data;
-    } catch (error) {
-      console.error('Error creando área:', error);
-      throw error;
-    }
+    const response = await api.post('/areas', data);
+    return response.data;
   },
 
   getUsuarios: async () => {
-    try {
-      const response = await axios.get(USUARIOS_URL);
-      return response.data;
-    } catch (error) {
-      console.error('Error obteniendo usuarios:', error);
-      throw error;
-    }
+    const response = await api.get('/usuarios');
+    return response.data;
   },
 
   createUsuario: async (data) => {
-    try {
-      const response = await axios.post(USUARIOS_URL, data, { headers: { 'Content-Type': 'application/json' }});
-      return response.data;
-    } catch (error) {
-      console.error('Error creando usuario:', error);
-      throw error;
-    }
-  }
+    const response = await api.post('/usuarios', data);
+    return response.data;
+  },
 };

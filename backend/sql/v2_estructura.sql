@@ -12,6 +12,52 @@ CREATE TABLE IF NOT EXISTS v2_areas (
   descripcion TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- 8. Historial de Asignaciones: registra cambios de área o responsable de un equipo
+CREATE TABLE IF NOT EXISTS v2_historial_asignaciones (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  equipo_id INT NOT NULL,
+  area_origen_id INT,
+  area_destino_id INT,
+  responsable_origen_id INT,
+  responsable_destino_id INT,
+  tipo_movimiento ENUM('Traslado','Cambio de Responsable','Asignacion Inicial','Devolucion','Baja') NOT NULL DEFAULT 'Traslado',
+  motivo TEXT,
+  registrado_por INT,
+  fecha_movimiento DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  notas TEXT,
+  FOREIGN KEY (equipo_id) REFERENCES v2_equipos(id) ON DELETE CASCADE,
+  FOREIGN KEY (area_origen_id) REFERENCES v2_areas(id) ON DELETE SET NULL,
+  FOREIGN KEY (area_destino_id) REFERENCES v2_areas(id) ON DELETE SET NULL,
+  FOREIGN KEY (responsable_origen_id) REFERENCES v2_usuarios(id) ON DELETE SET NULL,
+  FOREIGN KEY (responsable_destino_id) REFERENCES v2_usuarios(id) ON DELETE SET NULL,
+  FOREIGN KEY (registrado_por) REFERENCES v2_usuarios(id) ON DELETE SET NULL,
+  INDEX (equipo_id),
+  INDEX (fecha_movimiento)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 9. Cronograma de Mantenimiento: prioriza mantenimiento preventivo para reducir riesgos
+CREATE TABLE IF NOT EXISTS v2_cronograma_mantenimiento (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  equipo_id INT NOT NULL,
+  tipo_mantenimiento ENUM('Preventivo','Correctivo','Predictivo','Inspeccion') DEFAULT 'Preventivo',
+  frecuencia_dias INT DEFAULT 30,
+  proxima_fecha DATE,
+  ultima_fecha DATE,
+  prioridad ENUM('Alta','Media','Baja') DEFAULT 'Media',
+  responsable_id INT,
+  area_id INT,
+  estado ENUM('Pendiente','Programado','Completado','Cancelado') DEFAULT 'Pendiente',
+  descripcion TEXT,
+  creado_por INT,
+  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (equipo_id) REFERENCES v2_equipos(id) ON DELETE CASCADE,
+  FOREIGN KEY (responsable_id) REFERENCES v2_usuarios(id) ON DELETE SET NULL,
+  FOREIGN KEY (area_id) REFERENCES v2_areas(id) ON DELETE SET NULL,
+  FOREIGN KEY (creado_por) REFERENCES v2_usuarios(id) ON DELETE SET NULL,
+  INDEX (proxima_fecha),
+  INDEX (prioridad)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- 2. Mantenemos usuarios, pero añadimos FK a áreas
 CREATE TABLE IF NOT EXISTS v2_usuarios (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -141,3 +187,10 @@ CREATE TABLE IF NOT EXISTS v2_hojas_baja (
   FOREIGN KEY (creado_por) REFERENCES v2_usuarios(id),
   FOREIGN KEY (validado_por) REFERENCES v2_usuarios(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Usuario administrador inicial (usuario: admin / contraseña: admin123)
+INSERT IGNORE INTO v2_areas (id, nombre, descripcion) VALUES
+(1, 'Tecnología de la Información', 'Área de sistemas y soporte técnico');
+
+INSERT IGNORE INTO v2_usuarios (id, nombre_completo, usuario, password_hash, rol, area_id) VALUES
+(1, 'Administrador del Sistema', 'admin', '$2y$10$XXThufmFskrPvp/CRrU5Ae3nypx6OUs2/Xm25tIilOF3lH5vwm/pm', 'Administrador', 1);
