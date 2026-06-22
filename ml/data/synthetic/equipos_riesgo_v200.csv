@@ -1,0 +1,201 @@
+equipo_id,codigo_patrimonial,tipo_equipo,marca,modelo,ram_gb,almacenamiento_gb,tipo_disco,antiguedad_meses,estado_conservacion,estado_operativo,area_id,area_nombre,total_mantenimientos,correctivos_12m,preventivos_12m,dias_desde_ultimo_mantenimiento,severidad_max_historica,fallas_altas_criticas_12m,nivel_riesgo,score_riesgo
+9001,990000009001,Monitor,Dell,Model-792,,,,13,Nuevo,Operativo,10,Tecnología de la Información,0,0,0,,0,0,Bajo,15.0
+9002,990000009002,CPU,Canon,Model-739,32.0,512.0,HDD,20,Bueno,Operativo,12,Contabilidad,1,1,0,113.0,1,0,Bajo,15.0
+9003,990000009003,Otro,HP,Model-202,,,,51,Bueno,Operativo,14,Dirección General,1,1,0,195.0,1,0,Medio,40.0
+9004,990000009004,Impresora,Asus,Model-927,,,,37,Bueno,Operativo,13,Logística,1,1,0,325.0,3,1,Alto,65.0
+9005,990000009005,Laptop,Canon,Model-747,4.0,256.0,HDD,23,Nuevo,Operativo,13,Logística,2,0,1,249.0,1,0,Bajo,15.0
+9006,990000009006,Impresora,Acer,Model-343,,,,46,Regular,Operativo,10,Tecnología de la Información,4,1,0,119.0,2,0,Medio,40.0
+9007,990000009007,CPU,Asus,Model-447,16.0,256.0,HDD,23,Bueno,Operativo,12,Contabilidad,7,3,2,80.0,4,1,Alto,65.0
+9008,990000009008,Impresora,Lenovo,Model-565,,,,9,Bueno,Operativo,12,Contabilidad,1,0,1,40.0,1,0,Bajo,15.0
+9009,990000009009,Monitor,Dell,Model-165,,,,25,Regular,Operativo,12,Contabilidad,4,2,0,171.0,4,2,Critico,90.0
+9010,990000009010,Otro,Asus,Model-988,,,,11,Nuevo,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9011,990000009011,Otro,Acer,Model-171,,,,44,Bueno,Operativo,10,Tecnología de la Información,3,0,1,202.0,2,0,Bajo,15.0
+9012,990000009012,Impresora,Samsung,Model-353,,,,22,Malo,Dañado,11,Recursos Humanos,9,4,2,46.0,4,2,Critico,90.0
+9013,990000009013,Otro,Acer,Model-841,,,,15,Bueno,Operativo,13,Logística,1,1,0,264.0,2,0,Bajo,15.0
+9014,990000009014,CPU,Asus,Model-190,16.0,1024.0,NVMe,15,Nuevo,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9015,990000009015,Impresora,Lenovo,Model-830,,,,25,Regular,Operativo,10,Tecnología de la Información,7,2,2,206.0,3,1,Alto,65.0
+9016,990000009016,Otro,Canon,Model-588,,,,24,Nuevo,Operativo,12,Contabilidad,0,0,0,,0,0,Bajo,15.0
+9017,990000009017,CPU,Dell,Model-902,8.0,512.0,HDD,25,Malo,Operativo,11,Recursos Humanos,5,1,1,57.0,4,1,Alto,65.0
+9018,990000009018,Impresora,HP,Model-796,,,,6,Bueno,Operativo,10,Tecnología de la Información,0,0,0,,0,0,Bajo,15.0
+9019,990000009019,Otro,Epson,Model-147,,,,33,Bueno,Operativo,12,Contabilidad,3,0,3,109.0,1,0,Bajo,15.0
+9020,990000009020,Otro,Asus,Model-855,,,,12,Regular,Operativo,11,Recursos Humanos,5,4,1,28.0,4,2,Critico,90.0
+9021,990000009021,Laptop,Canon,Model-574,4.0,512.0,SSD,13,Malo,Dañado,11,Recursos Humanos,7,4,3,102.0,4,3,Critico,90.0
+9022,990000009022,Monitor,Acer,Model-881,,,,14,Bueno,Operativo,13,Logística,6,3,2,32.0,4,1,Alto,65.0
+9023,990000009023,Otro,Lenovo,Model-151,,,,18,Regular,Operativo,10,Tecnología de la Información,7,5,0,32.0,3,1,Alto,65.0
+9024,990000009024,Monitor,Asus,Model-301,,,,45,Regular,Operativo,12,Contabilidad,2,0,0,469.0,2,0,Medio,40.0
+9025,990000009025,Impresora,Samsung,Model-288,,,,13,Nuevo,Operativo,12,Contabilidad,1,1,0,165.0,2,0,Bajo,15.0
+9026,990000009026,Impresora,Asus,Model-308,,,,20,Bueno,Operativo,10,Tecnología de la Información,1,0,1,288.0,1,0,Bajo,15.0
+9027,990000009027,Laptop,Lenovo,Model-706,16.0,256.0,HDD,24,Bueno,Operativo,14,Dirección General,7,4,1,57.0,4,0,Alto,65.0
+9028,990000009028,CPU,Samsung,Model-245,32.0,512.0,HDD,8,Bueno,Operativo,10,Tecnología de la Información,2,2,0,103.0,2,0,Bajo,15.0
+9029,990000009029,Impresora,Dell,Model-258,,,,20,Bueno,Operativo,12,Contabilidad,0,0,0,,0,0,Bajo,15.0
+9030,990000009030,Otro,Dell,Model-304,,,,54,Regular,Operativo,14,Dirección General,1,0,1,286.0,1,0,Medio,40.0
+9031,990000009031,CPU,Canon,Model-338,32.0,256.0,NVMe,17,Nuevo,Operativo,14,Dirección General,2,0,1,293.0,1,0,Bajo,15.0
+9032,990000009032,Otro,Epson,Model-898,,,,44,Regular,Operativo,10,Tecnología de la Información,2,0,0,487.0,4,0,Medio,40.0
+9033,990000009033,Laptop,Lenovo,Model-711,32.0,256.0,SSD,16,Regular,Dañado,14,Dirección General,4,3,0,157.0,4,1,Critico,90.0
+9034,990000009034,Impresora,Asus,Model-608,,,,20,Regular,Operativo,14,Dirección General,3,0,0,368.0,1,0,Medio,40.0
+9035,990000009035,Impresora,HP,Model-107,,,,35,Regular,Operativo,13,Logística,3,2,0,69.0,1,0,Medio,40.0
+9036,990000009036,CPU,Asus,Model-129,32.0,256.0,HDD,36,Bueno,Operativo,12,Contabilidad,2,2,0,132.0,2,0,Bajo,15.0
+9037,990000009037,Monitor,Epson,Model-659,,,,26,Bueno,Operativo,10,Tecnología de la Información,2,0,1,278.0,1,0,Bajo,15.0
+9038,990000009038,Monitor,Acer,Model-841,,,,24,Nuevo,Operativo,13,Logística,0,0,0,,0,0,Bajo,15.0
+9039,990000009039,Otro,Lenovo,Model-562,,,,51,Bueno,Operativo,13,Logística,4,0,1,240.0,2,0,Medio,40.0
+9040,990000009040,Monitor,Acer,Model-813,,,,23,Regular,Operativo,13,Logística,7,2,1,16.0,3,0,Medio,40.0
+9041,990000009041,Otro,Asus,Model-260,,,,15,Nuevo,Operativo,13,Logística,0,0,0,,0,0,Bajo,15.0
+9042,990000009042,Laptop,Canon,Model-495,8.0,1024.0,SSD,10,Regular,Operativo,13,Logística,6,3,3,32.0,1,0,Alto,65.0
+9043,990000009043,Impresora,Lenovo,Model-776,,,,29,Bueno,Operativo,10,Tecnología de la Información,3,1,0,216.0,1,0,Bajo,15.0
+9044,990000009044,Laptop,Samsung,Model-896,16.0,1024.0,HDD,16,Nuevo,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9045,990000009045,Monitor,Epson,Model-205,,,,6,Bueno,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9046,990000009046,Otro,Dell,Model-472,,,,9,Bueno,Operativo,11,Recursos Humanos,1,0,1,186.0,1,0,Bajo,15.0
+9047,990000009047,Monitor,Samsung,Model-238,,,,34,Regular,Operativo,11,Recursos Humanos,1,0,0,554.0,1,0,Medio,40.0
+9048,990000009048,Monitor,Canon,Model-178,,,,10,Bueno,Operativo,14,Dirección General,1,1,0,48.0,1,0,Bajo,15.0
+9049,990000009049,Impresora,Samsung,Model-379,,,,26,Bueno,Operativo,10,Tecnología de la Información,2,0,0,605.0,2,0,Bajo,15.0
+9050,990000009050,CPU,Samsung,Model-322,8.0,512.0,HDD,26,Bueno,Operativo,14,Dirección General,2,1,0,180.0,2,0,Bajo,15.0
+9051,990000009051,Otro,HP,Model-982,,,,46,Bueno,Operativo,14,Dirección General,3,0,0,598.0,1,0,Bajo,15.0
+9052,990000009052,Monitor,Acer,Model-771,,,,9,Bueno,Operativo,14,Dirección General,3,2,1,31.0,3,1,Alto,65.0
+9053,990000009053,Laptop,Epson,Model-577,8.0,512.0,HDD,14,Bueno,Operativo,11,Recursos Humanos,5,2,3,155.0,2,0,Bajo,15.0
+9054,990000009054,Otro,Lenovo,Model-213,,,,10,Regular,Operativo,14,Dirección General,6,3,3,29.0,4,2,Critico,90.0
+9055,990000009055,Impresora,Lenovo,Model-517,,,,35,Bueno,Operativo,12,Contabilidad,1,0,1,364.0,1,0,Bajo,15.0
+9056,990000009056,Monitor,HP,Model-172,,,,7,Bueno,Operativo,13,Logística,2,0,2,19.0,1,0,Bajo,15.0
+9057,990000009057,Laptop,HP,Model-870,32.0,512.0,SSD,40,Bueno,Operativo,14,Dirección General,4,0,2,75.0,1,0,Bajo,15.0
+9058,990000009058,CPU,Samsung,Model-304,32.0,1024.0,NVMe,48,Bueno,Operativo,13,Logística,2,1,0,250.0,2,0,Bajo,15.0
+9059,990000009059,Impresora,Dell,Model-854,,,,11,Nuevo,Operativo,13,Logística,2,0,2,216.0,1,0,Bajo,15.0
+9060,990000009060,Otro,Asus,Model-504,,,,17,Regular,Dañado,11,Recursos Humanos,7,4,3,39.0,4,2,Critico,90.0
+9061,990000009061,Monitor,Epson,Model-552,,,,11,Nuevo,Operativo,14,Dirección General,2,1,1,304.0,2,0,Bajo,15.0
+9062,990000009062,Laptop,Lenovo,Model-863,32.0,1024.0,NVMe,24,Regular,Operativo,11,Recursos Humanos,3,1,0,60.0,3,1,Alto,65.0
+9063,990000009063,CPU,Dell,Model-250,4.0,256.0,NVMe,18,Nuevo,Operativo,11,Recursos Humanos,1,0,1,21.0,1,0,Bajo,15.0
+9064,990000009064,Otro,Lenovo,Model-726,,,,9,Malo,Operativo,12,Contabilidad,4,2,2,90.0,3,1,Alto,65.0
+9065,990000009065,Otro,Epson,Model-187,,,,22,Bueno,Operativo,10,Tecnología de la Información,6,3,1,73.0,1,0,Alto,65.0
+9066,990000009066,Otro,Dell,Model-356,,,,26,Bueno,Operativo,14,Dirección General,1,0,0,509.0,1,0,Bajo,15.0
+9067,990000009067,Impresora,Lenovo,Model-306,,,,14,Nuevo,Operativo,10,Tecnología de la Información,1,0,1,115.0,1,0,Bajo,15.0
+9068,990000009068,Impresora,Acer,Model-561,,,,43,Bueno,Operativo,11,Recursos Humanos,1,1,0,118.0,1,0,Bajo,15.0
+9069,990000009069,CPU,Asus,Model-395,16.0,512.0,NVMe,42,Bueno,Operativo,14,Dirección General,4,1,1,134.0,4,1,Alto,65.0
+9070,990000009070,Impresora,Epson,Model-672,,,,12,Nuevo,Operativo,12,Contabilidad,1,0,1,228.0,1,0,Bajo,15.0
+9071,990000009071,Otro,Epson,Model-724,,,,15,Regular,Operativo,14,Dirección General,6,2,3,100.0,2,0,Medio,40.0
+9072,990000009072,Laptop,Epson,Model-446,32.0,256.0,SSD,21,Bueno,Operativo,12,Contabilidad,2,1,0,323.0,1,0,Bajo,15.0
+9073,990000009073,Laptop,Dell,Model-650,16.0,512.0,NVMe,16,Bueno,Operativo,14,Dirección General,2,1,1,93.0,2,0,Bajo,15.0
+9074,990000009074,Laptop,Asus,Model-803,16.0,512.0,HDD,46,Regular,Operativo,11,Recursos Humanos,1,0,1,357.0,1,0,Medio,40.0
+9075,990000009075,Monitor,HP,Model-532,,,,6,Malo,Dañado,14,Dirección General,9,4,5,41.0,4,3,Critico,90.0
+9076,990000009076,CPU,Canon,Model-457,32.0,1024.0,HDD,12,Nuevo,Operativo,11,Recursos Humanos,1,0,1,96.0,1,0,Bajo,15.0
+9077,990000009077,Laptop,HP,Model-722,32.0,1024.0,NVMe,27,Bueno,Operativo,12,Contabilidad,1,0,1,315.0,1,0,Bajo,15.0
+9078,990000009078,Otro,Acer,Model-233,,,,50,Regular,Operativo,11,Recursos Humanos,4,2,0,126.0,1,0,Medio,40.0
+9079,990000009079,CPU,HP,Model-987,32.0,512.0,SSD,25,Bueno,Operativo,11,Recursos Humanos,7,2,2,210.0,4,0,Bajo,15.0
+9080,990000009080,Otro,Epson,Model-159,,,,18,Nuevo,Operativo,11,Recursos Humanos,2,0,2,195.0,1,0,Bajo,15.0
+9081,990000009081,Otro,Asus,Model-898,,,,15,Regular,Operativo,11,Recursos Humanos,3,2,0,97.0,4,0,Medio,40.0
+9082,990000009082,Laptop,Canon,Model-448,4.0,256.0,HDD,19,Bueno,Operativo,12,Contabilidad,1,0,1,125.0,1,0,Bajo,15.0
+9083,990000009083,Laptop,Epson,Model-418,32.0,256.0,NVMe,34,Bueno,Operativo,14,Dirección General,1,0,0,441.0,1,0,Bajo,15.0
+9084,990000009084,Otro,Samsung,Model-616,,,,15,Nuevo,Operativo,11,Recursos Humanos,2,0,1,329.0,1,0,Bajo,15.0
+9085,990000009085,Otro,Epson,Model-350,,,,24,Regular,Dañado,10,Tecnología de la Información,7,0,3,105.0,4,0,Critico,90.0
+9086,990000009086,Otro,HP,Model-374,,,,23,Nuevo,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9087,990000009087,Otro,HP,Model-257,,,,17,Bueno,Operativo,13,Logística,0,0,0,,0,0,Bajo,15.0
+9088,990000009088,Monitor,HP,Model-358,,,,7,Regular,Dañado,14,Dirección General,9,2,7,25.0,3,1,Critico,90.0
+9089,990000009089,Monitor,Samsung,Model-843,,,,26,Regular,Operativo,13,Logística,6,2,0,164.0,4,0,Medio,40.0
+9090,990000009090,Otro,Acer,Model-328,,,,31,Regular,Operativo,12,Contabilidad,4,1,0,308.0,2,0,Medio,40.0
+9091,990000009091,Impresora,Lenovo,Model-774,,,,30,Regular,Operativo,11,Recursos Humanos,2,2,0,40.0,2,0,Medio,40.0
+9092,990000009092,Impresora,Canon,Model-768,,,,16,Regular,Operativo,12,Contabilidad,7,1,3,18.0,1,0,Medio,40.0
+9093,990000009093,CPU,Asus,Model-847,16.0,512.0,HDD,23,Bueno,Operativo,14,Dirección General,4,0,2,42.0,1,0,Bajo,15.0
+9094,990000009094,Monitor,Asus,Model-132,,,,44,Regular,Operativo,14,Dirección General,3,2,0,171.0,2,0,Medio,40.0
+9095,990000009095,Otro,HP,Model-283,,,,7,Malo,Operativo,13,Logística,7,2,5,33.0,4,1,Alto,65.0
+9096,990000009096,Impresora,Samsung,Model-457,,,,16,Nuevo,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9097,990000009097,Impresora,Samsung,Model-272,,,,27,Nuevo,Operativo,13,Logística,1,1,0,228.0,1,0,Bajo,15.0
+9098,990000009098,Otro,Lenovo,Model-722,,,,24,Bueno,Operativo,14,Dirección General,2,1,1,22.0,1,0,Bajo,15.0
+9099,990000009099,Monitor,Asus,Model-150,,,,6,Bueno,Operativo,10,Tecnología de la Información,2,1,1,18.0,2,0,Bajo,15.0
+9100,990000009100,Otro,Canon,Model-468,,,,21,Bueno,Operativo,10,Tecnología de la Información,4,0,1,290.0,1,0,Bajo,15.0
+9101,990000009101,CPU,Lenovo,Model-828,4.0,512.0,SSD,21,Regular,Dañado,13,Logística,6,2,1,115.0,3,1,Critico,90.0
+9102,990000009102,Laptop,Dell,Model-850,32.0,512.0,HDD,13,Nuevo,Operativo,10,Tecnología de la Información,0,0,0,,0,0,Bajo,15.0
+9103,990000009103,Impresora,Epson,Model-796,,,,8,Bueno,Operativo,10,Tecnología de la Información,4,4,0,122.0,3,1,Alto,65.0
+9104,990000009104,Laptop,Dell,Model-370,8.0,256.0,NVMe,43,Regular,Operativo,14,Dirección General,1,0,0,694.0,2,0,Medio,40.0
+9105,990000009105,Otro,Asus,Model-186,,,,16,Nuevo,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9106,990000009106,Impresora,Epson,Model-596,,,,20,Malo,Dañado,11,Recursos Humanos,8,2,3,78.0,4,2,Critico,90.0
+9107,990000009107,Impresora,Canon,Model-519,,,,40,Regular,Operativo,10,Tecnología de la Información,3,1,1,273.0,1,0,Medio,40.0
+9108,990000009108,Monitor,HP,Model-122,,,,18,Nuevo,Operativo,10,Tecnología de la Información,0,0,0,,0,0,Bajo,15.0
+9109,990000009109,CPU,Samsung,Model-483,4.0,1024.0,SSD,36,Bueno,Operativo,13,Logística,3,1,0,355.0,2,0,Bajo,15.0
+9110,990000009110,Monitor,Lenovo,Model-411,,,,38,Bueno,Operativo,11,Recursos Humanos,3,0,0,483.0,1,0,Bajo,15.0
+9111,990000009111,Impresora,Canon,Model-878,,,,35,Bueno,Operativo,11,Recursos Humanos,1,0,0,654.0,1,0,Bajo,15.0
+9112,990000009112,Laptop,Asus,Model-909,8.0,512.0,NVMe,14,Bueno,Operativo,10,Tecnología de la Información,6,1,4,140.0,1,0,Bajo,15.0
+9113,990000009113,Impresora,HP,Model-824,,,,12,Bueno,Operativo,13,Logística,1,1,0,275.0,2,0,Bajo,15.0
+9114,990000009114,Otro,Samsung,Model-555,,,,15,Regular,Dañado,14,Dirección General,9,6,1,75.0,1,0,Critico,90.0
+9115,990000009115,CPU,Epson,Model-874,4.0,1024.0,NVMe,17,Regular,Operativo,13,Logística,4,1,2,94.0,1,0,Medio,40.0
+9116,990000009116,CPU,Samsung,Model-273,4.0,1024.0,NVMe,11,Regular,Dañado,13,Logística,4,3,1,30.0,3,1,Critico,90.0
+9117,990000009117,Laptop,HP,Model-158,4.0,1024.0,NVMe,19,Bueno,Operativo,10,Tecnología de la Información,2,1,1,55.0,2,0,Bajo,15.0
+9118,990000009118,Impresora,Acer,Model-587,,,,36,Regular,Operativo,11,Recursos Humanos,2,0,0,403.0,2,0,Medio,40.0
+9119,990000009119,Monitor,Samsung,Model-651,,,,18,Bueno,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9120,990000009120,Otro,Asus,Model-760,,,,11,Regular,Operativo,11,Recursos Humanos,4,3,1,45.0,2,0,Alto,65.0
+9121,990000009121,Otro,Samsung,Model-126,,,,12,Bueno,Operativo,11,Recursos Humanos,1,0,1,270.0,1,0,Bajo,15.0
+9122,990000009122,Impresora,Dell,Model-725,,,,23,Regular,Operativo,14,Dirección General,4,3,0,159.0,3,1,Alto,65.0
+9123,990000009123,Monitor,Lenovo,Model-965,,,,20,Nuevo,Operativo,12,Contabilidad,1,0,0,408.0,1,0,Bajo,15.0
+9124,990000009124,Impresora,Samsung,Model-922,,,,8,Bueno,Operativo,10,Tecnología de la Información,1,0,1,74.0,1,0,Bajo,15.0
+9125,990000009125,Impresora,HP,Model-599,,,,19,Bueno,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9126,990000009126,Monitor,Epson,Model-727,,,,19,Nuevo,Operativo,10,Tecnología de la Información,1,0,1,100.0,1,0,Bajo,15.0
+9127,990000009127,Monitor,Acer,Model-302,,,,18,Nuevo,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9128,990000009128,Otro,Samsung,Model-679,,,,34,Regular,Operativo,14,Dirección General,1,0,0,558.0,1,0,Medio,40.0
+9129,990000009129,Monitor,Epson,Model-614,,,,39,Bueno,Operativo,14,Dirección General,1,1,0,263.0,1,0,Bajo,15.0
+9130,990000009130,Impresora,Lenovo,Model-632,,,,9,Bueno,Operativo,13,Logística,7,3,4,75.0,3,2,Critico,90.0
+9131,990000009131,CPU,Asus,Model-689,4.0,512.0,HDD,38,Regular,Operativo,11,Recursos Humanos,3,0,0,468.0,2,0,Medio,40.0
+9132,990000009132,Otro,Acer,Model-177,,,,48,Bueno,Operativo,13,Logística,3,1,0,265.0,1,0,Bajo,15.0
+9133,990000009133,Laptop,Canon,Model-790,4.0,1024.0,SSD,21,Bueno,Operativo,13,Logística,1,1,0,84.0,1,0,Bajo,15.0
+9134,990000009134,Laptop,Dell,Model-644,4.0,256.0,NVMe,23,Regular,Operativo,11,Recursos Humanos,7,2,1,47.0,2,0,Medio,40.0
+9135,990000009135,CPU,Dell,Model-106,4.0,512.0,NVMe,9,Bueno,Operativo,10,Tecnología de la Información,1,0,1,177.0,1,0,Bajo,15.0
+9136,990000009136,Impresora,HP,Model-538,,,,23,Bueno,Operativo,13,Logística,0,0,0,,0,0,Bajo,15.0
+9137,990000009137,Impresora,Samsung,Model-390,,,,25,Bueno,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9138,990000009138,Laptop,Canon,Model-661,32.0,1024.0,HDD,7,Bueno,Operativo,10,Tecnología de la Información,2,1,1,71.0,4,1,Alto,65.0
+9139,990000009139,Laptop,HP,Model-239,4.0,256.0,NVMe,24,Nuevo,Operativo,10,Tecnología de la Información,1,0,1,139.0,1,0,Bajo,15.0
+9140,990000009140,Laptop,Epson,Model-331,8.0,1024.0,HDD,16,Malo,Operativo,10,Tecnología de la Información,6,4,1,49.0,4,2,Critico,90.0
+9141,990000009141,CPU,Lenovo,Model-661,8.0,1024.0,NVMe,13,Bueno,Operativo,12,Contabilidad,5,1,1,62.0,2,0,Bajo,15.0
+9142,990000009142,Laptop,HP,Model-760,4.0,256.0,SSD,17,Nuevo,Operativo,10,Tecnología de la Información,1,0,0,420.0,2,0,Bajo,15.0
+9143,990000009143,CPU,Canon,Model-276,16.0,256.0,HDD,51,Regular,Operativo,10,Tecnología de la Información,3,1,0,356.0,2,0,Medio,40.0
+9144,990000009144,CPU,Epson,Model-646,4.0,1024.0,HDD,15,Bueno,Operativo,11,Recursos Humanos,2,1,1,263.0,1,0,Bajo,15.0
+9145,990000009145,Otro,Canon,Model-748,,,,53,Bueno,Operativo,13,Logística,4,2,1,126.0,4,1,Alto,65.0
+9146,990000009146,Otro,Samsung,Model-455,,,,33,Bueno,Operativo,13,Logística,1,0,0,609.0,2,0,Bajo,15.0
+9147,990000009147,Laptop,Epson,Model-370,16.0,512.0,SSD,13,Bueno,Operativo,12,Contabilidad,0,0,0,,0,0,Bajo,15.0
+9148,990000009148,CPU,Canon,Model-206,4.0,256.0,NVMe,23,Regular,Operativo,12,Contabilidad,7,2,2,20.0,3,0,Medio,40.0
+9149,990000009149,Monitor,Samsung,Model-503,,,,17,Nuevo,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9150,990000009150,Otro,Canon,Model-991,,,,22,Bueno,Operativo,14,Dirección General,4,0,1,97.0,3,0,Bajo,15.0
+9151,990000009151,Laptop,Acer,Model-905,16.0,512.0,NVMe,43,Regular,Operativo,12,Contabilidad,3,0,1,203.0,2,0,Medio,40.0
+9152,990000009152,CPU,Lenovo,Model-389,32.0,1024.0,SSD,15,Regular,Operativo,13,Logística,7,1,6,94.0,4,1,Alto,65.0
+9153,990000009153,Otro,Asus,Model-190,,,,10,Malo,Dañado,10,Tecnología de la Información,6,3,3,70.0,3,1,Critico,90.0
+9154,990000009154,Laptop,HP,Model-917,4.0,256.0,NVMe,25,Regular,Operativo,13,Logística,5,1,0,256.0,4,0,Medio,40.0
+9155,990000009155,CPU,Epson,Model-489,4.0,512.0,HDD,19,Bueno,Operativo,10,Tecnología de la Información,5,1,2,95.0,1,0,Bajo,15.0
+9156,990000009156,CPU,Lenovo,Model-699,32.0,512.0,SSD,11,Bueno,Operativo,10,Tecnología de la Información,3,1,2,111.0,3,1,Alto,65.0
+9157,990000009157,Impresora,Canon,Model-359,,,,9,Bueno,Operativo,14,Dirección General,2,2,0,236.0,1,0,Bajo,15.0
+9158,990000009158,Monitor,Acer,Model-607,,,,50,Regular,Operativo,13,Logística,3,1,1,26.0,2,0,Medio,40.0
+9159,990000009159,Laptop,Samsung,Model-384,32.0,512.0,HDD,10,Nuevo,Operativo,11,Recursos Humanos,2,0,2,151.0,1,0,Bajo,15.0
+9160,990000009160,Impresora,Asus,Model-561,,,,6,Bueno,Operativo,12,Contabilidad,1,0,1,98.0,1,0,Bajo,15.0
+9161,990000009161,Impresora,Samsung,Model-744,,,,35,Bueno,Operativo,13,Logística,2,0,0,477.0,4,0,Bajo,15.0
+9162,990000009162,Impresora,Asus,Model-726,,,,24,Nuevo,Operativo,10,Tecnología de la Información,0,0,0,,0,0,Bajo,15.0
+9163,990000009163,Otro,Samsung,Model-790,,,,35,Bueno,Operativo,10,Tecnología de la Información,2,1,0,176.0,2,0,Bajo,15.0
+9164,990000009164,Laptop,HP,Model-621,16.0,512.0,NVMe,46,Regular,Operativo,13,Logística,4,0,2,144.0,3,0,Medio,40.0
+9165,990000009165,Monitor,Acer,Model-289,,,,13,Nuevo,Operativo,10,Tecnología de la Información,0,0,0,,0,0,Bajo,15.0
+9166,990000009166,CPU,Epson,Model-503,8.0,1024.0,HDD,11,Bueno,Operativo,14,Dirección General,3,2,1,45.0,3,1,Alto,65.0
+9167,990000009167,CPU,Asus,Model-781,8.0,512.0,SSD,30,Bueno,Operativo,14,Dirección General,3,0,1,278.0,1,0,Bajo,15.0
+9168,990000009168,CPU,Canon,Model-770,4.0,1024.0,NVMe,23,Regular,Operativo,10,Tecnología de la Información,5,2,2,43.0,2,0,Medio,40.0
+9169,990000009169,Impresora,Samsung,Model-851,,,,34,Bueno,Operativo,10,Tecnología de la Información,1,0,0,686.0,3,0,Bajo,15.0
+9170,990000009170,CPU,Samsung,Model-752,4.0,1024.0,SSD,6,Regular,Operativo,12,Contabilidad,6,4,2,102.0,2,0,Alto,65.0
+9171,990000009171,Laptop,Asus,Model-944,8.0,1024.0,SSD,51,Bueno,Operativo,14,Dirección General,1,0,1,322.0,1,0,Medio,40.0
+9172,990000009172,CPU,Epson,Model-655,16.0,256.0,SSD,15,Nuevo,Operativo,13,Logística,0,0,0,,0,0,Bajo,15.0
+9173,990000009173,Impresora,Acer,Model-142,,,,15,Regular,Operativo,12,Contabilidad,7,2,1,143.0,3,0,Medio,40.0
+9174,990000009174,Laptop,HP,Model-656,32.0,512.0,NVMe,15,Nuevo,Operativo,12,Contabilidad,0,0,0,,0,0,Bajo,15.0
+9175,990000009175,Impresora,Dell,Model-690,,,,21,Bueno,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9176,990000009176,CPU,Dell,Model-184,16.0,256.0,HDD,37,Bueno,Operativo,11,Recursos Humanos,2,1,0,139.0,1,0,Bajo,15.0
+9177,990000009177,Laptop,Samsung,Model-574,8.0,1024.0,HDD,53,Bueno,Operativo,11,Recursos Humanos,3,1,0,351.0,1,0,Medio,40.0
+9178,990000009178,Laptop,Lenovo,Model-157,32.0,512.0,NVMe,39,Bueno,Operativo,14,Dirección General,1,1,0,307.0,2,0,Bajo,15.0
+9179,990000009179,Impresora,Acer,Model-124,,,,14,Bueno,Operativo,11,Recursos Humanos,2,2,0,135.0,1,0,Bajo,15.0
+9180,990000009180,Laptop,Samsung,Model-752,4.0,256.0,SSD,21,Bueno,Operativo,13,Logística,1,0,0,586.0,1,0,Bajo,15.0
+9181,990000009181,Monitor,Samsung,Model-328,,,,15,Nuevo,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9182,990000009182,Impresora,Canon,Model-385,,,,35,Regular,Operativo,12,Contabilidad,4,0,1,137.0,1,0,Medio,40.0
+9183,990000009183,Impresora,Dell,Model-230,,,,8,Nuevo,Operativo,11,Recursos Humanos,2,2,0,48.0,2,0,Bajo,15.0
+9184,990000009184,Otro,Canon,Model-881,,,,27,Nuevo,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9185,990000009185,Otro,Epson,Model-909,,,,23,Bueno,Operativo,10,Tecnología de la Información,7,3,1,33.0,2,0,Alto,65.0
+9186,990000009186,Laptop,HP,Model-347,16.0,512.0,SSD,43,Regular,Operativo,12,Contabilidad,2,1,0,301.0,3,0,Medio,40.0
+9187,990000009187,CPU,Lenovo,Model-925,4.0,1024.0,HDD,13,Bueno,Operativo,14,Dirección General,1,0,1,305.0,1,0,Bajo,15.0
+9188,990000009188,CPU,Asus,Model-410,8.0,512.0,SSD,23,Bueno,Operativo,11,Recursos Humanos,6,2,3,93.0,3,1,Alto,65.0
+9189,990000009189,Otro,Asus,Model-724,,,,6,Bueno,Operativo,12,Contabilidad,2,0,2,126.0,1,0,Bajo,15.0
+9190,990000009190,Impresora,Epson,Model-225,,,,16,Bueno,Operativo,11,Recursos Humanos,2,2,0,133.0,2,0,Bajo,15.0
+9191,990000009191,CPU,Lenovo,Model-612,4.0,512.0,SSD,31,Regular,Operativo,10,Tecnología de la Información,1,0,1,293.0,1,0,Medio,40.0
+9192,990000009192,CPU,Asus,Model-219,32.0,512.0,HDD,21,Nuevo,Operativo,14,Dirección General,2,2,0,29.0,2,0,Bajo,15.0
+9193,990000009193,Laptop,Asus,Model-837,4.0,1024.0,SSD,47,Regular,Operativo,12,Contabilidad,4,2,0,282.0,1,0,Medio,40.0
+9194,990000009194,Laptop,HP,Model-991,32.0,256.0,HDD,36,Bueno,Operativo,14,Dirección General,1,1,0,108.0,1,0,Bajo,15.0
+9195,990000009195,Monitor,Dell,Model-507,,,,31,Bueno,Operativo,13,Logística,4,0,1,177.0,2,0,Bajo,15.0
+9196,990000009196,CPU,Lenovo,Model-382,8.0,512.0,SSD,13,Malo,Dañado,13,Logística,7,2,4,17.0,4,2,Critico,90.0
+9197,990000009197,Impresora,HP,Model-187,,,,52,Bueno,Operativo,10,Tecnología de la Información,1,1,0,105.0,1,0,Medio,40.0
+9198,990000009198,CPU,HP,Model-476,32.0,256.0,NVMe,19,Bueno,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9199,990000009199,Laptop,HP,Model-508,32.0,1024.0,HDD,16,Regular,Operativo,10,Tecnología de la Información,5,0,3,15.0,3,0,Medio,40.0
+9200,990000009200,Monitor,Acer,Model-623,,,,27,Bueno,Operativo,10,Tecnología de la Información,3,0,2,183.0,3,0,Bajo,15.0

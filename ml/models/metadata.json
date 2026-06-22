@@ -1,0 +1,74 @@
+{
+  "version": "v1",
+  "model_file": "riesgo_equipo_v1.joblib",
+  "trained_at": "2026-06-21T22:41:34.985185+00:00",
+  "dataset": "ml\\data\\synthetic\\equipos_riesgo_v200.csv",
+  "n_samples": 200,
+  "n_train": 160,
+  "n_test": 40,
+  "classes": [
+    "Alto",
+    "Bajo",
+    "Critico",
+    "Medio"
+  ],
+  "metrics": {
+    "accuracy": 0.95,
+    "f1_macro": 0.9196,
+    "classification_report": {
+      "Alto": {
+        "precision": 0.8333333333333334,
+        "recall": 1.0,
+        "f1-score": 0.9090909090909091,
+        "support": 5.0
+      },
+      "Bajo": {
+        "precision": 0.9583333333333334,
+        "recall": 1.0,
+        "f1-score": 0.9787234042553191,
+        "support": 23.0
+      },
+      "Critico": {
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1-score": 0.8571428571428571,
+        "support": 4.0
+      },
+      "Medio": {
+        "precision": 1.0,
+        "recall": 0.875,
+        "f1-score": 0.9333333333333333,
+        "support": 8.0
+      },
+      "accuracy": 0.95,
+      "macro avg": {
+        "precision": 0.9479166666666667,
+        "recall": 0.90625,
+        "f1-score": 0.9195726259556047,
+        "support": 40.0
+      },
+      "weighted avg": {
+        "precision": 0.9552083333333334,
+        "recall": 0.95,
+        "f1-score": 0.9487832734641245,
+        "support": 40.0
+      }
+    }
+  },
+  "features": [
+    "ram_gb",
+    "almacenamiento_gb",
+    "antiguedad_meses",
+    "total_mantenimientos",
+    "correctivos_12m",
+    "preventivos_12m",
+    "dias_desde_ultimo_mantenimiento",
+    "severidad_max_historica",
+    "fallas_altas_criticas_12m",
+    "area_id",
+    "tipo_equipo",
+    "tipo_disco",
+    "estado_conservacion",
+    "estado_operativo"
+  ]
+}

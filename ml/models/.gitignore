@@ -1,0 +1,2 @@
+# Modelos entrenados — generados por ml/scripts/train_model.py
+*.joblib

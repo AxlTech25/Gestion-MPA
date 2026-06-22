@@ -1,0 +1,21 @@
+equipo_id,codigo_patrimonial,tipo_equipo,marca,modelo,ram_gb,almacenamiento_gb,tipo_disco,antiguedad_meses,estado_conservacion,estado_operativo,area_id,area_nombre,total_mantenimientos,correctivos_12m,preventivos_12m,dias_desde_ultimo_mantenimiento,severidad_max_historica,fallas_altas_criticas_12m,nivel_riesgo,score_riesgo
+9001,990000009001,Monitor,Dell,Model-792,,,,13,Nuevo,Operativo,10,Tecnología de la Información,0,0,0,,0,0,Bajo,15.0
+9002,990000009002,CPU,Canon,Model-739,32.0,512.0,HDD,20,Bueno,Operativo,12,Contabilidad,1,1,0,113.0,1,0,Bajo,15.0
+9003,990000009003,Otro,HP,Model-202,,,,51,Bueno,Operativo,14,Dirección General,1,1,0,195.0,1,0,Medio,40.0
+9004,990000009004,Impresora,Asus,Model-927,,,,37,Bueno,Operativo,13,Logística,1,1,0,325.0,3,1,Alto,65.0
+9005,990000009005,Laptop,Canon,Model-747,4.0,256.0,HDD,23,Nuevo,Operativo,13,Logística,2,0,1,249.0,1,0,Bajo,15.0
+9006,990000009006,Impresora,Acer,Model-343,,,,46,Regular,Operativo,10,Tecnología de la Información,4,1,0,119.0,2,0,Medio,40.0
+9007,990000009007,CPU,Asus,Model-447,16.0,256.0,HDD,23,Bueno,Operativo,12,Contabilidad,7,3,2,80.0,4,1,Alto,65.0
+9008,990000009008,Impresora,Lenovo,Model-565,,,,9,Bueno,Operativo,12,Contabilidad,1,0,1,40.0,1,0,Bajo,15.0
+9009,990000009009,Monitor,Dell,Model-165,,,,25,Regular,Operativo,12,Contabilidad,4,2,0,171.0,4,2,Critico,90.0
+9010,990000009010,Otro,Asus,Model-988,,,,11,Nuevo,Operativo,14,Dirección General,0,0,0,,0,0,Bajo,15.0
+9011,990000009011,Otro,Acer,Model-171,,,,44,Bueno,Operativo,10,Tecnología de la Información,3,0,1,202.0,2,0,Bajo,15.0
+9012,990000009012,Impresora,Samsung,Model-353,,,,22,Malo,Dañado,11,Recursos Humanos,9,4,2,46.0,4,2,Critico,90.0
+9013,990000009013,Otro,Acer,Model-841,,,,15,Bueno,Operativo,13,Logística,1,1,0,264.0,2,0,Bajo,15.0
+9014,990000009014,CPU,Asus,Model-190,16.0,1024.0,NVMe,15,Nuevo,Operativo,11,Recursos Humanos,0,0,0,,0,0,Bajo,15.0
+9015,990000009015,Impresora,Lenovo,Model-830,,,,25,Regular,Operativo,10,Tecnología de la Información,7,2,2,206.0,3,1,Alto,65.0
+9016,990000009016,Otro,Canon,Model-588,,,,24,Nuevo,Operativo,12,Contabilidad,0,0,0,,0,0,Bajo,15.0
+9017,990000009017,CPU,Dell,Model-902,8.0,512.0,HDD,25,Malo,Operativo,11,Recursos Humanos,5,1,1,57.0,4,1,Alto,65.0
+9018,990000009018,Impresora,HP,Model-796,,,,6,Bueno,Operativo,10,Tecnología de la Información,0,0,0,,0,0,Bajo,15.0
+9019,990000009019,Otro,Epson,Model-147,,,,33,Bueno,Operativo,12,Contabilidad,3,0,3,109.0,1,0,Bajo,15.0
+9020,990000009020,Otro,Asus,Model-855,,,,12,Regular,Operativo,11,Recursos Humanos,5,4,1,28.0,4,2,Critico,90.0
