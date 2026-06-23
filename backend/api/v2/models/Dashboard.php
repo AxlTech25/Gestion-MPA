@@ -82,5 +82,66 @@ class Dashboard {
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function consultarEquipos(
+        ?string $tipo_equipo,
+        ?string $estado_operativo,
+        ?string $estado_conservacion,
+        ?string $tipo_otro = null
+    ): array {
+        $standardTipos = ['Laptop', 'CPU', 'Impresora', 'Monitor'];
+        $allowedOp = ['Operativo', 'Dañado', 'En Reparacion', 'Excedencia', 'Baja'];
+        $allowedCons = ['Nuevo', 'Bueno', 'Regular', 'Malo'];
+
+        $where = [];
+        $params = [];
+
+        if ($tipo_equipo !== null && $tipo_equipo !== '') {
+            if ($tipo_equipo === 'Otro') {
+                $where[] = "(e.tipo_equipo = 'Otro' OR e.tipo_equipo NOT IN ('Laptop','CPU','Impresora','Monitor'))";
+                $term = trim((string) $tipo_otro);
+                if ($term !== '') {
+                    $like = '%' . $term . '%';
+                    $where[] = '(e.tipo_equipo LIKE :tipo_otro_tipo OR e.marca LIKE :tipo_otro_marca OR e.modelo LIKE :tipo_otro_modelo)';
+                    $params[':tipo_otro_tipo'] = $like;
+                    $params[':tipo_otro_marca'] = $like;
+                    $params[':tipo_otro_modelo'] = $like;
+                }
+            } elseif (in_array($tipo_equipo, $standardTipos, true)) {
+                $where[] = 'e.tipo_equipo = :tipo_equipo';
+                $params[':tipo_equipo'] = $tipo_equipo;
+            }
+        }
+        if ($estado_operativo !== null && $estado_operativo !== '' && in_array($estado_operativo, $allowedOp, true)) {
+            $where[] = 'e.estado_operativo = :estado_operativo';
+            $params[':estado_operativo'] = $estado_operativo;
+        }
+        if ($estado_conservacion !== null && $estado_conservacion !== '' && in_array($estado_conservacion, $allowedCons, true)) {
+            $where[] = 'e.estado_conservacion = :estado_conservacion';
+            $params[':estado_conservacion'] = $estado_conservacion;
+        }
+
+        $sql = "
+            SELECT e.id, e.codigo_patrimonial, e.codigo_identificativo, e.tipo_equipo,
+                   e.marca, e.modelo, e.estado_operativo, e.estado_conservacion,
+                   e.ubicacion_fisica, a.nombre AS area_nombre
+            FROM v2_equipos e
+            LEFT JOIN v2_areas a ON e.area_id = a.id
+        ";
+
+        if ($where) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+
+        $sql .= ' ORDER BY e.codigo_patrimonial ASC';
+
+        $stmt = $this->conn->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

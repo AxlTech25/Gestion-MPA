@@ -1,17 +1,23 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/backend': {
+      '/gestion_mpa/backend': {
         target: 'http://localhost',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => '/gestion_mpa' + path,
-      }
-    }
-  }
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq, req) => {
+            const auth = req.headers.authorization;
+            if (auth) {
+              proxyReq.setHeader('Authorization', auth);
+            }
+          });
+        },
+      },
+    },
+  },
 })

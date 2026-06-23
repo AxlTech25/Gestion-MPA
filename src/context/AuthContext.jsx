@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { TOKEN_KEY, USER_KEY } from '../constants/config';
 
 const AuthContext = createContext();
@@ -9,6 +9,15 @@ export const AuthProvider = ({ children }) => {
         return stored ? JSON.parse(stored) : null;
     });
     const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null);
+
+    useEffect(() => {
+        const handleLogout = () => {
+            setUser(null);
+            setToken(null);
+        };
+        window.addEventListener('auth:logout', handleLogout);
+        return () => window.removeEventListener('auth:logout', handleLogout);
+    }, []);
 
     const login = (userData, authToken) => {
         setUser(userData);

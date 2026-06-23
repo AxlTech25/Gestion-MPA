@@ -9,6 +9,7 @@ USE gestion_equipos_mpa_v2;
 CREATE TABLE IF NOT EXISTS v2_areas (
   id INT PRIMARY KEY AUTO_INCREMENT,
   nombre VARCHAR(100) UNIQUE NOT NULL,
+  jefe_encargado VARCHAR(100),
   descripcion TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -83,6 +84,15 @@ CREATE TABLE IF NOT EXISTS v2_equipos (
   ram_gb INT, 
   almacenamiento_gb INT,
   tipo_disco ENUM('HDD', 'SSD', 'NVMe'),
+
+  -- Telemetría ML (Sprint 7)
+  horas_uso INT NOT NULL DEFAULT 0,
+  errores_smart INT NOT NULL DEFAULT 0,
+  contador_paginas INT NULL DEFAULT NULL,
+  salud_bateria DECIMAL(5,2) NULL DEFAULT NULL,
+  ultima_temp_cpu DECIMAL(5,2) NULL DEFAULT NULL,
+  ultima_temp_disco DECIMAL(5,2) NULL DEFAULT NULL,
+  fecha_ultimo_mantenimiento DATE NULL DEFAULT NULL,
   
   -- Para ML: Antigüedad real (Meses de uso calculables a partir de esta fecha)
   fecha_adquisicion DATE, 
@@ -94,8 +104,9 @@ CREATE TABLE IF NOT EXISTS v2_equipos (
   -- Normalización
   area_id INT NOT NULL, 
   responsable_id INT,
+  responsable_nombre VARCHAR(100),
   estado_conservacion ENUM('Nuevo', 'Bueno', 'Regular', 'Malo') DEFAULT 'Bueno',
-  estado_operativo ENUM('Operativo', 'Dañado', 'Excedencia', 'Baja') DEFAULT 'Operativo',
+  estado_operativo ENUM('Operativo', 'Dañado', 'En Reparacion', 'Excedencia', 'Baja') DEFAULT 'Operativo',
   
   fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
@@ -113,8 +124,10 @@ CREATE TABLE IF NOT EXISTS v2_fichas_tecnicas (
   licencia_so VARCHAR(100),
   mac_address VARCHAR(50),
   ip_asignada VARCHAR(15),
-  software_base TEXT, -- Ej: Office, Antivirus
-  
+  software_base TEXT,
+  observaciones_evaluacion TEXT,
+  fecha_evaluacion DATETIME,
+
   FOREIGN KEY (equipo_id) REFERENCES v2_equipos(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -145,10 +158,22 @@ CREATE TABLE IF NOT EXISTS v2_fichas_mantenimiento (
   equipo_id INT NOT NULL,
   fecha_intervencion DATETIME NOT NULL,
   tecnico_id INT,
-  tipo_mantenimiento ENUM('Preventivo', 'Correctivo', 'Evaluacion'),
+  tipo_mantenimiento ENUM('Preventivo', 'Correctivo', 'Predictivo', 'Evaluacion'),
   
   -- Crucial para ML: Clasificación estructurada del problema
-  categoria_falla_id INT, 
+  categoria_falla_id INT,
+
+  -- Sprint 7: contexto estructurado de intervención
+  sintoma_usuario TEXT,
+  causa_raiz VARCHAR(150),
+  componente_principal VARCHAR(100),
+  nivel_polvo ENUM('Bajo', 'Medio', 'Alto', 'Critico'),
+  temperatura_cpu DECIMAL(5,2),
+  temperatura_disco DECIMAL(5,2),
+  horas_uso_acumuladas INT,
+  salud_bateria_pct DECIMAL(5,2),
+  contador_paginas_lectura INT,
+  tiempo_inactividad_min INT NOT NULL DEFAULT 0,
   
   -- Texto libre solo para humanos
   diagnostico_texto TEXT, 

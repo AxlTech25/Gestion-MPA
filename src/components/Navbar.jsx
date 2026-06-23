@@ -24,6 +24,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center space-x-8">
           <MenuLink to="/v2/dashboard" label="Dashboard" active={location.pathname === '/v2/dashboard'} />
           <MenuLink to="/v2/inventario" label="Inventario" active={location.pathname === '/v2/inventario'} />
+          <MenuLink to="/v2/ficha-tecnica" label="Ficha Técnica" active={location.pathname === '/v2/ficha-tecnica'} />
           <MenuLink to="/v2/mantenimiento" label="Mantenimiento" active={location.pathname === '/v2/mantenimiento'} />
           <MenuLink to="/v2/configuracion" label="Configuración" active={location.pathname === '/v2/configuracion'} />
         </div>

@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { downloadPdf } from '../../../lib/api';
 import { equiposService } from '../services/equiposService';
-import { PlusCircle, Search, FileText, Settings } from 'lucide-react';
+import { mlService } from '../../ml/services/mlService';
+import { RiesgoBadge } from '../../ml/components/RiesgoBadge';
+import { PlusCircle, Search, FileText, Settings, FileSpreadsheet } from 'lucide-react';
 import { EquipoForm } from './EquipoForm';
 import { FichaTecnicaModal } from './FichaTecnicaModal';
+import { CargaMasivaModal } from './CargaMasivaModal';
 
 export const InventarioPage = () => {
   const [equipos, setEquipos] = useState([]);
+  const [riesgoMap, setRiesgoMap] = useState({});
+  const [mlOffline, setMlOffline] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCargaMasivaOpen, setIsCargaMasivaOpen] = useState(false);
   const [fichaEquipoId, setFichaEquipoId] = useState(null);
 
   // Filtros Sprint 4
@@ -27,10 +33,25 @@ export const InventarioPage = () => {
       if (res.success) {
         setEquipos(res.data);
       }
+      cargarRiesgos();
     } catch (error) {
       console.error("Fallo al cargar la tabla");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const cargarRiesgos = async () => {
+    try {
+      const res = await mlService.getRiesgoInventario();
+      if (res.success && Array.isArray(res.data)) {
+        const map = {};
+        res.data.forEach((r) => { map[r.equipo_id] = r; });
+        setRiesgoMap(map);
+        setMlOffline(false);
+      }
+    } catch {
+      setMlOffline(true);
     }
   };
 
@@ -59,6 +80,9 @@ export const InventarioPage = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-800">Inventario V2 (ML-Ready)</h2>
           <p className="text-sm text-slate-500">Gestión de equipos optimizada para inteligencia predictiva</p>
+          {mlOffline && (
+            <p className="text-xs text-amber-600 mt-1">Servicio ML no disponible — badges omitidos</p>
+          )}
         </div>
         <div className="flex flex-wrap gap-3">
           <div className="relative">
@@ -88,6 +112,14 @@ export const InventarioPage = () => {
             <option value="Malo">Malo</option>
           </select>
 
+          <button
+            onClick={() => setIsCargaMasivaOpen(true)}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            <FileSpreadsheet size={18} />
+            Carga Excel
+          </button>
+
           <button 
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
@@ -107,15 +139,18 @@ export const InventarioPage = () => {
               <th className="px-6 py-4 font-medium">Marca/Modelo</th>
               <th className="px-6 py-4 font-medium">RAM/Alm (Numérico)</th>
               <th className="px-6 py-4 font-medium">Área</th>
-              <th className="px-6 py-4 font-medium text-center">Estado ML</th>
+              <th className="px-6 py-4 font-medium">Responsable</th>
+              <th className="px-6 py-4 font-medium">Ubicación</th>
+              <th className="px-6 py-4 font-medium text-center">Riesgo ML</th>
+              <th className="px-6 py-4 font-medium text-center">Estado</th>
               <th className="px-6 py-4 font-medium text-right">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {loading ? (
-              <tr><td colSpan="7" className="text-center py-10 text-slate-400">Cargando inventario...</td></tr>
+              <tr><td colSpan="10" className="text-center py-10 text-slate-400">Cargando inventario...</td></tr>
             ) : filteredEquipos.length === 0 ? (
-              <tr><td colSpan="7" className="text-center py-10 text-slate-400">No se encontraron equipos.</td></tr>
+              <tr><td colSpan="10" className="text-center py-10 text-slate-400">No se encontraron equipos.</td></tr>
             ) : (
               filteredEquipos.map((eq) => (
                 <tr key={eq.id} className="hover:bg-slate-50 transition-colors group">
@@ -132,6 +167,18 @@ export const InventarioPage = () => {
                     {eq.ram_gb ? `${eq.ram_gb} GB` : 'N/A'} / {eq.almacenamiento_gb ? `${eq.almacenamiento_gb} GB` : 'N/A'}
                   </td>
                   <td className="px-6 py-4 text-slate-600">{eq.area_nombre || `ID: ${eq.area_id}`}</td>
+                  <td className="px-6 py-4 text-slate-600">
+                    {eq.responsable_nombre || eq.area_jefe || '—'}
+                  </td>
+                  <td className="px-6 py-4 text-slate-600 text-sm">
+                    {eq.ubicacion_fisica || eq.area_nombre || '—'}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <RiesgoBadge
+                      nivel={riesgoMap[eq.id]?.nivel_riesgo}
+                      score={riesgoMap[eq.id]?.score_riesgo}
+                    />
+                  </td>
                   <td className="px-6 py-4 text-center">
                     <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
                       eq.estado_conservacion === 'Bueno' || eq.estado_conservacion === 'Nuevo' ? 'bg-emerald-100 text-emerald-700' :
@@ -167,6 +214,13 @@ export const InventarioPage = () => {
         <EquipoForm 
           onClose={() => setIsModalOpen(false)} 
           onSuccess={cargarEquipos} 
+        />
+      )}
+
+      {isCargaMasivaOpen && (
+        <CargaMasivaModal
+          onClose={() => setIsCargaMasivaOpen(false)}
+          onSuccess={cargarEquipos}
         />
       )}
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -10,6 +10,7 @@ import { DashboardPage }    from './features/dashboard/components/DashboardPage'
 import { InventarioPage }   from './features/inventario/components/InventarioPage';
 import { MantenimientoPage } from './features/mantenimiento/components/MantenimientoPage';
 import { ConfiguracionPage } from './features/configuracion/components/ConfiguracionPage';
+import { FichaTecnicaPage } from './features/inventario/components/FichaTecnicaPage';
 
 // Login
 import Login from './features/auth/Login';
@@ -18,8 +19,19 @@ import Login from './features/auth/Login';
  * Protege las rutas: redirige al login si no hay sesión activa.
  */
 const PrivateRoute = ({ children }) => {
-    const { isAuthenticated } = useAuth();
-    return isAuthenticated ? children : <Navigate to="/login" />;
+    const { isAuthenticated, logout } = useAuth();
+
+    useEffect(() => {
+        const redirectToLogin = () => logout();
+        window.addEventListener('auth:logout', redirectToLogin);
+        return () => window.removeEventListener('auth:logout', redirectToLogin);
+    }, [logout]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return children;
 };
 
 /**
@@ -52,6 +64,7 @@ function App() {
                                         <Route path="/"               element={<Navigate to="/v2/dashboard" />} />
                                         <Route path="/v2/dashboard"   element={<DashboardPage />} />
                                         <Route path="/v2/inventario"  element={<InventarioPage />} />
+                                        <Route path="/v2/ficha-tecnica" element={<FichaTecnicaPage />} />
                                         <Route path="/v2/mantenimiento" element={<MantenimientoPage />} />
                                         <Route path="/v2/configuracion" element={<ConfiguracionPage />} />
                                         {/* Cualquier ruta no encontrada → dashboard */}

@@ -18,24 +18,35 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
     procesador: '',
     sistema_operativo: 'Windows 10',
     fecha_adquisicion: '',
-    area_id: ''
+    area_id: '',
+    horas_uso: '0',
+    errores_smart: '0',
+    contador_paginas: '',
+    salud_bateria: '',
+    ultima_temp_cpu: '',
+    ultima_temp_disco: '',
   });
   const [loading, setLoading] = useState(false);
   const [areas, setAreas] = useState([]);
 
   const isTechnical = formData.tipo_equipo === 'CPU' || formData.tipo_equipo === 'Laptop';
+  const isLaptop = formData.tipo_equipo === 'Laptop';
+  const isImpresora = formData.tipo_equipo === 'Impresora';
+  const showTelemetria = isTechnical || isImpresora;
+  const areaSeleccionada = areas.find((a) => String(a.id) === String(formData.area_id));
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resA = await organizacionService.getAreas();
-        if (resA.success) setAreas(resA.data);
-        
-        if (resA.success && resA.data.length > 0) {
-          setFormData(prev => ({ ...prev, area_id: resA.data[0].id }));
+        if (resA.success) {
+          setAreas(resA.data);
+          if (resA.data.length > 0) {
+            setFormData((prev) => ({ ...prev, area_id: resA.data[0].id }));
+          }
         }
       } catch (e) {
-        console.error("Error cargando áreas", e);
+        console.error('Error cargando áreas', e);
       }
     };
     fetchData();
@@ -45,7 +56,6 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Bloquear caracteres no numéricos en campos de código
     if (NUMERIC_FIELDS.includes(name) && !/^\d*$/.test(value)) return;
     setFormData({ ...formData, [name]: value });
   };
@@ -54,7 +64,6 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Si el tipo es "Otro", enviamos el nombre personalizado como tipo_equipo
       const payload = {
         ...formData,
         tipo_equipo: formData.tipo_equipo === 'Otro'
@@ -68,8 +77,8 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
       } else {
         alert(res.message);
       }
-    } catch (error) {
-      alert("Error al registrar equipo.");
+    } catch {
+      alert('Error al registrar equipo.');
     } finally {
       setLoading(false);
     }
@@ -78,8 +87,7 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[95vh]">
-        
-        {/* Header */}
+
         <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
           <h3 className="text-lg font-bold text-slate-800">Registrar Equipo</h3>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
@@ -87,11 +95,9 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-6 overflow-y-auto">
           <form id="equipo-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            
-            {/* Campos Comunes */}
+
             <div className="space-y-1">
               <label className="text-sm font-medium text-slate-700">Cód. Patrimonial *</label>
               <input
@@ -105,7 +111,8 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
                 inputMode="numeric"
                 title="Debe contener exactamente 12 dígitos numéricos."
                 placeholder="Ej: 740000001111"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm tracking-widest" />
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm tracking-widest"
+              />
               <p className={`text-xs ${formData.codigo_patrimonial.length === 12 ? 'text-emerald-500' : 'text-slate-400'}`}>
                 {formData.codigo_patrimonial.length}/12 dígitos
               </p>
@@ -120,9 +127,9 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
                 maxLength={6}
                 pattern="[0-9]{0,6}"
                 inputMode="numeric"
-                title="Solo dígitos numéricos. Máximo 6."
                 placeholder="Ej: 000121"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm tracking-widest" />
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm tracking-widest"
+              />
               <p className={`text-xs ${formData.codigo_identificativo.length === 6 ? 'text-emerald-500' : 'text-slate-400'}`}>
                 {formData.codigo_identificativo.length}/6 dígitos
               </p>
@@ -130,11 +137,41 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
 
             <div className="space-y-1">
               <label className="text-sm font-medium text-slate-700">Área Asignada *</label>
-              <select required name="area_id" value={formData.area_id} onChange={handleChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                {areas.map(a => <option key={a.id} value={a.id}>{a.nombre} (Jefe: {a.jefe_encargado || 'S/N'})</option>)}
+              <select
+                required
+                name="area_id"
+                value={formData.area_id}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+              >
+                {areas.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.nombre} (Jefe: {a.jefe_encargado || 'S/N'})
+                  </option>
+                ))}
               </select>
             </div>
+
+            {areaSeleccionada && (
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-slate-700">Responsable del Equipo</label>
+                <div className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-sm text-slate-700">
+                  {areaSeleccionada.jefe_encargado || 'Sin jefe asignado'}
+                </div>
+              </div>
+            )}
+
+            {areaSeleccionada && (
+              <div className="space-y-1 md:col-span-2">
+                <label className="text-sm font-medium text-slate-700">Ubicación (Área)</label>
+                <div className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-sm text-slate-700">
+                  {areaSeleccionada.nombre}
+                  {areaSeleccionada.descripcion && (
+                    <span className="text-slate-500"> — {areaSeleccionada.descripcion}</span>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-1">
               <label className="text-sm font-medium text-slate-700">Tipo de Equipo *</label>
@@ -161,7 +198,9 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
 
             {formData.tipo_equipo === 'Otro' && (
               <div className="space-y-1 md:col-span-2">
-                <p className="text-xs text-amber-600 font-medium">✏️ Nombre que aparecerá en el inventario: <strong>{formData.tipo_equipo_otro || '—'}</strong></p>
+                <p className="text-xs text-amber-600 font-medium">
+                  Nombre en inventario: <strong>{formData.tipo_equipo_otro || '—'}</strong>
+                </p>
               </div>
             )}
 
@@ -189,14 +228,13 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
-            {/* Campos Técnicos Condicionales */}
             {isTechnical && (
               <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-slate-100">
                 <h4 className="md:col-span-2 font-bold text-slate-800 text-sm flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span className="w-2 h-2 bg-blue-500 rounded-full" />
                   Especificaciones Técnicas (ML-Ready)
                 </h4>
-                
+
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-slate-700">Procesador</label>
                   <input name="procesador" value={formData.procesador} onChange={handleChange}
@@ -212,14 +250,8 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-slate-700">Almacenamiento (GB)</label>
                   <div className="flex gap-2">
-                    <input
-                      type="number"
-                      name="almacenamiento_gb"
-                      value={formData.almacenamiento_gb}
-                      onChange={handleChange}
-                      min="1" max="100000"
-                      className="w-20 px-2 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                      placeholder="GB" />
+                    <input type="number" name="almacenamiento_gb" value={formData.almacenamiento_gb} onChange={handleChange}
+                      className="w-20 px-2 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="GB" />
                     <select name="tipo_disco" value={formData.tipo_disco} onChange={handleChange}
                       className="flex-1 px-2 py-2 border border-slate-300 rounded-lg bg-white outline-none focus:ring-2 focus:ring-blue-500">
                       <option value="SSD">SSD</option>
@@ -243,16 +275,65 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
               </div>
             )}
 
+            {showTelemetria && (
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-slate-100">
+                <h4 className="md:col-span-2 font-bold text-slate-800 text-sm flex items-center gap-2">
+                  <span className="w-2 h-2 bg-violet-500 rounded-full" />
+                  Telemetría inicial (ML Fase 7)
+                </h4>
+
+                {(isTechnical || isLaptop) && (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700">Horas de uso</label>
+                      <input type="number" min="0" name="horas_uso" value={formData.horas_uso} onChange={handleChange}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700">Errores SMART</label>
+                      <input type="number" min="0" name="errores_smart" value={formData.errores_smart} onChange={handleChange}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700">Temp. CPU (°C)</label>
+                      <input type="number" step="0.1" name="ultima_temp_cpu" value={formData.ultima_temp_cpu} onChange={handleChange}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" placeholder="Opcional" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700">Temp. disco (°C)</label>
+                      <input type="number" step="0.1" name="ultima_temp_disco" value={formData.ultima_temp_disco} onChange={handleChange}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" placeholder="Opcional" />
+                    </div>
+                  </>
+                )}
+
+                {isLaptop && (
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-slate-700">Salud batería (%)</label>
+                    <input type="number" min="0" max="100" step="0.1" name="salud_bateria" value={formData.salud_bateria} onChange={handleChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" placeholder="0–100" />
+                  </div>
+                )}
+
+                {isImpresora && (
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-slate-700">Contador de páginas</label>
+                    <input type="number" min="0" name="contador_paginas" value={formData.contador_paginas} onChange={handleChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" />
+                  </div>
+                )}
+              </div>
+            )}
+
           </form>
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
-          <button onClick={onClose} type="button" className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+          <button onClick={onClose} type="button" className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800">
             Cancelar
           </button>
           <button form="equipo-form" type="submit" disabled={loading}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium rounded-lg shadow-sm transition-colors">
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium rounded-lg shadow-sm">
             {loading ? 'Guardando...' : 'Registrar Equipo'}
           </button>
         </div>

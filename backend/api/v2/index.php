@@ -1,11 +1,9 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+require_once __DIR__ . '/config/Cors.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+CorsConfig::applyHeaders();
+
+if (CorsConfig::handlePreflight()) {
     exit();
 }
 
@@ -33,6 +31,15 @@ switch ($resource) {
         $controller = new ReporteController();
         if (isset($request[1]) && $request[1] === 'equipo' && isset($request[2])) {
             $controller->ficha_tecnica($request[2]);
+        } elseif (isset($request[1]) && $request[1] === 'mantenimiento') {
+            if (isset($request[2]) && $request[2] === 'historial' && isset($request[3])) {
+                $controller->historial_mantenimiento(urldecode($request[3]));
+            } elseif (isset($request[2]) && is_numeric($request[2])) {
+                $controller->ficha_mantenimiento((int) $request[2]);
+            } else {
+                http_response_code(400);
+                echo json_encode(["success" => false, "message" => "Ruta de reporte de mantenimiento inválida."]);
+            }
         } else {
             http_response_code(400);
             echo json_encode(["success" => false, "message" => "Ruta de reporte inválida."]);
@@ -53,6 +60,10 @@ switch ($resource) {
 
     case 'dashboard':
         require_once 'routes/dashboard.php';
+        break;
+
+    case 'ml':
+        require_once 'routes/ml.php';
         break;
 
     case 'auth':

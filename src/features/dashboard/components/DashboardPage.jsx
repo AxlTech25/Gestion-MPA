@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
   Monitor, Wrench, Building2, AlertTriangle,
-  BarChart3, Activity, Clock
+  BarChart3, Activity, Clock, Brain
 } from 'lucide-react';
 import { dashboardService } from '../services/dashboardService';
+import { mlService } from '../../ml/services/mlService';
+import { RiesgoBadge } from '../../ml/components/RiesgoBadge';
+import { ConsultaEquiposPanel } from './ConsultaEquiposPanel';
 
 const StatCard = ({ label, value, icon: Icon, accent }) => (
   <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex items-start justify-between">
@@ -58,15 +61,32 @@ const severidadColor = {
 
 export const DashboardPage = () => {
   const [data, setData] = useState(null);
+  const [alertas, setAlertas] = useState([]);
+  const [mlOffline, setMlOffline] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await dashboardService.getResumen();
+        const [res, alertasRes] = await Promise.all([
+          dashboardService.getResumen(),
+          mlService.getAlertas().catch((err) => {
+            console.warn('ML alertas:', err?.response?.data?.message || err.message);
+            return null;
+          }),
+        ]);
         if (res.success) setData(res.data);
         else setError(res.message || 'No se pudo cargar el resumen.');
+
+        if (alertasRes?.success && Array.isArray(alertasRes.data)) {
+          setAlertas(alertasRes.data);
+          setMlOffline(false);
+        } else if (alertasRes?.success) {
+          setMlOffline(true);
+        } else {
+          setMlOffline(true);
+        }
       } catch {
         setError('Error al conectar con el servidor.');
       } finally {
@@ -92,7 +112,7 @@ export const DashboardPage = () => {
     );
   }
 
-  const { totales, por_estado_operativo, por_tipo_equipo, por_area, fallas_por_categoria, mantenimientos_recientes } = data;
+  const { totales, por_estado_operativo, por_estado_conservacion, por_tipo_equipo, por_area, fallas_por_categoria, mantenimientos_recientes } = data;
 
   return (
     <div className="space-y-8">
@@ -107,6 +127,12 @@ export const DashboardPage = () => {
         <StatCard label="Áreas activas" value={totales.areas} icon={Building2} accent="bg-violet-50 text-violet-600" />
         <StatCard label="Equipos dañados" value={totales.danados} icon={AlertTriangle} accent="bg-red-50 text-red-600" />
       </div>
+
+      <ConsultaEquiposPanel
+        porTipo={por_tipo_equipo}
+        porEstadoOperativo={por_estado_operativo}
+        porEstadoConservacion={por_estado_conservacion}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <BarList title="Estado operativo" items={por_estado_operativo} color="bg-emerald-500" />
@@ -132,6 +158,53 @@ export const DashboardPage = () => {
             <p className="text-sm text-slate-400">Aún no hay mantenimientos registrados.</p>
           )}
         </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <h3 className="text-sm font-black uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
+          <Brain size={16} /> Alertas predictivas
+        </h3>
+        {mlOffline ? (
+          <p className="text-sm text-amber-600">
+            No hay alertas predictivas disponibles. Verifique que FastAPI esté en ejecución en el puerto 8000.
+          </p>
+        ) : alertas.length ? (
+          <>
+            <p className="text-xs text-slate-400 mb-3">
+              Top {alertas.length} equipos con mayor score de riesgo (0–100).
+            </p>
+            <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs uppercase tracking-wider text-slate-400 border-b">
+                  <th className="pb-3 pr-4">Equipo</th>
+                  <th className="pb-3 pr-4">Tipo</th>
+                  <th className="pb-3 pr-4">Área</th>
+                  <th className="pb-3 pr-4 text-center">Riesgo</th>
+                  <th className="pb-3 text-right">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {alertas.slice(0, 10).map((a) => (
+                  <tr key={a.equipo_id} className="border-b border-slate-50 last:border-0">
+                    <td className="py-3 pr-4 font-semibold text-slate-800">{a.codigo_patrimonial}</td>
+                    <td className="py-3 pr-4 text-slate-600">{a.tipo_equipo || '—'}</td>
+                    <td className="py-3 pr-4 text-slate-600">{a.area_nombre || '—'}</td>
+                    <td className="py-3 pr-4 text-center">
+                      <RiesgoBadge nivel={a.nivel_riesgo} compact />
+                    </td>
+                    <td className="py-3 text-right font-mono text-slate-700">
+                      {Number(a.score_riesgo).toFixed(1)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          </>
+        ) : (
+          <p className="text-sm text-slate-400">Sin predicciones disponibles.</p>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">

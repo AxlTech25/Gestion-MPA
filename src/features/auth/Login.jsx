@@ -29,7 +29,13 @@ const Login = () => {
         setError(res.message || 'Credenciales incorrectas.');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'No se pudo conectar con el servidor.');
+      if (!err.response) {
+        setError('No se pudo conectar con el servidor. Verifica que XAMPP (Apache + MySQL) esté activo y usa http://localhost:5173');
+      } else if (err.response.status === 401) {
+        setError('Usuario o contraseña incorrectos.');
+      } else {
+        setError(err.response.data?.message || 'Error al iniciar sesión.');
+      }
     } finally {
       setLoading(false);
     }
