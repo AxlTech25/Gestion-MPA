@@ -39,6 +39,34 @@ class EquipoController {
         echo json_encode(["success" => true, "data" => $equipos]);
     }
 
+    public function show(int $id) {
+        $equipo = $this->equipo->getById($id);
+        if (!$equipo) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "message" => "Equipo no encontrado."]);
+            return;
+        }
+        echo json_encode(["success" => true, "data" => $equipo]);
+    }
+
+    public function update(int $id) {
+        $data = json_decode(file_get_contents("php://input"));
+        if (empty($data->codigo_patrimonial) || empty($data->tipo_equipo) || empty($data->area_id)) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "Faltan datos obligatorios (Código patrimonial, Tipo y Área)."]);
+            return;
+        }
+        if ($this->equipo->update($id, $data)) {
+            echo json_encode(["success" => true, "message" => "Equipo actualizado correctamente."]);
+        } else {
+            http_response_code(409);
+            echo json_encode([
+                "success" => false,
+                "message" => "No se pudo actualizar. Verifique que el equipo exista y que el código patrimonial no esté duplicado.",
+            ]);
+        }
+    }
+
     public function store() {
         $data = json_decode(file_get_contents("php://input"));
         if (!empty($data->codigo_patrimonial) && !empty($data->tipo_equipo) && !empty($data->area_id)) {

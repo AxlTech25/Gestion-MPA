@@ -3,7 +3,7 @@ import { downloadPdf } from '../../../lib/api';
 import { equiposService } from '../services/equiposService';
 import { mlService } from '../../ml/services/mlService';
 import { RiesgoBadge } from '../../ml/components/RiesgoBadge';
-import { PlusCircle, Search, FileText, Settings, FileSpreadsheet } from 'lucide-react';
+import { PlusCircle, Search, FileText, Settings, FileSpreadsheet, Pencil } from 'lucide-react';
 import { EquipoForm } from './EquipoForm';
 import { FichaTecnicaModal } from './FichaTecnicaModal';
 import { CargaMasivaModal } from './CargaMasivaModal';
@@ -14,6 +14,7 @@ export const InventarioPage = () => {
   const [mlOffline, setMlOffline] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [equipoEditId, setEquipoEditId] = useState(null);
   const [isCargaMasivaOpen, setIsCargaMasivaOpen] = useState(false);
   const [fichaEquipoId, setFichaEquipoId] = useState(null);
 
@@ -189,6 +190,12 @@ export const InventarioPage = () => {
                   </td>
                   <td className="px-6 py-4 text-right">
                      <div className="flex justify-end gap-2">
+                       <button
+                         onClick={() => setEquipoEditId(eq.id)}
+                         title="Editar equipo"
+                         className="text-slate-400 hover:text-amber-600 p-1.5 rounded-md hover:bg-amber-50 transition-colors">
+                         <Pencil size={18} />
+                       </button>
                        <button 
                          onClick={() => handleDescargarPDF(eq.id)}
                          title="Descargar Ficha PDF"
@@ -214,6 +221,14 @@ export const InventarioPage = () => {
         <EquipoForm 
           onClose={() => setIsModalOpen(false)} 
           onSuccess={cargarEquipos} 
+        />
+      )}
+
+      {equipoEditId && (
+        <EquipoForm
+          equipoId={equipoEditId}
+          onClose={() => setEquipoEditId(null)}
+          onSuccess={cargarEquipos}
         />
       )}
 

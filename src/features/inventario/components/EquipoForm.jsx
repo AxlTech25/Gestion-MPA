@@ -2,31 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { equiposService } from '../services/equiposService';
 import { organizacionService } from '../../configuracion/services/organizacionService';
+import { mapEquipoToForm, buildEquipoPayload } from '../utils/equipoFormUtils';
 
-export const EquipoForm = ({ onClose, onSuccess }) => {
-  const [formData, setFormData] = useState({
-    codigo_patrimonial: '',
-    codigo_identificativo: '',
-    tipo_equipo: 'CPU',
-    tipo_equipo_otro: '',
-    marca: '',
-    modelo: '',
-    numero_serie: '',
-    ram_gb: '',
-    almacenamiento_gb: '',
-    tipo_disco: 'SSD',
-    procesador: '',
-    sistema_operativo: 'Windows 10',
-    fecha_adquisicion: '',
-    area_id: '',
-    horas_uso: '0',
-    errores_smart: '0',
-    contador_paginas: '',
-    salud_bateria: '',
-    ultima_temp_cpu: '',
-    ultima_temp_disco: '',
-  });
+const INITIAL_FORM = {
+  codigo_patrimonial: '',
+  codigo_identificativo: '',
+  tipo_equipo: 'CPU',
+  tipo_equipo_otro: '',
+  marca: '',
+  modelo: '',
+  numero_serie: '',
+  ram_gb: '',
+  almacenamiento_gb: '',
+  tipo_disco: 'SSD',
+  procesador: '',
+  sistema_operativo: 'Windows 10',
+  fecha_adquisicion: '',
+  area_id: '',
+  horas_uso: '0',
+  errores_smart: '0',
+  contador_paginas: '',
+  salud_bateria: '',
+  ultima_temp_cpu: '',
+  ultima_temp_disco: '',
+};
+
+export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
+  const isEdit = Boolean(equipoId);
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(isEdit);
+  const [loadError, setLoadError] = useState('');
   const [areas, setAreas] = useState([]);
 
   const isTechnical = formData.tipo_equipo === 'CPU' || formData.tipo_equipo === 'Laptop';
@@ -37,20 +43,32 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoadingData(true);
+      setLoadError('');
       try {
         const resA = await organizacionService.getAreas();
         if (resA.success) {
           setAreas(resA.data);
-          if (resA.data.length > 0) {
-            setFormData((prev) => ({ ...prev, area_id: resA.data[0].id }));
-          }
         }
-      } catch (e) {
-        console.error('Error cargando áreas', e);
+
+        if (isEdit) {
+          const resE = await equiposService.getEquipo(equipoId);
+          if (resE.success) {
+            setFormData(mapEquipoToForm(resE.data));
+          } else {
+            setLoadError(resE.message || 'No se pudo cargar el equipo.');
+          }
+        } else if (resA.success && resA.data.length > 0) {
+          setFormData((prev) => ({ ...prev, area_id: String(resA.data[0].id) }));
+        }
+      } catch {
+        setLoadError(isEdit ? 'Error al cargar el equipo.' : 'Error cargando áreas.');
+      } finally {
+        setLoadingData(false);
       }
     };
     fetchData();
-  }, []);
+  }, [equipoId, isEdit]);
 
   const NUMERIC_FIELDS = ['codigo_patrimonial', 'codigo_identificativo'];
 
@@ -64,13 +82,10 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const payload = {
-        ...formData,
-        tipo_equipo: formData.tipo_equipo === 'Otro'
-          ? (formData.tipo_equipo_otro.trim() || 'Otro')
-          : formData.tipo_equipo,
-      };
-      const res = await equiposService.createEquipo(payload);
+      const payload = buildEquipoPayload(formData);
+      const res = isEdit
+        ? await equiposService.updateEquipo(equipoId, payload)
+        : await equiposService.createEquipo(payload);
       if (res.success) {
         onSuccess();
         onClose();
@@ -78,18 +93,43 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
         alert(res.message);
       }
     } catch {
-      alert('Error al registrar equipo.');
+      alert(isEdit ? 'Error al actualizar equipo.' : 'Error al registrar equipo.');
     } finally {
       setLoading(false);
     }
   };
+
+  if (loadingData) {
+    return (
+      <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl shadow-xl px-8 py-12 text-slate-400">
+          Cargando datos del equipo...
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md">
+          <p className="text-red-600 mb-4">{loadError}</p>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[95vh]">
 
         <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-          <h3 className="text-lg font-bold text-slate-800">Registrar Equipo</h3>
+          <h3 className="text-lg font-bold text-slate-800">
+            {isEdit ? 'Editar Equipo' : 'Registrar Equipo'}
+          </h3>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
             <X size={20} />
           </button>
@@ -334,7 +374,7 @@ export const EquipoForm = ({ onClose, onSuccess }) => {
           </button>
           <button form="equipo-form" type="submit" disabled={loading}
             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium rounded-lg shadow-sm">
-            {loading ? 'Guardando...' : 'Registrar Equipo'}
+            {loading ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Registrar Equipo')}
           </button>
         </div>
       </div>

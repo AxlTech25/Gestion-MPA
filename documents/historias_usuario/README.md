@@ -41,7 +41,7 @@ Incluye: prioridad (Alta/Media/Baja), estado (Implementada / En progreso / Pendi
 |-------|---------------|------------|
 | Autenticación | 4 | 0 |
 | Configuración | 5 | 0 |
-| Inventario | 9 | 1 |
+| Inventario | 9 | 0 |
 | Ficha técnica | 7 | 1 |
 | Mantenimiento | 12 | 0 |
 | Dashboard | 6 | 0 |

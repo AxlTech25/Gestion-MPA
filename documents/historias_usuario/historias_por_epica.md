@@ -282,7 +282,7 @@
 |-------|-------|
 | Prioridad | Media |
 | Sprint | — |
-| Estado | Pendiente |
+| Estado | Implementada |
 
 **Criterios de aceptación:**
 - [ ] Formulario de edición con datos precargados.
@@ -861,7 +861,6 @@
 
 | ID | Historia | Prioridad |
 |----|----------|-----------|
-| HU-INV-009 | Editar equipo existente | Media |
 | HU-FIC-008 | Evaluación predictiva en ficha | Media |
 | HU-ML-003 | Reentrenar modelo v2 (parcial) | Alta |
 | HU-ML-006 | Recálculo ML post-mantenimiento | Media |

@@ -22,12 +22,43 @@ class Equipo {
         return $stmt;
     }
 
+    public function getById(int $id): ?array {
+        $query = "SELECT e.*,
+                         a.nombre AS area_nombre,
+                         a.descripcion AS area_descripcion,
+                         a.jefe_encargado AS area_jefe,
+                         ft.procesador, ft.sistema_operativo
+                  FROM " . $this->table_name . " e
+                  LEFT JOIN v2_areas a ON e.area_id = a.id
+                  LEFT JOIN v2_fichas_tecnicas ft ON e.id = ft.equipo_id
+                  WHERE e.id = :id LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
     public function create($data) {
         $fields = $this->fieldsFromObject($data);
         if (isset($fields['error'])) {
             return false;
         }
         return $this->insertEquipo($fields) !== false;
+    }
+
+    public function update(int $id, $data): bool {
+        if (!$this->getById($id)) {
+            return false;
+        }
+        $fields = $this->fieldsFromObject($data);
+        if (isset($fields['error'])) {
+            return false;
+        }
+        if ($this->codigoPatrimonialEnUso($fields['codigo_patrimonial'], $id)) {
+            return false;
+        }
+        return $this->updateEquipo($id, $fields);
     }
 
     public function importRow(array $row): array {
@@ -204,6 +235,103 @@ class Equipo {
             error_log('Error insertando equipo: ' . $e->getMessage());
             return false;
         }
+    }
+
+    private function updateEquipo(int $id, array $f): bool {
+        $this->conn->beginTransaction();
+        try {
+            $areaData = $this->datosDesdeArea($f['area_id']);
+            $ubicacion_fisica = $areaData['ubicacion_fisica'];
+            $responsable_nombre = $areaData['responsable_nombre'];
+
+            $query = "UPDATE " . $this->table_name . " SET
+                codigo_patrimonial = :codigo_patrimonial,
+                codigo_identificativo = :codigo_identificativo,
+                tipo_equipo = :tipo_equipo,
+                marca = :marca,
+                modelo = :modelo,
+                numero_serie = :numero_serie,
+                ram_gb = :ram_gb,
+                almacenamiento_gb = :almacenamiento_gb,
+                tipo_disco = :tipo_disco,
+                horas_uso = :horas_uso,
+                errores_smart = :errores_smart,
+                contador_paginas = :contador_paginas,
+                salud_bateria = :salud_bateria,
+                ultima_temp_cpu = :ultima_temp_cpu,
+                ultima_temp_disco = :ultima_temp_disco,
+                fecha_adquisicion = :fecha_adquisicion,
+                area_id = :area_id,
+                ubicacion_fisica = :ubicacion_fisica,
+                responsable_nombre = :responsable_nombre
+              WHERE id = :id";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->bindValue(':codigo_patrimonial', $f['codigo_patrimonial']);
+            $stmt->bindValue(':codigo_identificativo', $f['codigo_identificativo']);
+            $stmt->bindValue(':tipo_equipo', $f['tipo_equipo']);
+            $stmt->bindValue(':marca', $f['marca']);
+            $stmt->bindValue(':modelo', $f['modelo']);
+            $stmt->bindValue(':numero_serie', $f['numero_serie']);
+            $stmt->bindValue(':ram_gb', $f['ram_gb'], $f['ram_gb'] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':almacenamiento_gb', $f['almacenamiento_gb'], $f['almacenamiento_gb'] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':tipo_disco', $f['tipo_disco']);
+            $stmt->bindValue(':horas_uso', $f['horas_uso'] ?? 0, PDO::PARAM_INT);
+            $stmt->bindValue(':errores_smart', $f['errores_smart'] ?? 0, PDO::PARAM_INT);
+            $stmt->bindValue(':contador_paginas', $f['contador_paginas'] ?? null, ($f['contador_paginas'] ?? null) === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':salud_bateria', $f['salud_bateria'] ?? null, ($f['salud_bateria'] ?? null) === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stmt->bindValue(':ultima_temp_cpu', $f['ultima_temp_cpu'] ?? null, ($f['ultima_temp_cpu'] ?? null) === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stmt->bindValue(':ultima_temp_disco', $f['ultima_temp_disco'] ?? null, ($f['ultima_temp_disco'] ?? null) === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stmt->bindValue(':fecha_adquisicion', $f['fecha_adquisicion']);
+            $stmt->bindValue(':area_id', $f['area_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':ubicacion_fisica', $ubicacion_fisica);
+            $stmt->bindValue(':responsable_nombre', $responsable_nombre);
+            $stmt->execute();
+
+            if (in_array($f['tipo_equipo'], ['Laptop', 'CPU', 'PC'], true)) {
+                $this->upsertFichaTecnicaBasica($id, $f['procesador'], $f['sistema_operativo']);
+            }
+
+            $this->conn->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
+            error_log('Error actualizando equipo: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function upsertFichaTecnicaBasica(int $equipoId, ?string $procesador, ?string $sistemaOperativo): void {
+        $check = $this->conn->prepare("SELECT id FROM v2_fichas_tecnicas WHERE equipo_id = :eid LIMIT 1");
+        $check->bindValue(':eid', $equipoId, PDO::PARAM_INT);
+        $check->execute();
+
+        if ($check->rowCount() > 0) {
+            $stmt = $this->conn->prepare(
+                "UPDATE v2_fichas_tecnicas SET procesador = :procesador, sistema_operativo = :sistema_operativo
+                 WHERE equipo_id = :equipo_id"
+            );
+        } else {
+            $stmt = $this->conn->prepare(
+                "INSERT INTO v2_fichas_tecnicas (equipo_id, procesador, sistema_operativo)
+                 VALUES (:equipo_id, :procesador, :sistema_operativo)"
+            );
+        }
+        $stmt->bindValue(':equipo_id', $equipoId, PDO::PARAM_INT);
+        $stmt->bindValue(':procesador', $procesador);
+        $stmt->bindValue(':sistema_operativo', $sistemaOperativo);
+        $stmt->execute();
+    }
+
+    private function codigoPatrimonialEnUso(string $codigo, int $excludeId): bool {
+        $stmt = $this->conn->prepare(
+            "SELECT id FROM " . $this->table_name . " WHERE codigo_patrimonial = :codigo AND id != :id LIMIT 1"
+        );
+        $stmt->bindValue(':codigo', $codigo);
+        $stmt->bindValue(':id', $excludeId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
 
     private function datosDesdeArea($area_id): array {

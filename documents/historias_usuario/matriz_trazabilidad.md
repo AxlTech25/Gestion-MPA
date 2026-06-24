@@ -19,7 +19,7 @@ Relación entre historias de usuario, sprints, versiones y módulos del sistema.
 | Sprint 6 ML | 0.7.0 | HU-ML-001, HU-ML-002, HU-ML-004, HU-ML-005, HU-INV-006, HU-MNT-009 |
 | Sprint 7 | 0.8.0 | HU-INV-008, HU-MNT-006–012, HU-DSH-005–006, HU-ML-003 (parcial) |
 | Post-Sprint 7 | 0.8.x | HU-MNT-003–005, HU-MNT-008, HU-RPT-002–003 |
-| Backlog | — | HU-INV-009, HU-FIC-008, HU-ML-006, HU-ML-007 |
+| Backlog | — | HU-FIC-008, HU-ML-006, HU-ML-007 |
 
 ---
 
@@ -44,7 +44,7 @@ Relación entre historias de usuario, sprints, versiones y módulos del sistema.
 | HU-INV-006 | Inventario | ✅ | 6 | InventarioPage | GET `/ml/predict/riesgo/batch` |
 | HU-INV-007 | Inventario | ✅ | 3–4 | FichaTecnicaModal | GET `/fichas-tecnicas/{id}` |
 | HU-INV-008 | Inventario | ✅ | 7 | EquipoForm | POST `/equipos` |
-| HU-INV-009 | Inventario | ⏳ | — | — | PUT `/equipos/{id}` (501) |
+| HU-INV-009 | Inventario | ✅ | — | EquipoForm | GET/PUT `/equipos/{id}` |
 | HU-FIC-001 | Ficha técnica | ✅ | 4+ | FichaTecnicaPage | GET `/fichas-tecnicas/buscar/{codigo}` |
 | HU-FIC-002 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | GET `/fichas-tecnicas/{id}` |
 | HU-FIC-003 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | PUT `/fichas-tecnicas/{id}` |

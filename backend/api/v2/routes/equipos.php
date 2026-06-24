@@ -17,16 +17,28 @@ if ($action === 'carga-masiva' && $method === 'POST') {
     exit;
 }
 
+if ($action !== null && is_numeric($action)) {
+    $id = (int) $action;
+    switch ($method) {
+        case 'GET':
+            $controller->show($id);
+            break;
+        case 'PUT':
+            $controller->update($id);
+            break;
+        default:
+            http_response_code(405);
+            echo json_encode(["success" => false, "message" => "Método no permitido."]);
+    }
+    exit;
+}
+
 switch ($method) {
     case 'GET':
         $controller->index();
         break;
     case 'POST':
         $controller->store();
-        break;
-    case 'PUT':
-        http_response_code(501);
-        echo json_encode(["success" => false, "message" => "Actualización no implementada."]);
         break;
     case 'DELETE':
         http_response_code(501);

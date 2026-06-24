@@ -6,8 +6,18 @@ export const equiposService = {
     return response.data;
   },
 
+  getEquipo: async (id) => {
+    const response = await api.get(`/equipos/${id}`);
+    return response.data;
+  },
+
   createEquipo: async (equipoData) => {
     const response = await api.post('/equipos', equipoData);
+    return response.data;
+  },
+
+  updateEquipo: async (id, equipoData) => {
+    const response = await api.put(`/equipos/${id}`, equipoData);
     return response.data;
   },
 
