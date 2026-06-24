@@ -4,7 +4,7 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
 
 **Stack:** React (Vite) · PHP API REST · MySQL · FastAPI (ML)
 
-**Versión actual:** 0.8.0
+**Versión actual:** 0.9.0
 
 ---
 
@@ -284,11 +284,43 @@ Más detalle en [`ml/README.md`](ml/README.md).
 
 ---
 
+## Despliegue en Hostinger
+
+Guía completa: [`documents/deploy/hostinger.md`](documents/deploy/hostinger.md)
+
+### Resumen rápido
+
+```bash
+# 1. Backend — dependencias y configuración
+cd backend
+composer install --no-dev
+cp api/v2/config/local.example.php api/v2/config/local.php
+# Editar local.php con credenciales MySQL de hPanel
+
+# 2. Frontend — compilar para producción
+cd ..
+cp .env.production.example .env.production
+# Editar: VITE_API_BASE_URL=/backend/api/v2  y  VITE_BASE_PATH=/
+npm install
+npm run build:hostinger
+
+# 3. Subir a Hostinger (public_html)
+#    - Contenido de dist/  →  raíz del dominio
+#    - Carpeta backend/    →  public_html/backend/
+```
+
+4. Importe `gestion_equipos_mpa_v2.sql` en phpMyAdmin (hPanel).  
+5. Active SSL y cambie la contraseña del usuario `admin`.
+
+> En hosting compartido el módulo ML queda deshabilitado (`ml_service_url` vacío). El resto del sistema funciona con normalidad.
+
+---
+
 ## Documentación adicional
 
 | Documento | Contenido |
 |-----------|-----------|
-| [`documents/architecture.md`](documents/architecture.md) | Arquitectura técnica V2 |
+| [`documents/deploy/hostinger.md`](documents/deploy/hostinger.md) | Guía de despliegue en Hostinger |
 | [`documents/changelog.md`](documents/changelog.md) | Historial de versiones |
 | [`documents/historias_usuario/`](documents/historias_usuario/) | Historias de usuario por épica |
 | [`documents/pruebas/`](documents/pruebas/) | Planes de pruebas funcionales y unitarias |

@@ -11,7 +11,6 @@ import { CargaMasivaModal } from './CargaMasivaModal';
 export const InventarioPage = () => {
   const [equipos, setEquipos] = useState([]);
   const [riesgoMap, setRiesgoMap] = useState({});
-  const [mlOffline, setMlOffline] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [equipoEditId, setEquipoEditId] = useState(null);
@@ -49,10 +48,9 @@ export const InventarioPage = () => {
         const map = {};
         res.data.forEach((r) => { map[r.equipo_id] = r; });
         setRiesgoMap(map);
-        setMlOffline(false);
       }
     } catch {
-      setMlOffline(true);
+      // ML opcional: sin servicio activo se omiten los badges de riesgo
     }
   };
 
@@ -81,9 +79,6 @@ export const InventarioPage = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-800">Inventario V2 (ML-Ready)</h2>
           <p className="text-sm text-slate-500">Gestión de equipos optimizada para inteligencia predictiva</p>
-          {mlOffline && (
-            <p className="text-xs text-amber-600 mt-1">Servicio ML no disponible — badges omitidos</p>
-          )}
         </div>
         <div className="flex flex-wrap gap-3">
           <div className="relative">

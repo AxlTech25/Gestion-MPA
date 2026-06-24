@@ -1,7 +1,7 @@
 # Historias de usuario por épica
 
 **Proyecto:** Sigemad MPA V2  
-**Versión de referencia:** 0.8.0  
+**Versión de referencia:** 0.9.0  
 **Última actualización:** 2026-06-21
 
 ---
@@ -404,11 +404,11 @@
 |-------|-------|
 | Prioridad | Media |
 | Sprint | 7 |
-| Estado | Pendiente |
+| Estado | Implementada |
 
 **Criterios de aceptación:**
-- [ ] Bloque «Evaluación predictiva» en `FichaTecnicaPanel`.
-- [ ] Muestra nivel, score y factores principales del modelo.
+- [x] Bloque «Evaluación predictiva» en `FichaTecnicaPanel`.
+- [x] Muestra nivel, score y factores principales del modelo.
 
 ---
 
@@ -733,11 +733,11 @@
 |-------|-------|
 | Prioridad | Alta |
 | Sprint | 7 |
-| Estado | En progreso |
+| Estado | Implementada |
 
 **Criterios de aceptación:**
 - [x] Features de telemetría en `features.py` y pipeline de dataset.
-- [ ] Modelo v2 reentrenado con datos reales y desplegado.
+- [x] Modelo v2 reentrenado (`riesgo_equipo_v2.joblib`) y desplegado en inferencia.
 
 ---
 
@@ -777,10 +777,10 @@
 |-------|-------|
 | Prioridad | Media |
 | Sprint | 7 (Fase 2) |
-| Estado | Pendiente |
+| Estado | Implementada |
 
 **Criterios de aceptación:**
-- [ ] Tras `POST /mantenimientos`, se dispara recálculo ML del equipo afectado.
+- [x] Tras `POST /mantenimientos`, se dispara recálculo ML del equipo afectado.
 
 ---
 
@@ -791,10 +791,10 @@
 |-------|-------|
 | Prioridad | Baja |
 | Sprint | 7 Fase 2 |
-| Estado | Pendiente |
+| Estado | Implementada |
 
 **Criterios de aceptación:**
-- [ ] Tabla `v2_metricas_equipo` creada y alimentada en cada mantenimiento.
+- [x] Tabla `v2_metricas_equipo` creada y alimentada en cada mantenimiento.
 
 ---
 

@@ -1,10 +1,12 @@
 <?php
+require_once __DIR__ . '/LocalConfig.php';
+
 class CorsConfig {
     /** @return list<string> */
     private static function allowedOrigins(): array {
-        $env = getenv('CORS_ALLOWED_ORIGINS');
-        if ($env) {
-            return array_values(array_filter(array_map('trim', explode(',', $env))));
+        $fromConfig = LocalConfig::getList('cors_origins');
+        if ($fromConfig !== []) {
+            return $fromConfig;
         }
 
         return [

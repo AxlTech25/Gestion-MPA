@@ -47,9 +47,11 @@ const MainLayout = ({ children }) => (
 );
 
 function App() {
+    const basename = (import.meta.env.VITE_BASE_PATH || '/').replace(/\/$/, '') || undefined;
+
     return (
         <AuthProvider>
-            <Router>
+            <Router basename={basename}>
                 <Routes>
                     {/* Ruta pública */}
                     <Route path="/login" element={<Login />} />

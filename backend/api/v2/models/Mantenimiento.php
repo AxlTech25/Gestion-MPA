@@ -119,10 +119,13 @@ class Mantenimiento {
         $stmt->bindValue(':estado_post_mantenimiento', $estado_post_mantenimiento);
 
         try {
-            return $stmt->execute();
+            if ($stmt->execute()) {
+                return (int) $this->conn->lastInsertId();
+            }
+            return null;
         } catch (PDOException $e) {
             error_log('Error creando mantenimiento: ' . $e->getMessage());
-            return false;
+            return null;
         }
     }
 

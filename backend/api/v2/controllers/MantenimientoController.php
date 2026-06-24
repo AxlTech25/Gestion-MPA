@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../models/Mantenimiento.php';
 require_once __DIR__ . '/../models/Equipo.php';
+require_once __DIR__ . '/../models/MetricaEquipo.php';
+require_once __DIR__ . '/../services/MlService.php';
 require_once __DIR__ . '/../config/Database.php';
 
 class MantenimientoController {
@@ -69,12 +71,23 @@ class MantenimientoController {
                 $data->nro_orden = "ORD-" . date("Ymd-His");
             }
 
-            if ($this->mantenimiento->create($data)) {
+            $mantenimientoId = $this->mantenimiento->create($data);
+            if ($mantenimientoId) {
                 $sync = $this->mantenimiento->buildEquipoSyncPayload($data);
                 $this->equipo->syncTelemetria((int) $data->equipo_id, $sync);
 
+                $metrica = new MetricaEquipo($this->db);
+                $metrica->registrarDesdeMantenimiento((int) $data->equipo_id, $mantenimientoId, $data);
+
+                $ml = new MlService($this->db);
+                $ml->recalcularEquipo((int) $data->equipo_id);
+
                 http_response_code(201);
-                echo json_encode(["success" => true, "message" => "Mantenimiento registrado exitosamente."]);
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Mantenimiento registrado exitosamente.",
+                    "data"    => ["id" => $mantenimientoId],
+                ]);
             } else {
                 http_response_code(503);
                 echo json_encode(["success" => false, "message" => "No se pudo registrar el mantenimiento."]);

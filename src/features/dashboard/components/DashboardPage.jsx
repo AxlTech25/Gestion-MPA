@@ -62,7 +62,6 @@ const severidadColor = {
 export const DashboardPage = () => {
   const [data, setData] = useState(null);
   const [alertas, setAlertas] = useState([]);
-  const [mlOffline, setMlOffline] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -81,11 +80,6 @@ export const DashboardPage = () => {
 
         if (alertasRes?.success && Array.isArray(alertasRes.data)) {
           setAlertas(alertasRes.data);
-          setMlOffline(false);
-        } else if (alertasRes?.success) {
-          setMlOffline(true);
-        } else {
-          setMlOffline(true);
         }
       } catch {
         setError('Error al conectar con el servidor.');
@@ -164,11 +158,7 @@ export const DashboardPage = () => {
         <h3 className="text-sm font-black uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
           <Brain size={16} /> Alertas predictivas
         </h3>
-        {mlOffline ? (
-          <p className="text-sm text-amber-600">
-            No hay alertas predictivas disponibles. Verifique que FastAPI esté en ejecución en el puerto 8000.
-          </p>
-        ) : alertas.length ? (
+        {alertas.length ? (
           <>
             <p className="text-xs text-slate-400 mb-3">
               Top {alertas.length} equipos con mayor score de riesgo (0–100).

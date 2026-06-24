@@ -37,8 +37,12 @@ from features import preparar_dataframe  # noqa: E402
 
 DEFAULT_DATASET = ML_ROOT / "data" / "synthetic" / "equipos_riesgo_v200.csv"
 MODELS_DIR = ML_ROOT / "models"
-MODEL_FILE = MODELS_DIR / "riesgo_equipo_v1.joblib"
-METADATA_FILE = MODELS_DIR / "metadata.json"
+
+
+def model_paths(version: str) -> tuple[Path, Path]:
+    suffix = version if version else "v1"
+    model_file = MODELS_DIR / f"riesgo_equipo_{suffix}.joblib"
+    return model_file, model_file
 
 
 def build_pipeline() -> Pipeline:
@@ -76,7 +80,7 @@ def build_pipeline() -> Pipeline:
     )
 
 
-def train(dataset_path: Path, test_size: float = 0.2) -> dict:
+def train(dataset_path: Path, test_size: float = 0.2, version: str = "v1") -> dict:
     df = pd.read_csv(dataset_path)
     if TARGET_COLUMN not in df.columns:
         raise ValueError(f"El dataset debe incluir la columna '{TARGET_COLUMN}'")
@@ -100,11 +104,14 @@ def train(dataset_path: Path, test_size: float = 0.2) -> dict:
     f1_macro = f1_score(y_test, y_pred, average="macro")
     report = classification_report(y_test, y_pred, output_dict=True, zero_division=0)
 
+    MODEL_FILE, _ = model_paths(version)
+    METADATA_FILE = MODELS_DIR / ("metadata_v2.json" if version == "v2" else "metadata.json")
+
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     joblib.dump(pipeline, MODEL_FILE)
 
     metadata = {
-        "version": "v1",
+        "version": version,
         "model_file": MODEL_FILE.name,
         "trained_at": datetime.now(timezone.utc).isoformat(),
         "dataset": str(dataset_path.relative_to(ML_ROOT.parent))
@@ -131,6 +138,7 @@ def main():
     parser = argparse.ArgumentParser(description="Entrenar modelo de riesgo por equipo")
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
     parser.add_argument("--test-size", type=float, default=0.2)
+    parser.add_argument("--version", choices=["v1", "v2"], default="v1")
     args = parser.parse_args()
 
     if not args.dataset.exists():
@@ -139,10 +147,12 @@ def main():
         sys.exit(1)
 
     print(f"Entrenando con: {args.dataset}")
-    meta = train(args.dataset, test_size=args.test_size)
+    meta = train(args.dataset, test_size=args.test_size, version=args.version)
+    model_file, _ = model_paths(args.version)
+    metadata_file = MODELS_DIR / ("metadata_v2.json" if args.version == "v2" else "metadata.json")
 
-    print(f"\nModelo guardado: {MODEL_FILE}")
-    print(f"Métricas: {METADATA_FILE}")
+    print(f"\nModelo guardado: {model_file}")
+    print(f"Métricas: {metadata_file}")
     print(f"  Muestras:   {meta['n_samples']}")
     print(f"  Accuracy:   {meta['metrics']['accuracy']}")
     print(f"  F1 macro:   {meta['metrics']['f1_macro']}")

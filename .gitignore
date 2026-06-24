@@ -10,7 +10,14 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
+__pycache__
+*.pyc
+backend/api/v2/config/local.php
+backend/api/v2/config/local.hostinger.php
+.env
+.env.local
+.env.production
+.env.development
 
 # Editor directories and files
 .vscode/*

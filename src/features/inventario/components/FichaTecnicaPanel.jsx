@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Save, FileText, Cpu, HardDrive, Monitor, Wifi, Key, Package, ClipboardCheck
+  Save, FileText, Cpu, HardDrive, Monitor, Wifi, Key, Package, ClipboardCheck, Brain
 } from 'lucide-react';
 import { downloadPdf } from '../../../lib/api';
 import { fichaTecnicaService } from '../services/fichaTecnicaService';
+import { mlService } from '../../ml/services/mlService';
+import { RiesgoBadge } from '../../ml/components/RiesgoBadge';
 
 const Field = ({ label, icon: Icon, children }) => (
   <div className="space-y-1">
@@ -64,19 +66,31 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
   const [form, setForm] = useState({});
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+  const [riesgo, setRiesgo] = useState(null);
 
   const isTechnical = data
     ? TECHNICAL_TYPES.some((t) => data.tipo_equipo?.toLowerCase().includes(t.toLowerCase()))
     : false;
 
+  const loadRiesgo = async (id) => {
+    try {
+      const res = await mlService.getRiesgoEquipo(id);
+      if (res.success) setRiesgo(res.data);
+    } catch {
+      setRiesgo(null);
+    }
+  };
+
   const loadFicha = async () => {
     setLoading(true);
     setError('');
+    setRiesgo(null);
     try {
       const res = await fichaTecnicaService.getFicha(equipoId);
       if (res.success) {
         setData(res.data);
         setForm(buildFormState(res.data));
+        loadRiesgo(equipoId);
       } else {
         setError(res.message || 'No se pudo cargar la ficha.');
       }
@@ -270,6 +284,46 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
           <div className="bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm text-slate-500">
             Las especificaciones de hardware/software no aplican para equipos tipo{' '}
             <strong className="text-slate-700">{data.tipo_equipo}</strong>.
+          </div>
+        )}
+
+        {riesgo && (
+          <div className="bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-100 rounded-xl p-5">
+            <h3 className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+              <Brain size={16} className="text-violet-600" /> Evaluación predictiva
+            </h3>
+            <div className="flex flex-wrap items-center gap-4 mb-3">
+              <RiesgoBadge nivel={riesgo.nivel_riesgo} score={riesgo.score_riesgo} />
+              <div className="text-sm text-slate-600">
+                <span className="font-semibold text-slate-800">
+                  {Number(riesgo.score_riesgo).toFixed(1)}
+                </span>
+                <span className="text-slate-400"> / 100</span>
+                {riesgo.modelo_version && (
+                  <span className="ml-2 text-xs text-slate-400">modelo {riesgo.modelo_version}</span>
+                )}
+              </div>
+            </div>
+            {Array.isArray(riesgo.factores) && riesgo.factores.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  Factores principales
+                </p>
+                <ul className="space-y-1">
+                  {riesgo.factores.slice(0, 5).map((f, i) => (
+                    <li key={i} className="text-sm text-slate-600 flex justify-between gap-4">
+                      <span>{f.feature || f.nombre || `Factor ${i + 1}`}</span>
+                      <span className="font-mono text-slate-500">
+                        {f.importancia != null ? Number(f.importancia).toFixed(2) : '—'}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <p className="text-xs text-slate-400 mt-3">
+              Recomendación: priorice mantenimiento preventivo si el nivel es Alto o Crítico.
+            </p>
           </div>
         )}
 

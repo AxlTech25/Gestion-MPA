@@ -1,8 +1,8 @@
 # Sprint 7 — Extensión de esquema V2 para ML predictivo (Fase 1)
 
 **Fecha planificada:** 2026-07-01 — 2026-07-31  
-**Estado:** En progreso (Fase 1 — implementación base)  
-**Versión objetivo:** 0.8.0  
+**Estado:** Completado (Fase 1 + Fase 2)  
+**Versión objetivo:** 0.9.0  
 **Depende de:** Sprint 6 (ML operativo, v0.7.0)
 
 ---
@@ -29,13 +29,11 @@ Esta fase es la implementación concreta acordada tras el análisis documentado 
 - Actualización pipeline ML (`features.py`, `dataset.py`, reentrenamiento)
 - Script de migración: `backend/tools/migrate_fase7.php`
 
-### Fuera de alcance (Fase 2+)
+### Fuera de alcance (Sprint 8+)
 
-- Tabla `v2_metricas_equipo`
 - Tabla `v2_fallos`
 - Agente automático WMI/SMART
-- Bloque ML en `FichaTecnicaPanel.jsx`
-- Recálculo automático de riesgo al guardar mantenimiento
+- DELETE equipos vía API
 
 ---
 

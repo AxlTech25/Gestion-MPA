@@ -1,10 +1,19 @@
 <?php
+require_once __DIR__ . '/LocalConfig.php';
+
 class Database {
-    private $host = "localhost";
-    private $db_name = "gestion_equipos_mpa_v2";
-    private $username = "root"; // Ajustar según servidor
-    private $password = ""; // Ajustar según servidor
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
     public $conn;
+
+    public function __construct() {
+        $this->host = LocalConfig::get('db_host', 'localhost');
+        $this->db_name = LocalConfig::get('db_name', 'gestion_equipos_mpa_v2');
+        $this->username = LocalConfig::get('db_user', 'root');
+        $this->password = LocalConfig::get('db_pass', '');
+    }
 
     public function getConnection() {
         $this->conn = null;

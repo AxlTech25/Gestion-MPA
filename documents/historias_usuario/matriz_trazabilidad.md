@@ -19,7 +19,7 @@ Relación entre historias de usuario, sprints, versiones y módulos del sistema.
 | Sprint 6 ML | 0.7.0 | HU-ML-001, HU-ML-002, HU-ML-004, HU-ML-005, HU-INV-006, HU-MNT-009 |
 | Sprint 7 | 0.8.0 | HU-INV-008, HU-MNT-006–012, HU-DSH-005–006, HU-ML-003 (parcial) |
 | Post-Sprint 7 | 0.8.x | HU-MNT-003–005, HU-MNT-008, HU-RPT-002–003 |
-| Backlog | — | HU-FIC-008, HU-ML-006, HU-ML-007 |
+| Backlog | — | — |
 
 ---
 
@@ -52,7 +52,7 @@ Relación entre historias de usuario, sprints, versiones y módulos del sistema.
 | HU-FIC-005 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | GET `/reportes/equipo/{id}` |
 | HU-FIC-006 | Ficha técnica | ✅ | 4 | InventarioPage | GET `/reportes/equipo/{id}` |
 | HU-FIC-007 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | PUT `/fichas-tecnicas/{id}` |
-| HU-FIC-008 | Ficha técnica | ⏳ | 7 | FichaTecnicaPanel | GET `/ml/predict/riesgo` |
+| HU-FIC-008 | Ficha técnica | ✅ | 7 | FichaTecnicaPanel | GET `/ml/equipos/{id}/riesgo` |
 | HU-MNT-001 | Mantenimiento | ✅ | 3 | MantenimientoPage | GET `/mantenimientos` |
 | HU-MNT-002 | Mantenimiento | ✅ | 3 | MantenimientoForm | POST `/mantenimientos` |
 | HU-MNT-003 | Mantenimiento | ✅ | 7+ | MantenimientoPage | GET `/mantenimientos/historial/{codigo}` |
@@ -73,11 +73,11 @@ Relación entre historias de usuario, sprints, versiones y módulos del sistema.
 | HU-DSH-006 | Dashboard | ✅ | 7+ | ConsultaEquiposPanel | GET `/dashboard/consulta?tipo_otro=` |
 | HU-ML-001 | ML | ✅ | 6 | DashboardPage | GET `/ml/alertas` |
 | HU-ML-002 | ML | ✅ | 6 | mlService | POST `/ml/predict/riesgo` |
-| HU-ML-003 | ML | 🔄 | 7 | features.py | FastAPI `/train` |
+| HU-ML-003 | ML | ✅ | 7 | features.py, train_model.py | `riesgo_equipo_v2.joblib` |
 | HU-ML-004 | ML | ✅ | 6 | MantenimientoForm | GET `/ml/predict/categoria` |
 | HU-ML-005 | ML | ✅ | 6 | Dashboard, Inventario | Fallback graceful |
-| HU-ML-006 | ML | ⏳ | 7 Fase 2 | — | POST `/mantenimientos` + ML |
-| HU-ML-007 | ML | ⏳ | 7 Fase 2 | — | `v2_metricas_equipo` |
+| HU-ML-006 | ML | ✅ | 7 Fase 2 | MlService | POST `/mantenimientos` + recálculo |
+| HU-ML-007 | ML | ✅ | 7 Fase 2 | MetricaEquipo | `v2_metricas_equipo` |
 | HU-RPT-001 | Reportes | ✅ | 4 | FichaTecnicaPanel | ReporteController |
 | HU-RPT-002 | Reportes | ✅ | 7+ | MantenimientoPage | `/reportes/mantenimiento/historial/` |
 | HU-RPT-003 | Reportes | ✅ | 7+ | MantenimientoDetalleModal | `/reportes/mantenimiento/{id}` |

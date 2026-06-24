@@ -1,0 +1,4 @@
+# Evitar acceso HTTP directo a archivos de configuración
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>

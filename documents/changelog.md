@@ -4,7 +4,20 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 
-## [0.8.0] - Sprint 7 (En progreso) — Telemetría ML y mantenimiento estructurado
+## [0.9.0] - Cierre Sprint 7 — Fase 2 ML y ficha predictiva
+
+### Añadido
+- **HU-FIC-008:** Bloque «Evaluación predictiva» en `FichaTecnicaPanel.jsx` (score, nivel, factores).
+- **HU-ML-006:** Recálculo automático de riesgo tras `POST /mantenimientos` vía `MlService::recalcularEquipo()`.
+- **HU-ML-007:** Tabla `v2_metricas_equipo`, modelo `MetricaEquipo.php`, migración `v2_metricas_equipo.sql`.
+- **HU-ML-003:** Modelo `riesgo_equipo_v2.joblib` con features de telemetría; inferencia prioriza v2 si existe.
+- **Backend:** `services/MlService.php` (cliente ML reutilizable).
+
+### Cambiado
+- `MlController.php` refactorizado para usar `MlService`.
+- `train_model.py` acepta `--version v2`.
+
+## [0.8.0] - Sprint 7 (Completado) — Telemetría ML y mantenimiento estructurado
 
 ### Añadido
 - **Base de datos Fase 7:** columnas de telemetría en `v2_equipos` (`horas_uso`, `errores_smart`, `contador_paginas`, `salud_bateria`, `ultima_temp_cpu`, `ultima_temp_disco`, `fecha_ultimo_mantenimiento`).
@@ -19,11 +32,6 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 ### Cambiado
 - `v2_estructura.sql` actualizado para instalaciones nuevas con esquema Fase 7.
 - `ml/data/README.md` ampliado con diccionario de telemetría.
-
-### Pendiente (Sprint 7)
-- Reentrenar modelo ML v2 con datos reales acumulados (`build_dataset.py` + `train_model.py`).
-- Bloque **Evaluación predictiva** en `FichaTecnicaPanel.jsx`.
-- Tabla `v2_metricas_equipo` (Fase 2).
 
 ## [0.7.0] - Sprint 6 (Completado) — Machine Learning Predictivo
 
