@@ -11,6 +11,7 @@ const INITIAL_FORM = {
   tipo_equipo_otro: '',
   marca: '',
   modelo: '',
+  color: '',
   numero_serie: '',
   ram_gb: '',
   almacenamiento_gb: '',
@@ -253,6 +254,12 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
             <div className="space-y-1">
               <label className="text-sm font-medium text-slate-700">Modelo</label>
               <input name="modelo" value={formData.modelo} onChange={handleChange}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-700">Color</label>
+              <input name="color" value={formData.color} onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 

@@ -67,6 +67,31 @@ ALTER TABLE v2_fichas_mantenimiento
     ENUM('Preventivo', 'Correctivo', 'Predictivo', 'Evaluacion')
     NOT NULL;
 
+-- Extender estado_operativo para evaluaciones con causales específicas
+ALTER TABLE v2_equipos
+  MODIFY COLUMN estado_operativo
+    ENUM('DAÑO','ESTADO DE EXCEDENCIA','ESTADO DE CHATARRA','MANTENIMIENTO O REPARACION','ONEROSA','OBSOLESCENCIA TECNICA','RAEE','Operativo','Dañado','En Reparacion','Excedencia','Baja')
+    NOT NULL DEFAULT 'Operativo';
+
+-- Agregar campos de diagnóstico y fotos a la ficha técnica
+ALTER TABLE v2_fichas_tecnicas
+  ADD COLUMN IF NOT EXISTS diagnostico TEXT NULL
+    COMMENT 'Diagnóstico técnico de la evaluación' AFTER observaciones_evaluacion,
+  ADD COLUMN IF NOT EXISTS conclusion_motivo TEXT NULL
+    COMMENT 'Conclusión o motivo de la evaluación' AFTER diagnostico,
+  ADD COLUMN IF NOT EXISTS imagen_1 VARCHAR(255) NULL DEFAULT NULL
+    COMMENT 'Nombre de archivo de imagen 1' AFTER conclusion_motivo,
+  ADD COLUMN IF NOT EXISTS imagen_2 VARCHAR(255) NULL DEFAULT NULL
+    COMMENT 'Nombre de archivo de imagen 2' AFTER imagen_1;
+
+-- Numeración correlativa global de fichas técnicas, independiente del tipo de equipo
+ALTER TABLE v2_fichas_tecnicas
+  ADD COLUMN IF NOT EXISTS numero_ficha VARCHAR(20) UNIQUE AFTER equipo_id;
+
+-- Color identificativo del equipo
+ALTER TABLE v2_equipos
+  ADD COLUMN IF NOT EXISTS color VARCHAR(30) NULL AFTER modelo;
+
 -- ------------------------------------------------------------
 -- C. Índices útiles para consultas ML / reportes
 -- ------------------------------------------------------------

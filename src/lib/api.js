@@ -36,8 +36,30 @@ api.interceptors.response.use(
 
 export const downloadPdf = async (path) => {
   const response = await api.get(path, { responseType: 'blob' });
-  const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-  window.open(url, '_blank');
+  const contentType = response.headers['content-type'] || '';
+
+  if (!contentType.includes('application/pdf')) {
+    const errorText = await response.data.text();
+    let message = 'El servidor no devolvió un PDF válido.';
+
+    try {
+      const errorData = JSON.parse(errorText);
+      message = errorData.message || message;
+    } catch {
+      if (errorText.trim()) {
+        message = errorText.trim();
+      }
+    }
+
+    throw new Error(message);
+  }
+
+  const url = URL.createObjectURL(response.data);
+  const link = document.createElement('a');
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  link.click();
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
 };
 

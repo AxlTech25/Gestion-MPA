@@ -7,6 +7,10 @@ $conn = $database->getConnection();
 $columns = [
     'observaciones_evaluacion' => 'TEXT NULL AFTER software_base',
     'fecha_evaluacion'         => 'DATETIME NULL AFTER observaciones_evaluacion',
+    'diagnostico'              => "TEXT NULL AFTER observaciones_evaluacion",
+    'conclusion_motivo'        => "TEXT NULL AFTER diagnostico",
+    'imagen_1'                 => "VARCHAR(255) NULL DEFAULT NULL AFTER conclusion_motivo",
+    'imagen_2'                 => "VARCHAR(255) NULL DEFAULT NULL AFTER imagen_1",
 ];
 
 foreach ($columns as $name => $definition) {

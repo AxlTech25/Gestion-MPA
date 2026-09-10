@@ -32,6 +32,12 @@ const estadoBadge = (tipo, valor) => {
     operativo: {
       Operativo: 'bg-emerald-100 text-emerald-700',
       'Dañado': 'bg-orange-100 text-orange-700',
+      'ESTADO DE EXCEDENCIA': 'bg-slate-200 text-slate-600',
+      'ESTADO DE CHATARRA': 'bg-red-100 text-red-700',
+      'MANTENIMIENTO O REPARACION': 'bg-blue-100 text-blue-700',
+      ONEROSA: 'bg-amber-100 text-amber-700',
+      'OBSOLESCENCIA TECNICA': 'bg-rose-100 text-rose-700',
+      RAEE: 'bg-slate-300 text-slate-700',
       Excedencia: 'bg-slate-200 text-slate-600',
       Baja: 'bg-red-100 text-red-700',
     },
@@ -56,7 +62,10 @@ const buildFormState = (data) => ({
   tipo_disco: data.tipo_disco || 'SSD',
   estado_conservacion: data.estado_conservacion || 'Bueno',
   estado_operativo: data.estado_operativo || 'Operativo',
-  observaciones_evaluacion: data.observaciones_evaluacion || '',
+  diagnostico: data.diagnostico || data.observaciones_evaluacion || '',
+  conclusion_motivo: data.conclusion_motivo || '',
+  imagen_1: data.imagen_1 || '',
+  imagen_2: data.imagen_2 || '',
 });
 
 export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
@@ -64,6 +73,7 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({});
+  const [files, setFiles] = useState({ imagen_1: null, imagen_2: null });
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
   const [riesgo, setRiesgo] = useState(null);
@@ -107,19 +117,39 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const handleFileChange = (e) => {
+    const { name, files: fileList } = e.target;
+    setFiles({ ...files, [name]: fileList?.[0] ?? null });
+  };
+
   const handleSave = async () => {
     setSaving(true);
+    setError('');
+    setSaved(false);
+
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      if (['imagen_1', 'imagen_2'].includes(key)) {
+        return;
+      }
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
+      }
+    });
+    if (files.imagen_1) formData.append('imagen_1', files.imagen_1);
+    if (files.imagen_2) formData.append('imagen_2', files.imagen_2);
+
     try {
-      const res = await fichaTecnicaService.saveFicha(equipoId, form);
+      const res = await fichaTecnicaService.saveFicha(equipoId, formData, true);
       if (res.success) {
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
         await loadFicha();
       } else {
-        alert(res.message);
+        setError(res.message || 'No se pudo guardar la ficha.');
       }
-    } catch {
-      alert('Error al guardar la ficha.');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error al guardar la ficha.');
     } finally {
       setSaving(false);
     }
@@ -128,8 +158,8 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
   const handlePDF = async () => {
     try {
       await downloadPdf(`/reportes/equipo/${equipoId}`);
-    } catch {
-      alert('No se pudo generar el PDF.');
+    } catch (err) {
+      alert(err.message || 'No se pudo generar el PDF.');
     }
   };
 
@@ -170,6 +200,11 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
       )}
 
       <div className="p-6 space-y-6">
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-5 py-4 text-sm">
+            {error}
+          </div>
+        )}
         {/* Evaluación del estado — resumen visual */}
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
           <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
@@ -338,22 +373,63 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
                 <option>Nuevo</option><option>Bueno</option><option>Regular</option><option>Malo</option>
               </select>
             </Field>
-            <Field label="Estado Operativo">
+            <Field label="Causales">
               <select name="estado_operativo" value={form.estado_operativo} onChange={handleChange} className={selectCls}>
-                <option>Operativo</option><option>Dañado</option><option>Excedencia</option><option>Baja</option>
+                <option>Dañado</option>
+                <option>ESTADO DE EXCEDENCIA</option>
+                <option>ESTADO DE CHATARRA</option>
+                <option>MANTENIMIENTO O REPARACION ONEROSA</option>
+                <option>OBSOLESCENCIA TECNICA</option>
+                <option>RAEE</option>
               </select>
             </Field>
           </div>
-          <Field label="Observaciones de la evaluación" icon={ClipboardCheck}>
+          <Field label="Diagnóstico" icon={ClipboardCheck}>
             <textarea
-              name="observaciones_evaluacion"
-              value={form.observaciones_evaluacion}
+              name="diagnostico"
+              value={form.diagnostico}
               onChange={handleChange}
               rows={4}
               className={inputCls}
-              placeholder="Describa el estado físico, fallas detectadas, recomendaciones de mantenimiento o baja..."
+              placeholder="Describa el diagnóstico del equipo, fallas detectadas y observaciones técnicas."
             />
           </Field>
+          <Field label="Conclusión y/o Motivo">
+            <textarea
+              name="conclusion_motivo"
+              value={form.conclusion_motivo}
+              onChange={handleChange}
+              rows={3}
+              className={inputCls}
+              placeholder="Registre la conclusión o motivo de la evaluación."
+            />
+          </Field>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="Imagen del equipo 1">
+              <input
+                type="file"
+                name="imagen_1"
+                accept="image/jpeg,image/png"
+                onChange={handleFileChange}
+                className="w-full text-sm text-slate-600"
+              />
+              {data.imagen_1 && (
+                <p className="text-xs text-slate-500 mt-1">Imagen actual: {data.imagen_1}</p>
+              )}
+            </Field>
+            <Field label="Imagen del equipo 2">
+              <input
+                type="file"
+                name="imagen_2"
+                accept="image/jpeg,image/png"
+                onChange={handleFileChange}
+                className="w-full text-sm text-slate-600"
+              />
+              {data.imagen_2 && (
+                <p className="text-xs text-slate-500 mt-1">Imagen actual: {data.imagen_2}</p>
+              )}
+            </Field>
+          </div>
         </div>
       </div>
 

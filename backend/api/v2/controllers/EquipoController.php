@@ -17,6 +17,7 @@ class EquipoController {
         'tipo_equipo',
         'marca',
         'modelo',
+        'color',
         'numero_serie',
         'area',
         'ram_gb',
@@ -26,6 +27,31 @@ class EquipoController {
         'sistema_operativo',
         'fecha_adquisicion',
     ];
+
+    private const PLANTILLA_EJEMPLO = [
+        '740000001111',
+        '000121',
+        'Laptop',
+        'HP',
+        'ProBook 450',
+        'Negro',
+        'SN123456',
+        'Tecnología de la Información',
+        '16',
+        '512',
+        'SSD',
+        'Intel Core i5',
+        'Windows 11',
+        '2024-01-15',
+    ];
+
+    public static function plantillaColumnas(): array {
+        return self::PLANTILLA_HEADERS;
+    }
+
+    public static function plantillaFilaEjemplo(): array {
+        return self::PLANTILLA_EJEMPLO;
+    }
 
     public function __construct() {
         $database = new Database();
@@ -90,21 +116,7 @@ class EquipoController {
         $writer->openToBrowser('plantilla_carga_equipos.xlsx');
 
         $writer->addRow(Row::fromValues(self::PLANTILLA_HEADERS));
-        $writer->addRow(Row::fromValues([
-            '740000001111',
-            '000121',
-            'Laptop',
-            'HP',
-            'ProBook 450',
-            'SN123456',
-            'Tecnología de la Información',
-            '16',
-            '512',
-            'SSD',
-            'Intel Core i5',
-            'Windows 11',
-            '2024-01-15',
-        ]));
+        $writer->addRow(Row::fromValues(self::PLANTILLA_EJEMPLO));
 
         $writer->close();
         exit;

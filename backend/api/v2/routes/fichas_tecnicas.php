@@ -25,6 +25,11 @@ if ($segment === 'buscar') {
     exit;
 }
 
+if ($method === 'GET' && $segment !== null && !isset($request[2]) && preg_match('/^\d{12}$/', (string) $segment)) {
+    $controller->searchByCodigo((string) $segment);
+    exit;
+}
+
 $equipo_id = $segment;
 
 if (!$equipo_id || !is_numeric($equipo_id)) {

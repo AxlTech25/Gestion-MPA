@@ -11,6 +11,7 @@ export const mapEquipoToForm = (eq) => {
     tipo_equipo_otro: isStandard ? '' : empty(eq.tipo_equipo),
     marca: empty(eq.marca),
     modelo: empty(eq.modelo),
+    color: empty(eq.color),
     numero_serie: empty(eq.numero_serie),
     ram_gb: empty(eq.ram_gb),
     almacenamiento_gb: empty(eq.almacenamiento_gb),

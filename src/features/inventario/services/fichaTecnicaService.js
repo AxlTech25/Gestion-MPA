@@ -12,8 +12,12 @@ export const fichaTecnicaService = {
     return response.data;
   },
 
-  saveFicha: async (equipoId, data) => {
-    const response = await api.put(`/fichas-tecnicas/${equipoId}`, data);
+  saveFicha: async (equipoId, data, isFormData = false) => {
+    const headers = isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined;
+    // PHP no siempre popula $_POST para peticiones PUT con multipart/form-data.
+    // Usar POST cuando enviamos FormData para que el backend reciba correctamente los campos.
+    const method = isFormData ? 'post' : 'put';
+    const response = await api[method](`/fichas-tecnicas/${equipoId}`, data, { headers });
     return response.data;
   },
 };

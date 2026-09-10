@@ -48,25 +48,121 @@ class ReporteController {
 
     private function pdfStyles(): string {
         return '
-            body  { font-family: "Helvetica", sans-serif; font-size: 13px; color: #334155; margin: 30px; }
-            h1    { color: #1e3a8a; text-align: center; font-size: 18px; border-bottom: 2px solid #1e3a8a;
-                    padding-bottom: 10px; margin-bottom: 4px; }
+            body  { font-family: "Helvetica", sans-serif; font-size: 13px; color: #1f2937; margin: 2px 10px 20px; }
+            h1    { color: #111827; text-align: center; font-size: 18px; font-weight: 700;
+                    margin: 0 0 18px 0; }
             .sub  { text-align:center; color:#64748b; font-size:11px; margin-bottom:20px; }
-            h3    { color:#1e3a8a; margin-top:28px; margin-bottom:6px; font-size:13px;
+            h3    { color:#111827; margin-top:28px; margin-bottom:6px; font-size:13px;
                     text-transform:uppercase; letter-spacing:1px; }
             table { width:100%; border-collapse:collapse; margin-top:6px; }
-            th, td{ border:1px solid #e2e8f0; padding:8px 12px; text-align:left; font-size:12px; }
-            th    { background-color:#f1f5f9; width:35%; color:#475569; font-weight:600; }
-            td    { color:#1e293b; }
+            th, td{ border:1px solid #e5e7eb; padding:8px 12px; text-align:left; font-size:12px; }
+            .general-info-table th, .general-info-table td { padding:5px 10px; }
+            th    { background-color:#f3f4f6; width:35%; color:#374151; font-weight:600; }
+            td    { color:#111827; }
             .badge{ display:inline-block; padding:2px 10px; border-radius:20px;
-                    background:#dbeafe; color:#1d4ed8; font-size:11px; font-weight:bold; }
-            .badge-correctivo { background:#fee2e2; color:#b91c1c; }
-            .badge-preventivo { background:#dbeafe; color:#1d4ed8; }
+                    background:#e5e7eb; color:#111827; font-size:11px; font-weight:bold; }
+            .badge-correctivo { background:#f3f4f6; color:#111827; }
+            .badge-preventivo { background:#f3f4f6; color:#111827; }
             .text-block { white-space: pre-wrap; line-height: 1.5; }
-            .footer{ margin-top:50px; text-align:center; font-size:10px; color:#94a3b8;
-                     border-top:1px solid #e2e8f0; padding-top:10px; }
-            .timeline-row:nth-child(even) td { background:#f8fafc; }
+            .image-heading { margin-top:16px; border:1px solid #111827; border-bottom:0; padding:3px; text-align:center; font-size:12px; font-weight:700; }
+            .image-row { width:100%; display:table; table-layout:fixed; border:1px solid #111827; border-top:0; }
+            .image-box { display:table-cell; width:50%; padding:1px; vertical-align:top; background:#ffffff; }
+            .image-box img { width:300px; height:190px; object-fit:contain; display:block; margin:0 auto; }
+            .ficha-pdf { margin:0 10px 8px; font-size:11px; }
+            .ficha-pdf h3 { margin-top:12px !important; margin-bottom:4px !important; }
+            .ficha-pdf .image-heading { margin-top:8px; }
+            .ficha-pdf .general-info-table th, .ficha-pdf .general-info-table td { padding:3px 8px; }
+            .header-band { width:100%; display:block; margin-bottom:18px; }
+            .brand-box { width:100%; }
+            .brand-mark {
+                width:100%; background: transparent; display:flex;
+                align-items:center; justify-content:flex-start; padding:0;
+            }
+            .brand-mark img {
+                display:block; width:100%; max-width:420px; height:auto; object-fit:contain;
+            }
+            .header-lower { width:100%; display:table; margin-top:2px; }
+            .header-title { display:table-cell; width:68%; vertical-align:top; color:#111827; font-size:18px; font-weight:700; letter-spacing:0.2px; margin:0; text-transform:uppercase; }
+            .header-meta { display:table-cell; width:32%; padding:0; text-align:right; vertical-align:top; }
+            .sheet-number { display:inline-block; min-width:150px; border:1px solid #2563eb; padding:6px 10px; text-align:left; color:#111827; font-size:16px; font-weight:700; }
+            .issue-date { display:inline-block; min-width:150px; margin-top:18px; padding:0 10px 3px; border-bottom:1px solid #111827; color:#111827; font-size:12px; text-align:left; }
+            .footer{ margin-top:50px; text-align:center; font-size:10px; color:#6b7280;
+                     border-top:1px solid #e5e7eb; padding-top:10px; }
+            .timeline-row:nth-child(even) td { background:#f9fafb; }
         ';
+    }
+
+    private function imageDataUri(?string $fileName): ?string {
+        if (!$fileName) {
+            return null;
+        }
+
+        $uploadDir = realpath(__DIR__ . '/../../../uploads/fichas_tecnicas');
+        if (!$uploadDir) {
+            return null;
+        }
+
+        $filePath = realpath($uploadDir . DIRECTORY_SEPARATOR . basename($fileName));
+        if (!$filePath || strpos($filePath, $uploadDir) !== 0 || !is_file($filePath)) {
+            return null;
+        }
+
+        $content = @file_get_contents($filePath);
+        if ($content === false) {
+            return null;
+        }
+
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'webp' => 'image/webp',
+            'gif' => 'image/gif',
+            'svg' => 'image/svg+xml',
+        ];
+        $mime = $mimeTypes[$ext] ?? null;
+        if (!$mime) {
+            return null;
+        }
+
+        return 'data:' . $mime . ';base64,' . base64_encode($content);
+    }
+
+    private function renderImageTag(?string $fileName, string $title = ''): string {
+        $uri = $this->imageDataUri($fileName);
+        if (!$uri) {
+            return '';
+        }
+
+           return '<div class="image-box">'
+               . '<img src="' . $uri . '" alt="' . $this->h($title) . '" />'
+             . '</div>';
+    }
+
+    private function logoDataUri(): string {
+        $candidates = [
+            __DIR__ . '/../../../../public/logo-mpa.png',
+            __DIR__ . '/../../../../public/logo-mpa.svg',
+        ];
+
+        foreach ($candidates as $path) {
+            $filePath = realpath($path);
+            if (!$filePath || !is_file($filePath)) {
+                continue;
+            }
+
+            $content = @file_get_contents($filePath);
+            if ($content === false) {
+                continue;
+            }
+
+            $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+            $mime = ['png' => 'image/png', 'svg' => 'image/svg+xml'][$ext] ?? 'image/png';
+            return 'data:' . $mime . ';base64,' . base64_encode($content);
+        }
+
+        return '';
     }
 
     private function renderPdf(string $html, string $filename): void {
@@ -78,7 +174,20 @@ class ReporteController {
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
+
+        // La API establece JSON por defecto; este endpoint devuelve un PDF.
+        if (ob_get_length() !== false) {
+            ob_clean();
+        }
+        header('Content-Type: application/pdf');
         $dompdf->stream($filename, ["Attachment" => false]);
+    }
+
+    private function firmanteInfo(): array {
+        return [
+            'nombre' => 'Tec. Denky Navarro Navarro',
+            'rol' => 'Técnico Responsable'
+        ];
     }
 
     private function isTechnical($tipo) {
@@ -90,12 +199,19 @@ class ReporteController {
     }
 
     public function ficha_tecnica($equipo_id) {
-        $query = "SELECT e.*, a.nombre as area_nombre, a.jefe_encargado,
+         $query = "SELECT e.*, a.nombre as area_nombre, a.jefe_encargado,
                          ft.procesador, ft.sistema_operativo, ft.licencia_so,
-                         ft.mac_address, ft.ip_asignada, ft.software_base
+                         ft.mac_address, ft.ip_asignada, ft.software_base,
+                         ft.observaciones_evaluacion, ft.diagnostico, ft.conclusion_motivo,
+                         ft.numero_ficha,
+                    ft.imagen_1, ft.imagen_2,
+                    hb.causal_danio, hb.causal_excedencia, hb.causal_chatarra,
+                    hb.causal_reparacion_onerosa, hb.causal_obsolescencia_tecnica,
+                    hb.causal_raee
                   FROM v2_equipos e
                   LEFT JOIN v2_areas a ON e.area_id = a.id
                   LEFT JOIN v2_fichas_tecnicas ft ON e.id = ft.equipo_id
+                LEFT JOIN v2_hojas_baja hb ON e.id = hb.equipo_id
                   WHERE e.id = :id LIMIT 1";
 
         $stmt = $this->db->prepare($query);
@@ -110,8 +226,31 @@ class ReporteController {
 
         $e = $stmt->fetch(PDO::FETCH_ASSOC);
         $esTecnico = $this->isTechnical($e['tipo_equipo']);
+        $tipoEquipo = strtoupper(trim((string) ($e['tipo_equipo'] ?? 'EQUIPO')));
+        $numeroFicha = trim((string) ($e['numero_ficha'] ?? ''));
+        if ($numeroFicha === '') {
+            $numeroFicha = 'N°' . str_pad((string) ((int) ($e['id'] ?? $equipo_id)), 3, '0', STR_PAD_LEFT);
+        }
+
+        $causalLabels = [
+            'causal_danio' => 'Daño',
+            'causal_excedencia' => 'Estado De Excedencia',
+            'causal_chatarra' => 'Estado De Chatarra',
+            'causal_reparacion_onerosa' => 'Mantenimiento O Reparacion Onerosa',
+            'causal_obsolescencia_tecnica' => 'Obsolescencia Tecnica',
+            'causal_raee' => 'Raee',
+        ];
+        $causales = [];
+        foreach ($causalLabels as $field => $label) {
+            if (!empty($e[$field])) {
+                $causales[] = $label;
+            }
+        }
+        $causalesTexto = $causales ? implode(', ', $causales) : '—';
 
         // ── Sección de especificaciones técnicas (solo si es CPU/Laptop) ──
+        $observacionesEvaluacion = trim((string) ($e['observaciones_evaluacion'] ?? ''));
+
         if ($esTecnico) {
             $seccionTecnica = '
             <h3 style="color:#1e3a8a;margin-top:28px;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:1px;">
@@ -127,6 +266,8 @@ class ReporteController {
                 <tr><th>IP Asignada</th><td>'      . htmlspecialchars($e['ip_asignada']       ?? 'DHCP') . '</td></tr>
                 <tr><th>Software Base</th><td>'    . htmlspecialchars($e['software_base']     ?? 'N/A') . '</td></tr>
             </table>';
+        } elseif (strtolower(trim($e['tipo_equipo'] ?? '')) === 'monitor') {
+            $seccionTecnica = '';
         } else {
             $seccionTecnica = '
             <div style="margin-top:20px;padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-size:12px;">
@@ -135,39 +276,107 @@ class ReporteController {
             </div>';
         }
 
+        $diagnosticoText = trim((string) ($e['diagnostico'] ?? $e['observaciones_evaluacion'] ?? ''));
+        $conclusionText = trim((string) ($e['conclusion_motivo'] ?? ''));
+        $imagen1Tag = $this->renderImageTag($e['imagen_1'], 'Imagen del equipo 1');
+        $imagen2Tag = $this->renderImageTag($e['imagen_2'], 'Imagen del equipo 2');
+
+        $seccionDiagnostico = '';
+        if ($diagnosticoText !== '') {
+            $seccionDiagnostico = '
+            <h3 style="color:#1e3a8a;margin-top:28px;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:1px;">
+                Diagnóstico
+            </h3>
+            <div class="text-block">' . $this->h($diagnosticoText) . '</div>';
+        }
+
+        $seccionConclusion = '';
+        if ($conclusionText !== '') {
+            $seccionConclusion = '
+            <h3 style="color:#1e3a8a;margin-top:28px;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:1px;">
+                Conclusión y/o Motivo
+            </h3>
+            <div class="text-block">' . $this->h($conclusionText) . '</div>';
+        }
+
+        $seccionImagenes = '';
+        if ($imagen1Tag !== '' || $imagen2Tag !== '') {
+            $seccionImagenes = '
+            <div class="image-heading">IMAGEN</div>
+            <div class="image-row">' . $imagen1Tag . $imagen2Tag . '</div>';
+        }
+
+        $firmante = $this->firmanteInfo();
+        $firmaHtml = '
+        <table style="width:100%; border:0; margin-top:36px;">
+            <tr><td style="border:0; text-align:center;">
+            <div style="width:42%; margin:0 auto; text-align:center;">
+                <div style="height:42px; border-bottom:2px solid #1e293b; margin-bottom:10px; opacity:0.9;"></div>
+                <div style="font-size:10px; color:#475569; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; margin-bottom:6px;">' . $this->h($firmante['rol']) . '</div>
+                <div style="font-size:13px; color:#0f172a; font-weight:700; letter-spacing:0.2px;">' . $this->h($firmante['nombre']) . '</div>
+            </div>
+            </td></tr>
+        </table>';
+
+        $logoUri = $this->logoDataUri();
+        $headerHtml = '
+        <div class="header-band">
+            <div class="brand-box">
+                <div class="brand-mark">
+                    ' . ($logoUri !== '' ? '<img src="' . $logoUri . '" alt="MPA logo" />' : '') . '
+                </div>
+                <div class="header-lower">
+                    <div class="header-title">HOJA DE REVISIÓN TÉCNICA DE ' . $this->h($tipoEquipo) . '</div>
+                    <div class="header-meta">
+                        <div class="sheet-number">' . $this->h($numeroFicha) . '</div>
+                        <div class="issue-date">FECHA: ' . date('d/m/Y') . '</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        ';
+
         $html = '
         <html>
         <head>
             <meta charset="UTF-8">
             <style>' . $this->pdfStyles() . '</style>
         </head>
-        <body>
-            <h1>Ficha Técnica de Equipo</h1>
-            <p class="sub">Sistema de Gestión de Equipos &mdash; MPA V2</p>
+        <body class="ficha-pdf">
+            ' . $headerHtml . '
 
-            <h3>Información General</h3>
-            <table>
+            <h3 style="margin-top:10px;">Información General</h3>
+            <table class="general-info-table">
                 <tr><th>Código Patrimonial</th><td><strong>' . $this->h($e['codigo_patrimonial'] ?? '') . '</strong></td></tr>
                 <tr><th>Código Identificativo</th><td>'     . $this->h($e['codigo_identificativo'] ?? '—') . '</td></tr>
                 <tr><th>Tipo de Equipo</th><td><span class="badge">' . $this->h($e['tipo_equipo'] ?? '') . '</span></td></tr>
-                <tr><th>Marca / Modelo</th><td>'            . $this->h(($e['marca'] ?? '—') . ' / ' . ($e['modelo'] ?? '—')) . '</td></tr>
+                <tr><th>Marca</th><td>'                  . $this->h($e['marca'] ?? '—') . '</td></tr>
+                <tr><th>Modelo</th><td>'                 . $this->h($e['modelo'] ?? '—') . '</td></tr>
+                <tr><th>Color</th><td>'                  . $this->h($e['color'] ?? '—') . '</td></tr>
                 <tr><th>Número de Serie</th><td>'           . $this->h($e['numero_serie'] ?? '—') . '</td></tr>
-                <tr><th>Área Asignada</th><td>'             . $this->h($e['area_nombre'] ?? '—') . '</td></tr>
-                <tr><th>Jefe a Cargo</th><td>'              . $this->h($e['jefe_encargado'] ?? '—') . '</td></tr>
-                <tr><th>Fecha Adquisición</th><td>'         . $this->h($e['fecha_adquisicion'] ?? '—') . '</td></tr>
+                <tr><th>Oficina</th><td>'                   . $this->h($e['area_nombre'] ?? '—') . '</td></tr>
+                <tr><th>Responsable</th><td>'               . $this->h($e['responsable_nombre'] ?? $e['jefe_encargado'] ?? '—') . '</td></tr>
+                <tr><th>Causales</th><td>'                  . $this->h($causalesTexto) . '</td></tr>
                 <tr><th>Estado Conservación</th><td>'       . $this->h($e['estado_conservacion'] ?? '—') . '</td></tr>
                 <tr><th>Estado Operativo</th><td>'          . $this->h($e['estado_operativo'] ?? '—') . '</td></tr>
             </table>
 
             ' . $seccionTecnica . '
+            ' . $seccionDiagnostico . '
+            ' . $seccionConclusion . '
+            ' . $seccionImagenes . '
+            ' . $firmaHtml . '
 
-            <div class="footer">
-                Documento generado automáticamente &bull; Fecha de emisión: ' . date('d/m/Y H:i') . '
-            </div>
         </body>
         </html>';
 
-        $this->renderPdf($html, "ficha_tecnica_" . ($e['codigo_patrimonial'] ?? $equipo_id) . ".pdf");
+        $codigoArchivo = preg_replace(
+            '/[^A-Za-z0-9._-]+/',
+            '_',
+            (string) ($e['codigo_patrimonial'] ?? $equipo_id)
+        );
+        $codigoArchivo = trim($codigoArchivo, '._-') ?: (string) $equipo_id;
+        $this->renderPdf($html, "ficha_tecnica_{$codigoArchivo}.pdf");
     }
 
     public function historial_mantenimiento(string $codigo) {

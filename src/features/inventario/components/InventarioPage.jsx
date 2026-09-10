@@ -57,8 +57,8 @@ export const InventarioPage = () => {
   const handleDescargarPDF = async (id) => {
     try {
       await downloadPdf(`/reportes/equipo/${id}`);
-    } catch {
-      console.error('No se pudo descargar el PDF');
+    } catch (err) {
+      console.error(err.message || 'No se pudo descargar el PDF');
     }
   };
 

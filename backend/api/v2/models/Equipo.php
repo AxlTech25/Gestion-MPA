@@ -83,6 +83,7 @@ class Equipo {
             (string) $data->tipo_equipo,
             $data->marca ?? null,
             $data->modelo ?? null,
+            $data->color ?? null,
             $data->numero_serie ?? null,
             $data->ram_gb ?? null,
             $data->almacenamiento_gb ?? null,
@@ -140,6 +141,7 @@ class Equipo {
             $tipoNorm,
             $this->nullableStr($row['marca'] ?? null),
             $this->nullableStr($row['modelo'] ?? null),
+            $this->nullableStr($row['color'] ?? null),
             $this->nullableStr($row['numero_serie'] ?? null),
             $this->nullableInt($row['ram_gb'] ?? null),
             $this->nullableInt($row['almacenamiento_gb'] ?? null),
@@ -157,6 +159,7 @@ class Equipo {
         string $tipo_equipo,
         ?string $marca,
         ?string $modelo,
+        ?string $color,
         ?string $numero_serie,
         ?int $ram_gb,
         ?int $almacenamiento_gb,
@@ -167,7 +170,7 @@ class Equipo {
         ?string $sistema_operativo
     ): array {
         return compact(
-            'codigo_patrimonial', 'codigo_identificativo', 'tipo_equipo', 'marca', 'modelo',
+            'codigo_patrimonial', 'codigo_identificativo', 'tipo_equipo', 'marca', 'modelo', 'color',
             'numero_serie', 'ram_gb', 'almacenamiento_gb', 'tipo_disco', 'fecha_adquisicion',
             'area_id', 'procesador', 'sistema_operativo'
         );
@@ -181,13 +184,13 @@ class Equipo {
             $responsable_nombre = $areaData['responsable_nombre'];
 
             $query = "INSERT INTO " . $this->table_name . "
-                     (codigo_patrimonial, codigo_identificativo, tipo_equipo, marca, modelo,
+                     (codigo_patrimonial, codigo_identificativo, tipo_equipo, marca, modelo, color,
                       numero_serie, ram_gb, almacenamiento_gb, tipo_disco,
                       horas_uso, errores_smart, contador_paginas, salud_bateria,
                       ultima_temp_cpu, ultima_temp_disco,
                       fecha_adquisicion, area_id, ubicacion_fisica, responsable_nombre)
                      VALUES
-                     (:codigo_patrimonial, :codigo_identificativo, :tipo_equipo, :marca, :modelo,
+                     (:codigo_patrimonial, :codigo_identificativo, :tipo_equipo, :marca, :modelo, :color,
                       :numero_serie, :ram_gb, :almacenamiento_gb, :tipo_disco,
                       :horas_uso, :errores_smart, :contador_paginas, :salud_bateria,
                       :ultima_temp_cpu, :ultima_temp_disco,
@@ -199,6 +202,7 @@ class Equipo {
             $stmt->bindValue(':tipo_equipo', $f['tipo_equipo']);
             $stmt->bindValue(':marca', $f['marca']);
             $stmt->bindValue(':modelo', $f['modelo']);
+            $stmt->bindValue(':color', $f['color']);
             $stmt->bindValue(':numero_serie', $f['numero_serie']);
             $stmt->bindValue(':ram_gb', $f['ram_gb'], $f['ram_gb'] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $stmt->bindValue(':almacenamiento_gb', $f['almacenamiento_gb'], $f['almacenamiento_gb'] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
@@ -250,6 +254,7 @@ class Equipo {
                 tipo_equipo = :tipo_equipo,
                 marca = :marca,
                 modelo = :modelo,
+                color = :color,
                 numero_serie = :numero_serie,
                 ram_gb = :ram_gb,
                 almacenamiento_gb = :almacenamiento_gb,
@@ -273,6 +278,7 @@ class Equipo {
             $stmt->bindValue(':tipo_equipo', $f['tipo_equipo']);
             $stmt->bindValue(':marca', $f['marca']);
             $stmt->bindValue(':modelo', $f['modelo']);
+            $stmt->bindValue(':color', $f['color']);
             $stmt->bindValue(':numero_serie', $f['numero_serie']);
             $stmt->bindValue(':ram_gb', $f['ram_gb'], $f['ram_gb'] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $stmt->bindValue(':almacenamiento_gb', $f['almacenamiento_gb'], $f['almacenamiento_gb'] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);

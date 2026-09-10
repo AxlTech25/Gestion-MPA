@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS v2_equipos (
   tipo_equipo ENUM('Laptop', 'CPU', 'Impresora', 'Monitor', 'Otro') NOT NULL,
   marca VARCHAR(50),
   modelo VARCHAR(50),
+  color VARCHAR(30),
   numero_serie VARCHAR(100),
   
   -- Para ML: Usar numéricos en lugar de VARCHAR
@@ -118,6 +119,7 @@ CREATE TABLE IF NOT EXISTS v2_equipos (
 CREATE TABLE IF NOT EXISTS v2_fichas_tecnicas (
   id INT PRIMARY KEY AUTO_INCREMENT,
   equipo_id INT UNIQUE NOT NULL,
+  numero_ficha VARCHAR(20) UNIQUE,
   
   procesador VARCHAR(100),
   sistema_operativo ENUM('Windows 7', 'Windows 8', 'Windows 8.1', 'Windows 10', 'Windows 11', 'Linux', 'macOS'),
@@ -126,6 +128,10 @@ CREATE TABLE IF NOT EXISTS v2_fichas_tecnicas (
   ip_asignada VARCHAR(15),
   software_base TEXT,
   observaciones_evaluacion TEXT,
+  diagnostico TEXT,
+  conclusion_motivo TEXT,
+  imagen_1 VARCHAR(255),
+  imagen_2 VARCHAR(255),
   fecha_evaluacion DATETIME,
 
   FOREIGN KEY (equipo_id) REFERENCES v2_equipos(id) ON DELETE CASCADE
