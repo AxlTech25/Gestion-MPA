@@ -24,7 +24,7 @@
 
 ## Detalle por caso
 
-Copie filas según necesite. Adjunte capturas en `documents/pruebas/evidencias/YYYY-MM-DD/`.
+Copie filas según necesite. Adjunte capturas en `documents/04_testing/evidencias/YYYY-MM-DD/`.
 
 | ID | Módulo | Resultado | Observaciones | Evidencia |
 |----|--------|-----------|---------------|-----------|

@@ -34,6 +34,9 @@ pytest -v
 src/lib/equipoTipo.test.js          → Utilidades tipo de equipo (JS)
 backend/tests/MantenimientoTest.php → Sync telemetría post-mantenimiento
 backend/tests/DashboardConsultaTest.php → Filtros consulta dashboard (SQLite)
+backend/tests/UsuarioTest.php → Conteo de roles y ENUM de roles
+backend/tests/AuthMiddlewareTest.php → Comprobación de rol en payload JWT
+backend/tests/EquipoPlantillaTest.php → Alineación fila ejemplo vs encabezados Excel
 ml/tests/test_features.py           → Pipeline features ML
 ml/tests/test_ml_schemas.py         → Validación Pydantic API ML
 ```

@@ -1,6 +1,6 @@
 # Pruebas funcionales — Gestión MPA V2
 
-Documentación para validar el sistema antes de entrega o despliegue.
+Documentación para validar el sistema antes de entrega o despliegue. Corresponde a la **fase de pruebas** del Prompt-Centered SDLC v1.2.
 
 ## Contenido
 
@@ -12,7 +12,7 @@ Documentación para validar el sistema antes de entrega o despliegue.
 
 ## Versión bajo prueba
 
-**0.8.0** (Sprint 7 en progreso) — incluye telemetría, mantenimiento ampliado, consulta en dashboard e integración ML v1.
+**0.9.1** — incluye telemetría, mantenimiento ampliado, consulta en dashboard, integración ML, ficha predictiva, RBAC de usuarios en API y plantilla Excel alineada.
 
 ## Orden recomendado de ejecución
 

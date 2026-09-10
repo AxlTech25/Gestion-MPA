@@ -1,15 +1,15 @@
 # Plan de pruebas funcionales — Gestión MPA V2
 
-**Versión del plan:** 1.0  
-**Versión del sistema:** 0.8.0  
-**Fecha:** 2026-06-21  
+**Versión del plan:** 1.1  
+**Versión del sistema:** 0.9.1  
+**Fecha:** 2026-09-09  
 **Alcance:** Validación funcional end-to-end de la aplicación web (React + API PHP V2 + MySQL + microservicio ML opcional)
 
 ---
 
 ## 1. Objetivo
 
-Verificar que las funcionalidades implementadas hasta la versión **0.8.0** cumplen los requisitos de negocio y operan correctamente desde la interfaz de usuario, incluyendo:
+Verificar que las funcionalidades implementadas hasta la versión **0.9.1** cumplen los requisitos de negocio y operan correctamente desde la interfaz de usuario, incluyendo:
 
 - Autenticación y control de acceso
 - Gestión de inventario y fichas técnicas
@@ -131,6 +131,11 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 - **Pasos:** Login correcto → recargar página (F5).
 - **Resultado esperado:** Usuario permanece autenticado.
 
+#### AUTH-007 — Mutaciones de usuarios solo Administrador
+- **Precondición:** Token JWT de un usuario con rol Técnico (o Practicante).
+- **Pasos:** `PUT` y `DELETE` `/gestion_mpa/backend/api/v2/usuarios?id=1` con Authorization Bearer del técnico.
+- **Resultado esperado:** HTTP 403 JSON; el usuario objetivo no cambia ni se elimina.
+
 ---
 
 ### 4.2 Configuración (CFG)
@@ -155,6 +160,21 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 - **Precondición:** Área creada en CFG-002.
 - **Pasos:** Abrir registro de equipo en Inventario → desplegable Área.
 - **Resultado esperado:** Nueva área visible y seleccionable.
+
+#### CFG-006 — Editar personal (Administrador)
+- **Precondición:** Sesión Administrador; existe un usuario Técnico de prueba.
+- **Pasos:** Configuración → Personal → Editar → cambiar nombre o rol → Guardar.
+- **Resultado esperado:** Cambio visible en la tabla tras recargar.
+
+#### CFG-007 — Eliminar último Administrador bloqueado
+- **Precondición:** Solo un usuario con rol Administrador.
+- **Pasos:** Intentar eliminar ese administrador (UI o `DELETE /usuarios?id=`).
+- **Resultado esperado:** Mensaje de rechazo; el usuario permanece. HTTP 409 si es por API.
+
+#### CFG-008 — Técnico no ve Configuración
+- **Precondición:** Sesión con rol Técnico.
+- **Pasos:** Revisar Navbar e intentar abrir `/v2/configuracion`.
+- **Resultado esperado:** Sin enlace Configuración; redirección al dashboard.
 
 ---
 
@@ -194,7 +214,7 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 
 #### INV-009 — Descargar plantilla Excel
 - **Pasos:** Botón plantilla de carga masiva (si visible).
-- **Resultado esperado:** Archivo `.xlsx` descargado.
+- **Resultado esperado:** Archivo `.xlsx` descargado. Encabezados incluyen `color`. La fila de ejemplo tiene `Negro` (o un color) en `color` y el número de serie en `numero_serie`, no desplazados.
 
 #### INV-010 — Carga masiva válida
 - **Precondición:** Plantilla con filas válidas.
@@ -395,7 +415,7 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 - **Pasos:** Nuevo mantenimiento correctivo para equipo con predicción.
 - **Resultado esperado:** Banner «Sugerencia IA» con categoría y probabilidad.
 
-#### ML-006 — Proxy batch inventario (regresión Sprint 6)
+#### ML-006 — Proxy batch inventario (regresión incremento 6)
 - **Verificación técnica opcional:** Network tab → llamada batch ML con body `{}` no `[]`.
 - **Resultado esperado:** HTTP 200; datos de riesgo parseados.
 
@@ -427,16 +447,20 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 - **Verificación técnica:** Preflight OPTIONS desde frontend.
 - **Resultado esperado:** HTTP 200; peticiones subsecuentes OK.
 
+#### REG-006 — Plantilla Excel alineada (regresión color)
+- **Pasos:** Descargar plantilla → abrir primera fila de datos.
+- **Resultado esperado:** 14 columnas; `color` y `numero_serie` no intercambiados. Caso unitario `EquipoPlantillaTest`.
+
 ---
 
-## 5. Fuera de alcance (v0.8.0)
+## 5. Fuera de alcance (v0.9.1)
 
 No bloquear release funcional si fallan únicamente estos ítems pendientes de roadmap:
 
 | Ítem | Referencia |
 |------|------------|
-| Reentrenamiento modelo ML v2 con telemetría real | Sprint 7 pendiente |
-| Bloque evaluación predictiva en `FichaTecnicaPanel` | Sprint 7 pendiente |
+| Reentrenamiento modelo ML v2 con telemetría real | Incremento 7 pendiente |
+| Bloque evaluación predictiva en `FichaTecnicaPanel` | Incremento 7 pendiente |
 | Tabla `v2_metricas_equipo` | Fase 2 |
 | Recálculo automático ML al guardar mantenimiento | Diseño futuro |
 | Edición/eliminación de equipos vía API PUT/DELETE | HTTP 501 actual |
@@ -458,7 +482,7 @@ Marcar casos relacionados como **N/A** o **BLOQUEADO** con referencia al ítem.
 ### Flujo
 
 1. Registrar en plantilla (`plantilla_registro_resultados.md`).
-2. Captura en `documents/pruebas/evidencias/YYYY-MM-DD/`.
+2. Captura en `documents/04_testing/evidencias/YYYY-MM-DD/`.
 3. Corregir → re-ejecutar caso afectado + regresión del módulo.
 
 ---
@@ -516,10 +540,10 @@ Se considera la ronda de pruebas **aprobada** cuando:
 
 ## 10. Referencias
 
-- `documents/changelog.md` — versiones 0.6.0 a 0.8.0
-- `documents/sprints/sprint_6.md` — ML predictivo
-- `documents/sprints/sprint_7_extension_schema_v2.md` — telemetría y mantenimiento Fase 7
-- `documents/architecture.md` — stack y rutas API
+- `documents/05_mantenimiento/changelog.md` — versiones 0.6.0 a 0.9.1
+- `documents/03_implementacion/incrementos/incremento_6.md` — ML predictivo
+- `documents/03_implementacion/incrementos/incremento_7_extension_schema_v2.md` — telemetría y mantenimiento Fase 7
+- `documents/02_diseno/architecture.md` — stack y rutas API
 - `ml/README.md` — puesta en marcha FastAPI
 
 ---

@@ -1,7 +1,7 @@
 # Plan de pruebas unitarias — Gestión MPA V2
 
-**Versión:** 1.0  
-**Fecha:** 2026-06-21  
+**Versión:** 1.1  
+**Fecha:** 2026-09-09  
 **Alcance:** Lógica aislada en frontend (JS), backend (PHP) y microservicio ML (Python)
 
 ---
@@ -57,12 +57,28 @@ Comprobar automáticamente que las reglas de negocio críticas funcionan sin dep
 
 **Nota:** Usa SQLite en memoria; no requiere MySQL ni XAMPP.
 
+### 2.3b Backend — `backend/tests/UsuarioTest.php` y `AuthMiddlewareTest.php`
+
+| ID | Caso | Resultado esperado |
+|----|------|-------------------|
+| UT-PHP-014 | `countByRol('Administrador')` | 1 en fixture |
+| UT-PHP-015 | `Usuario::ROLES_VALIDOS` | Administrador, Tecnico, Practicante |
+| UT-PHP-016 | `tieneRol` Administrador | `true` solo para ese rol |
+| UT-PHP-017 | `tieneRol` Técnico vs Administrador | `false` |
+| UT-PHP-018 | Payload sin `rol` | `false` |
+
+### 2.3c Backend — `backend/tests/EquipoPlantillaTest.php`
+
+| ID | Caso | Resultado esperado |
+|----|------|-------------------|
+| UT-PHP-019 | Fila ejemplo vs encabezados | Misma longitud; serie en `numero_serie`, no en `color` |
+
 ### 2.4 ML — `ml/tests/test_features.py`
 
 | ID | Caso | Resultado esperado |
 |----|------|-------------------|
 | UT-ML-001 | Cantidad de `FEATURE_COLUMNS` | numéricas + categóricas |
-| UT-ML-002 | Telemetría Sprint 7 en numéricas | 6 columnas presentes |
+| UT-ML-002 | Telemetría incremento 7 en numéricas | 6 columnas presentes |
 | UT-ML-003 | `preparar_dataframe` sin columnas | Numéricas = 0, categóricas = Desconocido |
 | UT-ML-004 | Nulos y strings vacíos | Coerción a 0 |
 | UT-ML-005 | No muta DataFrame original | Copia independiente |
@@ -130,7 +146,7 @@ pytest tests/test_features.py -v
 | Componentes React completos | Requiere Testing Library + mocks API | Tests de componente |
 | `Equipo::normalizeTipo` | Método privado | Extraer a clase utilitaria o test vía importación |
 | Inferencia ML end-to-end | Depende de `.joblib` en disco | Test con modelo fixture |
-| Auth JWT | Depende de secret y headers | Test middleware aislado |
+| Auth JWT (decode HTTP) | Depende de secret y headers | Cubierto parcialmente: `tieneRol` en `AuthMiddlewareTest` |
 
 ---
 
