@@ -14,7 +14,7 @@ SRC = BASE / "MATRIZ-DOBLE-ENTRADA-V3-AMARO-JIANG-MONEY-ME.xlsx"
 DST = BASE / "MATRIZ-DOBLE-ENTRADA-V3-SIGEMAD-MPA.xlsx"
 
 REPO = "https://github.com/AxlTech25/Gestion-MPA"
-COMMIT_HEAD = "7a1c402"  # snapshot origin/main al documentar la matriz
+COMMIT_HEAD = "56e7134"  # último commit de documentación de fases antes de actualizar la matriz
 RESPONSABLE = "AxlTech25"
 ROL = "Desarrollador"
 
@@ -93,7 +93,7 @@ FUNCIONES = [
         "completa": "src/features/auth/Login.jsx",
         "commit": "5ce7575",
         "test": "documents/04_testing/plan_pruebas_funcionales.md (casos AUTH)",
-        "obs": "Commit 5ce7575 (migración V2 JWT). También AuthMiddleware.php, Jwt.php y AuthContext.jsx. Historial Git agregado (no un commit por prompt). Sin prueba unitaria de login.",
+        "obs": "Origen JWT: 5ce7575. Claim nombre_completo en login: 4e08b9e [I-001]. También AuthMiddleware.php, Jwt.php y AuthContext.jsx. Sin prueba unitaria de login.",
     },
     {
         "id": "F-002",
@@ -115,9 +115,9 @@ FUNCIONES = [
         "ruta": "src/features/configuracion/",
         "archivo": "ConfiguracionPage.jsx",
         "completa": "src/features/configuracion/components/ConfiguracionPage.jsx",
-        "commit": "9950f99",
+        "commit": "4e08b9e",
         "test": "documents/04_testing/plan_pruebas_funcionales.md (casos CFG)",
-        "obs": "Commit 9950f99 (estructura inicial; incremento 5 v0.5.0 via en ese lote). API: AreaController.php y UsuarioController.php.",
+        "obs": "SHA vigente: 4e08b9e [I-001] (nombre completo y UI de usuarios). Origen del módulo: 9950f99. API: AreaController.php y UsuarioController.php.",
     },
     {
         "id": "F-003",
@@ -139,9 +139,9 @@ FUNCIONES = [
         "ruta": "backend/api/v2/controllers/",
         "archivo": "EquipoController.php",
         "completa": "backend/api/v2/controllers/EquipoController.php",
-        "commit": "9950f99",
+        "commit": "f086a63",
         "test": "src/lib/equipoTipo.test.js",
-        "obs": "Commit 9950f99 (origen del CRUD). Evoluciones posteriores en 06d75b1 y 1c63dbe. Test unitario solo de tipo de equipo (Vitest).",
+        "obs": "SHA vigente: f086a63 [I-001] (evaluación, PDF y esquema). Origen del CRUD: 9950f99. Test unitario solo de tipo de equipo (Vitest).",
     },
     {
         "id": "F-004",
@@ -163,9 +163,9 @@ FUNCIONES = [
         "ruta": "backend/api/v2/controllers/",
         "archivo": "FichaTecnicaController.php",
         "completa": "backend/api/v2/controllers/FichaTecnicaController.php",
-        "commit": "9950f99",
+        "commit": "f086a63",
         "test": "documents/04_testing/plan_pruebas_funcionales.md (casos FIC)",
-        "obs": "Commit 9950f99 (origen). UI: FichaTecnicaPage.jsx y FichaTecnicaPanel.jsx. Bloque predictivo en 8b20337 (v0.9.0).",
+        "obs": "SHA vigente: f086a63 [I-001] (FichaTecnicaController y panel). Origen: 9950f99. Bloque predictivo: 8b20337 (v0.9.0).",
     },
     {
         "id": "F-005",
@@ -259,9 +259,9 @@ FUNCIONES = [
         "ruta": "backend/api/v2/controllers/",
         "archivo": "ReporteController.php",
         "completa": "backend/api/v2/controllers/ReporteController.php",
-        "commit": "5ce7575",
+        "commit": "f086a63",
         "test": "documents/04_testing/plan_pruebas_funcionales.md (casos RPT)",
-        "obs": "Commit 5ce7575 (descarga PDF con JWT). Origen del controlador: 9950f99. Sin prueba unitaria del PDF.",
+        "obs": "SHA vigente: f086a63 [I-001] (ReporteController y downloadPdf). JWT en blob: 5ce7575. Origen: 9950f99.",
     },
 ]
 
@@ -285,7 +285,7 @@ PROMPTS = [
         "estado": "Aprobado",
         "resultado": "API V2 + features React de auth, configuración, inventario, ficha, mantenimiento, dashboard y reportes",
         "evidencia": "prompts/03_implementacion/I-001_api_auth_inventario_v1.md",
-        "evidencia_commits": "Código: 9950f99 (origen), 5ce7575 (JWT/dashboard). Ver columna Commit de F-001 a F-006 y F-008.",
+        "evidencia_commits": "Vigente: f086a63 (inventario/ficha/PDF), 4e08b9e (configuración). Origen: 9950f99, JWT: 5ce7575.",
     },
     {
         "id": "I-002",
