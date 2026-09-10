@@ -4,7 +4,20 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 
-## [0.9.0] - Cierre Sprint 7 — Fase 2 ML y ficha predictiva
+## [0.9.1] - 2026-09-09 — Mitigación RBAC usuarios y plantilla Excel
+
+### Añadido
+- **HU-AUTH-005:** `AuthMiddleware::requireRole()` aplica autorización por rol en la API (además del JWT).
+- **HU-CFG-006:** `POST`/`PUT`/`PATCH`/`DELETE` `/usuarios` restringidos a **Administrador**. La API rechaza autoeliminación y la eliminación o degradación del último administrador.
+- Ruta `/v2/configuracion` y enlace del Navbar visibles solo para Administrador.
+
+### Arreglado
+- **HU-INV-004:** La fila de ejemplo de `plantilla_carga_equipos.xlsx` incluye `color`; `numero_serie` y `area` ya no quedan desplazados.
+
+### Seguridad
+- Un Técnico o Practicante autenticado ya no puede crear, editar roles/contraseñas ni eliminar cuentas llamando a `/api/v2/usuarios` de forma directa.
+
+## [0.9.0] - Cierre incremento 7 — Fase 2 ML y ficha predictiva
 
 ### Añadido
 - **HU-FIC-008:** Bloque «Evaluación predictiva» en `FichaTecnicaPanel.jsx` (score, nivel, factores).
@@ -17,7 +30,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 - `MlController.php` refactorizado para usar `MlService`.
 - `train_model.py` acepta `--version v2`.
 
-## [0.8.0] - Sprint 7 (Completado) — Telemetría ML y mantenimiento estructurado
+## [0.8.0] - Incremento 7 (Completado) — Telemetría ML y mantenimiento estructurado
 
 ### Añadido
 - **Base de datos Fase 7:** columnas de telemetría en `v2_equipos` (`horas_uso`, `errores_smart`, `contador_paginas`, `salud_bateria`, `ultima_temp_cpu`, `ultima_temp_disco`, `fecha_ultimo_mantenimiento`).
@@ -27,13 +40,13 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 - **Backend:** `Equipo::syncTelemetria()`, sincronización automática del snapshot del equipo tras registrar mantenimiento.
 - **Frontend:** sección telemetría en `EquipoForm.jsx`; formulario Fase 7 en `MantenimientoForm.jsx` (campos condicionales por tipo de intervención).
 - **ML:** 6 features nuevas en `features.py`, `dataset.py` y `build_dataset.py` (`horas_uso`, `errores_smart`, `salud_bateria`, `contador_paginas`, `ultima_temp_cpu`, `ultima_temp_disco`).
-- **Documentación:** `documents/ml/mantenimiento_predictivo_analisis.md`, `documents/sprints/sprint_7_extension_schema_v2.md`.
+- **Documentación:** `documents/02_diseno/ml/mantenimiento_predictivo_analisis.md`, `documents/03_implementacion/incrementos/incremento_7_extension_schema_v2.md`.
 
 ### Cambiado
 - `v2_estructura.sql` actualizado para instalaciones nuevas con esquema Fase 7.
 - `ml/data/README.md` ampliado con diccionario de telemetría.
 
-## [0.7.0] - Sprint 6 (Completado) — Machine Learning Predictivo
+## [0.7.0] - Incremento 6 (Completado) — Machine Learning Predictivo
 
 ### Añadido
 - **Dataset A:** CSV sintético 200 equipos (`ml/data/synthetic/equipos_riesgo_v200.csv`), scripts de generación, export MySQL y feature engineering (`ml/scripts/`).
@@ -43,7 +56,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 - **Base de datos:** Tabla `v2_predicciones_ml` (`backend/sql/v2_ml_predicciones.sql`, migración `migrate_ml_predicciones.php`).
 - **Frontend:** `mlService.js`, `RiesgoBadge.jsx`, badges de riesgo en inventario, panel **Alertas predictivas** en dashboard (top 10), sugerencia de categoría en `MantenimientoForm.jsx`.
 - **Herramientas:** `verify_sprint6_ml.py`, `predict_cli.py`, `ml/README.md`.
-- Documentación actualizada en `documents/sprints/sprint_6.md` y `documents/architecture.md`.
+- Documentación actualizada en `documents/03_implementacion/incrementos/incremento_6.md` y `documents/02_diseno/architecture.md`.
 
 ### Cambiado
 - `InventarioPage.jsx`: columna **Estado** separada de **Riesgo ML** (semáforo predictivo).
@@ -67,42 +80,42 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 - `AuthContext` reemplaza Zustand como gestor de sesión (token + usuario).
 - Descarga de PDF autenticada vía blob en lugar de `window.open` directo.
 
-## [0.5.0] - Sprint 5 (Completado)
+## [0.5.0] - Incremento 5 (Completado)
 ### Añadido
 - **Backend API:** Modelos, Controladores y Rutas (`/api/v2/areas`, `/api/v2/usuarios`) para el CRUD Organizacional. Encriptación BCRYPT para nuevo personal.
 - **Frontend React:** Nuevo módulo de `ConfiguracionPage.jsx` con pestañas duales para administrar Áreas y Personal.
 - **Frontend React:** Modales de registro de áreas y personal integrados con `organizacionService.js`.
 - **Frontend React:** `EquipoForm.jsx` ahora se alimenta dinámicamente de la base de datos para mostrar las áreas reales y asignar responsables al equipo.
-- Resumen detallado en `documents/sprints/sprint_5.md`.
+- Resumen detallado en `documents/03_implementacion/incrementos/incremento_5.md`.
 
-## [0.4.0] - Sprint 4 (Completado)
+## [0.4.0] - Incremento 4 (Completado)
 ### Añadido
 - **Backend:** Instalación de `dompdf/dompdf` vía Composer para generación de documentos.
 - **Backend API:** `ReporteController.php` y ruta `/api/v2/reportes/equipo/{id}` para descargar Fichas Técnicas.
 - **Frontend React:** Filtros combinados en tiempo real (Texto, Tipo, Estado) en `InventarioPage.jsx`.
 - **Frontend React:** Botón de descarga de PDF integrado en la tabla de inventario.
-- Resumen en `documents/sprints/sprint_4.md`.
+- Resumen en `documents/03_implementacion/incrementos/incremento_4.md`.
 
-## [0.3.0] - Sprint 3 (Completado)
+## [0.3.0] - Incremento 3 (Completado)
 ### Añadido
 - **Backend API:** Modelo `Mantenimiento.php`, Controlador y Rutas para gestionar historiales.
 - **Frontend React:** `MantenimientoPage.jsx` con diseño de Línea de Tiempo (Timeline).
 - **Frontend React:** Modal interactivo para registrar mantenimientos con selección de `categoria_falla_id`.
 - **Frontend React:** Servicio Axios para Mantenimientos (`mantenimientoService.js`).
-- Resumen en `documents/sprints/sprint_3.md`.
+- Resumen en `documents/03_implementacion/incrementos/incremento_3.md`.
 
-## [0.2.0] - Sprint 2 (Completado)
+## [0.2.0] - Incremento 2 (Completado)
 ### Añadido
 - **Backend API:** Modelo `Equipo.php`, `EquipoController.php` y rutas `/api/v2/equipos` (GET y POST).
 - **Frontend React:** `InventarioPage` rediseñado con Tailwind y tabla moderna.
 - **Frontend React:** Formulario modal `EquipoForm` para alta de equipos con campos ML-ready (numéricos y fechas).
 - **Frontend React:** Cliente HTTP con Axios (`equiposService.js`).
-- Resumen del Sprint en `documents/sprints/sprint_2.md`.
+- Resumen del incremento en `documents/03_implementacion/incrementos/incremento_2.md`.
 
-## [0.1.0] - Sprint 1 (Completado)
+## [0.1.0] - Incremento 1 (Completado)
 ### Añadido
 - Carpeta `documents/` para centralizar la documentación técnica.
-- Documento de arquitectura (`architecture.md`) que define la estructura V2 para soportar Machine Learning y API REST.
+- Documento de arquitectura (`documents/02_diseno/architecture.md`) que define la estructura V2 para soportar Machine Learning y API REST.
 - Nuevo esquema de base de datos (`v2_estructura.sql`) optimizado para ML (Normalización, tipos de datos correctos, historial estructurado).
 
 ### Cambiado
