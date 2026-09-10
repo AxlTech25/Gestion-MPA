@@ -51,6 +51,7 @@ try {
         'sub'  => (int) $user['id'],
         'rol'  => $user['rol'],
         'user' => $user['usuario'],
+        'nombre_completo' => $user['nombre_completo'],
     ];
 
     $token = JWT::encode($payload, JwtConfig::getSecret(), 'HS256');

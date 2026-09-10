@@ -3,6 +3,7 @@ import { organizacionService } from '../services/organizacionService';
 import { Users, Building2, PlusCircle } from 'lucide-react';
 import { AreaForm } from './AreaForm';
 import { UsuarioForm } from './UsuarioForm';
+import { useAuth } from '../../../context/AuthContext';
 
 export const ConfiguracionPage = () => {
   const [activeTab, setActiveTab] = useState('areas');
@@ -12,10 +13,63 @@ export const ConfiguracionPage = () => {
   
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [isUsuarioModalOpen, setIsUsuarioModalOpen] = useState(false);
+  const [selectedUsuario, setSelectedUsuario] = useState(null);
+  const { user: authUser } = useAuth();
 
   useEffect(() => {
     cargarDatos();
   }, [activeTab]);
+
+  const handleDelete = async (id) => {
+    // Esta función ahora se usa internamente para realizar la eliminación
+    try {
+      const res = await organizacionService.deleteUsuario(id);
+      if (res.success) {
+        cargarDatos();
+      } else {
+        alert(res.message || 'No se pudo eliminar el usuario.');
+      }
+    } catch (e) {
+      console.error('Error eliminando usuario', e);
+      alert('Error eliminando usuario.');
+    }
+  };
+
+  // Estado para modal de confirmación
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState(null);
+
+  const requestDelete = (user) => {
+    // Evitar que un administrador se elimine a sí mismo
+    if (authUser && authUser.id === user.id) {
+      alert('No puedes eliminar tu propia cuenta mientras estés autenticado.');
+      return;
+    }
+
+    // Evitar eliminar el último admin
+    if (user.rol === 'Administrador') {
+      const adminCount = usuarios.filter(u => u.rol === 'Administrador').length;
+      if (adminCount <= 1) {
+        alert('No se puede eliminar al último usuario con rol Administrador.');
+        return;
+      }
+    }
+
+    setConfirmTarget(user);
+    setConfirmModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!confirmTarget) return;
+    await handleDelete(confirmTarget.id);
+    setConfirmTarget(null);
+    setConfirmModalOpen(false);
+  };
+
+  const cancelDelete = () => {
+    setConfirmTarget(null);
+    setConfirmModalOpen(false);
+  };
 
   const cargarDatos = async () => {
     setLoading(true);
@@ -92,10 +146,11 @@ export const ConfiguracionPage = () => {
                   <th className="px-6 py-4 font-medium">Nombre Completo</th>
                   <th className="px-6 py-4 font-medium">Usuario</th>
                   <th className="px-6 py-4 font-medium">Rol en TI</th>
+                  {authUser?.rol === 'Administrador' && <th className="px-6 py-4 font-medium">Acciones</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {usuarios.length === 0 ? <tr><td colSpan="3" className="text-center py-10">No hay personal de TI registrado.</td></tr> :
+                {usuarios.length === 0 ? <tr><td colSpan={authUser?.rol === 'Administrador' ? 4 : 3} className="text-center py-10">No hay personal de TI registrado.</td></tr> :
                   usuarios.map(u => (
                     <tr key={u.id} className="hover:bg-slate-50">
                       <td className="px-6 py-4 font-medium text-slate-800">{u.nombre_completo}</td>
@@ -103,6 +158,14 @@ export const ConfiguracionPage = () => {
                       <td className="px-6 py-4">
                         <span className={`px-2 py-1 rounded text-xs font-medium ${u.rol === 'Administrador' ? 'bg-purple-100 text-purple-700' : u.rol === 'Tecnico' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'}`}>{u.rol}</span>
                       </td>
+                      {authUser?.rol === 'Administrador' && (
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => { setSelectedUsuario(u); setIsUsuarioModalOpen(true); }} className="text-sm px-3 py-1 bg-yellow-100 text-yellow-800 rounded">Editar</button>
+                            <button onClick={() => requestDelete(u)} className="text-sm px-3 py-1 bg-red-100 text-red-700 rounded">Eliminar</button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))
                 }
@@ -112,8 +175,39 @@ export const ConfiguracionPage = () => {
         )}
       </div>
 
-      {isAreaModalOpen && <AreaForm onClose={() => setIsAreaModalOpen(false)} onSuccess={cargarDatos} />}
-      {isUsuarioModalOpen && <UsuarioForm onClose={() => setIsUsuarioModalOpen(false)} onSuccess={cargarDatos} areas={areas} />}
+      {/* Modales */}
+      {isAreaModalOpen && (
+        <AreaForm
+          onClose={() => setIsAreaModalOpen(false)}
+          onSuccess={cargarDatos}
+        />
+      )}
+
+      {isUsuarioModalOpen && (
+        <UsuarioForm
+          onClose={() => { setIsUsuarioModalOpen(false); setSelectedUsuario(null); }}
+          onSuccess={cargarDatos}
+          areas={areas}
+          user={selectedUsuario}
+        />
+      )}
+
+      {/* Modal de confirmación personalizado */}
+      {confirmModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-6">
+              <h3 className="text-lg font-bold">Confirmar eliminación</h3>
+              <p className="text-sm text-slate-600 mt-2">¿Estás seguro de eliminar a <strong className="text-slate-800">{confirmTarget?.nombre_completo}</strong>? Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="px-6 py-4 bg-slate-50 flex justify-end gap-3">
+              <button onClick={cancelDelete} className="px-4 py-2 text-sm text-slate-600">Cancelar</button>
+              <button onClick={confirmDelete} className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

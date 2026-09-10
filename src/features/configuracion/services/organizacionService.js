@@ -20,4 +20,14 @@ export const organizacionService = {
     const response = await api.post('/usuarios', data);
     return response.data;
   },
+
+  updateUsuario: async (id, data) => {
+    const response = await api.put(`/usuarios?id=${id}`, data);
+    return response.data;
+  },
+
+  deleteUsuario: async (id) => {
+    const response = await api.delete(`/usuarios?id=${id}`);
+    return response.data;
+  },
 };

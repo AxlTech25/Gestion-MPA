@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { organizacionService } from '../services/organizacionService';
 
-export const UsuarioForm = ({ onClose, onSuccess, areas }) => {
+export const UsuarioForm = ({ onClose, onSuccess, areas, user }) => {
   const [formData, setFormData] = useState({
     nombre_completo: '',
     usuario: '',
     password: '',
     rol: 'Practicante',
-    area_id: areas.length > 0 ? areas[0].id : ''
+    area_id: ''
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setFormData({
+      nombre_completo: user?.nombre_completo || '',
+      usuario: user?.usuario || '',
+      password: '',
+      rol: user?.rol || 'Practicante',
+      area_id: user?.area_id || (areas.length > 0 ? areas[0].id : '')
+    });
+  }, [user, areas]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -18,7 +28,12 @@ export const UsuarioForm = ({ onClose, onSuccess, areas }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await organizacionService.createUsuario(formData);
+      let res;
+      if (user && user.id) {
+        res = await organizacionService.updateUsuario(user.id, formData);
+      } else {
+        res = await organizacionService.createUsuario(formData);
+      }
       if (res.success) {
         onSuccess();
         onClose();
@@ -26,7 +41,7 @@ export const UsuarioForm = ({ onClose, onSuccess, areas }) => {
         alert(res.message);
       }
     } catch (error) {
-      alert("Error al registrar usuario.");
+      alert("Error al registrar/actualizar usuario.");
     } finally {
       setLoading(false);
     }
@@ -36,7 +51,7 @@ export const UsuarioForm = ({ onClose, onSuccess, areas }) => {
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
         <div className="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
-          <h3 className="text-lg font-bold text-slate-800">Registrar Personal</h3>
+          <h3 className="text-lg font-bold text-slate-800">{user ? 'Editar Personal' : 'Registrar Personal'}</h3>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X size={20} /></button>
         </div>
         <div className="p-6">
@@ -54,8 +69,8 @@ export const UsuarioForm = ({ onClose, onSuccess, areas }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Contraseña *</label>
-              <input required type="password" name="password" value={formData.password} onChange={handleChange}
+              <label className="text-sm font-medium text-slate-700">Contraseña {user ? '(dejar vacío para no cambiar)' : '*'}</label>
+              <input type="password" name="password" value={formData.password} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
@@ -72,7 +87,7 @@ export const UsuarioForm = ({ onClose, onSuccess, areas }) => {
         <div className="px-6 py-4 border-t bg-slate-50 flex justify-end gap-3">
           <button onClick={onClose} type="button" className="px-4 py-2 text-sm text-slate-600">Cancelar</button>
           <button form="usuario-form" type="submit" disabled={loading} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-            {loading ? 'Guardando...' : 'Crear Usuario'}
+            {loading ? 'Guardando...' : user ? 'Actualizar Usuario' : 'Crear Usuario'}
           </button>
         </div>
       </div>
