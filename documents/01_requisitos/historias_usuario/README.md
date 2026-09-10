@@ -8,7 +8,7 @@ Documentación de requisitos desde la perspectiva del usuario final y los roles 
 |-----------|-------------|
 | [personas.md](./personas.md) | Perfiles de usuario y necesidades |
 | [historias_por_epica.md](./historias_por_epica.md) | Catálogo completo de historias con criterios de aceptación |
-| [matriz_trazabilidad.md](./matriz_trazabilidad.md) | Relación historia ↔ sprint ↔ versión |
+| [matriz_trazabilidad.md](./matriz_trazabilidad.md) | Relación historia ↔ incremento SDLC ↔ versión |
 
 ## Convención de identificadores
 
@@ -33,14 +33,14 @@ Cada historia sigue la plantilla:
 
 > **Como** [rol], **quiero** [acción], **para** [beneficio].
 
-Incluye: prioridad (Alta/Media/Baja), estado (Implementada / En progreso / Pendiente), sprint de origen y criterios de aceptación verificables.
+Incluye: prioridad (Alta/Media/Baja), estado (Implementada / En progreso / Pendiente), incremento SDLC de origen y criterios de aceptación verificables.
 
-## Estado global (v0.9.0)
+## Estado global (v0.9.1)
 
 | Épica | Implementadas | Pendientes |
 |-------|---------------|------------|
-| Autenticación | 4 | 0 |
-| Configuración | 5 | 0 |
+| Autenticación | 5 | 0 |
+| Configuración | 6 | 0 |
 | Inventario | 9 | 0 |
 | Ficha técnica | 8 | 0 |
 | Mantenimiento | 12 | 0 |
@@ -50,6 +50,7 @@ Incluye: prioridad (Alta/Media/Baja), estado (Implementada / En progreso / Pendi
 
 ## Relación con otras carpetas
 
-- Sprints técnicos: `documents/sprints/`
-- Pruebas funcionales: `documents/pruebas/plan_pruebas_funcionales.md`
-- Pruebas unitarias: `documents/pruebas/unitarias/`
+- Metodología: `documents/metodologia.md`
+- Incrementos de implementación: `documents/03_implementacion/incrementos/`
+- Pruebas funcionales: `documents/04_testing/plan_pruebas_funcionales.md`
+- Pruebas unitarias: `documents/04_testing/unitarias/`

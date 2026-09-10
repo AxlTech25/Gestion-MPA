@@ -1,8 +1,8 @@
 # Historias de usuario por épica
 
 **Proyecto:** Sigemad MPA V2  
-**Versión de referencia:** 0.9.0  
-**Última actualización:** 2026-06-21
+**Versión de referencia:** 0.9.1  
+**Última actualización:** 2026-09-09
 
 ---
 
@@ -14,7 +14,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 | Personas | P1, P2, P5 |
 
@@ -32,7 +32,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -47,7 +47,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -62,12 +62,30 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
 - [ ] El botón «Salir» elimina el token y redirige al login.
 - [ ] Tras cerrar sesión no se puede acceder a rutas privadas sin volver a autenticarse.
+
+---
+
+### HU-AUTH-005 — Autorizar mutaciones de usuarios en la API
+**Como** administrador, **quiero** que solo mi rol pueda crear, editar o eliminar cuentas vía API, **para** que un técnico no escale privilegios saltándose la interfaz.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 0.9.1 |
+| Estado | Implementada |
+| Personas | P1 |
+
+**Criterios de aceptación:**
+- [ ] `POST`/`PUT`/`PATCH`/`DELETE` `/usuarios` con JWT de Técnico o Practicante responden HTTP 403.
+- [ ] El mismo administrador autenticado no puede eliminarse a sí mismo (HTTP 403).
+- [ ] No se puede eliminar ni degradar al último Administrador (HTTP 409).
+- [ ] `/v2/configuracion` redirige al dashboard si el rol no es Administrador.
 
 ---
 
@@ -79,7 +97,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 5 (0.5.0) |
+| Incremento | 5 (0.5.0) |
 | Estado | Implementada |
 | Personas | P1 |
 
@@ -95,7 +113,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 5 |
+| Incremento | 5 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -110,7 +128,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 5 |
+| Incremento | 5 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -124,7 +142,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 5 |
+| Incremento | 5 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -134,13 +152,31 @@
 
 ---
 
+### HU-CFG-006 — Editar y eliminar personal
+**Como** administrador, **quiero** actualizar o dar de baja personal desde configuración, **para** mantener roles y accesos alineados con el equipo real.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 0.9.1 |
+| Estado | Implementada |
+| Personas | P1 |
+
+**Criterios de aceptación:**
+- [ ] Editar nombre, usuario, rol, área o contraseña (opcional) persiste en BD.
+- [ ] Eliminar pide confirmación y no permite borrar la propia cuenta ni al último Administrador.
+- [ ] Las acciones de edición/eliminación no aparecen para Técnico ni Practicante.
+- [ ] La API aplica las mismas reglas aunque la petición no pase por la UI.
+
+---
+
 ### HU-CFG-005 — Áreas dinámicas en inventario
 **Como** registrador de equipos, **quiero** seleccionar el área desde las áreas configuradas, **para** no depender de valores predefinidos en el formulario.
 
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 5 |
+| Incremento | 5 |
 | Estado | Implementada |
 | Personas | P5 |
 
@@ -158,7 +194,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 2 (0.2.0) |
+| Incremento | 2 (0.2.0) |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -173,7 +209,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 2, 5, 7 |
+| Incremento | 2, 5, 7 |
 | Estado | Implementada |
 | Personas | P5 |
 
@@ -191,7 +227,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 4 (0.4.0) |
+| Incremento | 4 (0.4.0) |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -206,11 +242,12 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | — |
+| Incremento | — |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
-- [ ] Descarga archivo `.xlsx` con columnas esperadas por el importador.
+- [ ] Descarga archivo `.xlsx` con columnas esperadas por el importador, incluida `color`.
+- [ ] La fila de ejemplo tiene el mismo número de columnas que el encabezado (`numero_serie` no cae en `color`).
 
 ---
 
@@ -220,7 +257,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | — |
+| Incremento | — |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -235,7 +272,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 6 (0.7.0) |
+| Incremento | 6 (0.7.0) |
 | Estado | Implementada |
 | Personas | P4 |
 
@@ -251,7 +288,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 3–4 |
+| Incremento | 3–4 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -265,7 +302,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 7 (0.8.0) |
+| Incremento | 7 (0.8.0) |
 | Estado | Implementada |
 | Personas | P4 |
 
@@ -281,7 +318,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | — |
+| Incremento | — |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -298,7 +335,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 4+ |
+| Incremento | 4+ |
 | Estado | Implementada |
 | Personas | P2 |
 
@@ -314,7 +351,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 4 |
+| Incremento | 4 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -328,7 +365,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 4 |
+| Incremento | 4 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -343,7 +380,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 4 |
+| Incremento | 4 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -359,7 +396,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 4 (0.4.0) |
+| Incremento | 4 (0.4.0) |
 | Estado | Implementada |
 | Personas | P3 |
 
@@ -375,7 +412,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 4 |
+| Incremento | 4 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -389,7 +426,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 4 |
+| Incremento | 4 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -403,7 +440,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 7 |
+| Incremento | 7 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -420,7 +457,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 3 (0.3.0) |
+| Incremento | 3 (0.3.0) |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -435,7 +472,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 3 |
+| Incremento | 3 |
 | Estado | Implementada |
 | Personas | P2 |
 
@@ -451,7 +488,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 | Personas | P3 |
 
@@ -468,7 +505,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -483,7 +520,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -498,7 +535,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -514,7 +551,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -530,7 +567,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -545,7 +582,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 6 |
+| Incremento | 6 |
 | Estado | Implementada |
 | Personas | P2, P4 |
 
@@ -562,7 +599,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 7 |
+| Incremento | 7 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -578,7 +615,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 7 |
+| Incremento | 7 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -593,7 +630,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Baja |
-| Sprint | 7 |
+| Incremento | 7 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -609,7 +646,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 | Personas | P1 |
 
@@ -624,7 +661,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -638,7 +675,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -652,7 +689,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -666,7 +703,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 | Personas | P3 |
 
@@ -683,7 +720,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -701,7 +738,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 6 (0.7.0) |
+| Incremento | 6 (0.7.0) |
 | Estado | Implementada |
 | Personas | P4 |
 
@@ -717,7 +754,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 6 |
+| Incremento | 6 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -732,7 +769,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 7 |
+| Incremento | 7 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -747,7 +784,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 6 |
+| Incremento | 6 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -761,7 +798,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 6 |
+| Incremento | 6 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -776,7 +813,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 7 (Fase 2) |
+| Incremento | 7 (Fase 2) |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -790,7 +827,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Baja |
-| Sprint | 7 Fase 2 |
+| Incremento | 7 Fase 2 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -806,7 +843,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 4 |
+| Incremento | 4 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -820,7 +857,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -834,7 +871,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Media |
-| Sprint | 7+ |
+| Incremento | 7+ |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -848,7 +885,7 @@
 | Campo | Valor |
 |-------|-------|
 | Prioridad | Alta |
-| Sprint | 0.6.0 |
+| Incremento | 0.6.0 |
 | Estado | Implementada |
 
 **Criterios de aceptación:**
@@ -868,4 +905,4 @@
 
 ---
 
-*Documento vivo: actualizar al cerrar cada sprint o al implementar nuevas historias.*
+*Documento vivo: actualizar al cerrar cada incremento SDLC o al implementar nuevas historias.*

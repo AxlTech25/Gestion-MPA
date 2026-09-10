@@ -1,41 +1,44 @@
 # Matriz de trazabilidad — Historias de usuario
 
-Relación entre historias de usuario, sprints, versiones y módulos del sistema.
+Relación entre historias de usuario, incrementos SDLC, versiones y módulos del sistema.
 
 **Leyenda estado:** ✅ Implementada · 🔄 En progreso · ⏳ Pendiente
 
 ---
 
-## Por sprint / versión
+## Por incremento / versión
 
-| Sprint | Versión | Historias principales |
-|--------|---------|----------------------|
-| Sprint 1 | 0.1.0 | (Infraestructura — sin HU de usuario directa) |
-| Sprint 2 | 0.2.0 | HU-INV-001, HU-INV-002 |
-| Sprint 3 | 0.3.0 | HU-MNT-001, HU-MNT-002 |
-| Sprint 4 | 0.4.0 | HU-INV-003, HU-FIC-001–007, HU-RPT-001, HU-RPT-004 |
-| Sprint 5 | 0.5.0 | HU-CFG-001–005 |
-| Sprint 6 | 0.6.0 | HU-AUTH-001–004, HU-DSH-001–004, HU-RPT-004 |
-| Sprint 6 ML | 0.7.0 | HU-ML-001, HU-ML-002, HU-ML-004, HU-ML-005, HU-INV-006, HU-MNT-009 |
-| Sprint 7 | 0.8.0 | HU-INV-008, HU-MNT-006–012, HU-DSH-005–006, HU-ML-003 (parcial) |
-| Post-Sprint 7 | 0.8.x | HU-MNT-003–005, HU-MNT-008, HU-RPT-002–003 |
-| Backlog | — | — |
+| Incremento | Versión | Historias principales |
+|------------|---------|----------------------|
+| Incremento 1 | 0.1.0 | (Infraestructura — sin HU de usuario directa) |
+| Incremento 2 | 0.2.0 | HU-INV-001, HU-INV-002 |
+| Incremento 3 | 0.3.0 | HU-MNT-001, HU-MNT-002 |
+| Incremento 4 | 0.4.0 | HU-INV-003, HU-FIC-001–007, HU-RPT-001, HU-RPT-004 |
+| Incremento 5 | 0.5.0 | HU-CFG-001–005 |
+| Incremento 6 | 0.6.0 | HU-AUTH-001–004, HU-DSH-001–004, HU-RPT-004 |
+| Incremento 6 ML | 0.7.0 | HU-ML-001, HU-ML-002, HU-ML-004, HU-ML-005, HU-INV-006, HU-MNT-009 |
+| Incremento 7 | 0.8.0 | HU-INV-008, HU-MNT-006–012, HU-DSH-005–006, HU-ML-003 (parcial) |
+| Post-incremento 7 | 0.8.x | HU-MNT-003–005, HU-MNT-008, HU-RPT-002–003 |
+| Parche seguridad / plantilla | 0.9.1 | HU-AUTH-005, HU-CFG-006, HU-INV-004 (ajuste) |
+| Pendiente | — | — |
 
 ---
 
 ## Matriz completa
 
-| ID | Épica | Estado | Sprint | Módulo UI | API principal |
+| ID | Épica | Estado | Incremento | Módulo UI | API principal |
 |----|-------|--------|--------|-----------|---------------|
 | HU-AUTH-001 | Autenticación | ✅ | 0.6.0 | Login | POST `/auth/login` |
 | HU-AUTH-002 | Autenticación | ✅ | 0.6.0 | App.jsx | Middleware JWT |
 | HU-AUTH-003 | Autenticación | ✅ | 0.6.0 | AuthContext | — |
 | HU-AUTH-004 | Autenticación | ✅ | 0.6.0 | Navbar | — |
+| HU-AUTH-005 | Autenticación | ✅ | 0.9.1 | AuthMiddleware, App.jsx | POST/PUT/DELETE `/usuarios` |
 | HU-CFG-001 | Configuración | ✅ | 5 | ConfiguracionPage | GET `/areas` |
 | HU-CFG-002 | Configuración | ✅ | 5 | AreaForm | POST `/areas` |
 | HU-CFG-003 | Configuración | ✅ | 5 | ConfiguracionPage | GET `/usuarios` |
 | HU-CFG-004 | Configuración | ✅ | 5 | UsuarioForm | POST `/usuarios` |
 | HU-CFG-005 | Configuración | ✅ | 5 | EquipoForm | GET `/areas` |
+| HU-CFG-006 | Configuración | ✅ | 0.9.1 | ConfiguracionPage, UsuarioController | PUT/DELETE `/usuarios` |
 | HU-INV-001 | Inventario | ✅ | 2 | InventarioPage | GET `/equipos` |
 | HU-INV-002 | Inventario | ✅ | 2,5,7 | EquipoForm | POST `/equipos` |
 | HU-INV-003 | Inventario | ✅ | 4 | InventarioPage | — (client-side) |
@@ -89,8 +92,8 @@ Relación entre historias de usuario, sprints, versiones y módulos del sistema.
 
 | Tipo | Documento | Historias cubiertas |
 |------|-----------|---------------------|
-| Funcional | `documents/pruebas/plan_pruebas_funcionales.md` | AUTH, CFG, INV, FIC, MNT, DSH, ML, REG |
-| Unitario | `documents/pruebas/unitarias/plan_pruebas_unitarias.md` | Lógica MNT-010, DSH-005/006, ML-003 |
+| Funcional | `documents/04_testing/plan_pruebas_funcionales.md` | AUTH, CFG, INV, FIC, MNT, DSH, ML, REG |
+| Unitario | `documents/04_testing/unitarias/plan_pruebas_unitarias.md` | Lógica MNT-010, DSH-005/006, ML-003, AUTH-005, INV-004 |
 
 ---
 
@@ -109,4 +112,4 @@ Relación entre historias de usuario, sprints, versiones y módulos del sistema.
 
 ---
 
-*Actualizar esta matriz al cerrar sprints o al cambiar el estado de una historia.*
+*Actualizar esta matriz al cerrar incrementos SDLC o al cambiar el estado de una historia.*
