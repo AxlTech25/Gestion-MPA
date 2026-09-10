@@ -1,4 +1,4 @@
-# Microservicio ML — Gestión MPA (Sprint 6)
+# Microservicio ML — Gestión MPA (incremento 6)
 
 ## Dataset A (implementado)
 
@@ -79,7 +79,7 @@ ml/
 | `DB_PASSWORD` | *(vacío)* |
 | `DB_NAME` | gestion_equipos_mpa_v2 |
 
-### Sprint 6 — estado
+### Incremento 6 — estado
 
 - [x] Dataset A sintético (200 equipos) + scripts de exportación
 - [x] Entrenamiento Scikit-learn (`ml/scripts/train_model.py`)
@@ -88,4 +88,4 @@ ml/
 - [x] Proxy PHP `/api/v2/ml/*`
 - [x] UI badges de riesgo en inventario + alertas dashboard
 
-Ver `documents/sprints/sprint_6.md`.
+Ver `documents/03_implementacion/incrementos/incremento_6.md`.

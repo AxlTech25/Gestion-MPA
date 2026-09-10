@@ -1,9 +1,11 @@
-# Resumen - Sprint 5: Módulo de Configuración Organizacional
+# Incremento 5 — Módulo de configuración organizacional
+
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado
 
-## Objetivos del Sprint
+## Objetivos del incremento
 Proveer al administrador de un panel centralizado para gestionar las áreas de la empresa y el personal técnico/operativo asociado a dichas áreas, de manera que el sistema sea escalable y no dependa de opciones pre-codeadas en el frontend ni de inserciones directas en base de datos.
 
 ## Entregables
@@ -22,3 +24,7 @@ Proveer al administrador de un panel centralizado para gestionar las áreas de l
 
 4. **Documentación**
    - Registro de estos cambios en `changelog.md` bajo la versión **0.5.0**.
+
+## Corrección posterior (0.9.1)
+
+Las mutaciones de `/usuarios` quedaron solo autenticadas (JWT) en el incremento 5. En **0.9.1** se exige rol Administrador en servidor, con bloqueo de autoeliminación y del último administrador. Ver `documents/05_mantenimiento/changelog.md` y `documents/02_diseno/architecture.md`.

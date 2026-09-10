@@ -1,9 +1,11 @@
-# Resumen - Sprint 1: Cimientos y Arquitectura Core
+# Incremento 1 — Cimientos y arquitectura core
+
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado
 
-## Objetivos del Sprint
+## Objetivos del incremento
 Establecer la arquitectura base para la migración progresiva del sistema a la Versión 2 (V2), preparando el terreno para la integración futura de Machine Learning e Inteligencia de Negocios, sin interrumpir la versión actual.
 
 ## Entregables

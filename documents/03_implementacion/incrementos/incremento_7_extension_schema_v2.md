@@ -1,9 +1,11 @@
-# Sprint 7 — Extensión de esquema V2 para ML predictivo (Fase 1)
+# Incremento 7 — Extensión de esquema V2 para ML predictivo (Fase 1)
+
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
 
 **Fecha planificada:** 2026-07-01 — 2026-07-31  
 **Estado:** Completado (Fase 1 + Fase 2)  
 **Versión objetivo:** 0.9.0  
-**Depende de:** Sprint 6 (ML operativo, v0.7.0)
+**Depende de:** Incremento 6 (ML operativo, v0.7.0)
 
 ---
 
@@ -11,7 +13,7 @@
 
 Ampliar `v2_equipos` y `v2_fichas_mantenimiento` con campos de **telemetría básica** y **contexto estructurado de intervención**, sin reemplazar el esquema V2 ni romper el pipeline ML existente.
 
-Esta fase es la implementación concreta acordada tras el análisis documentado en `documents/ml/mantenimiento_predictivo_analisis.md`.
+Esta fase es la implementación concreta acordada tras el análisis documentado en `documents/02_diseno/ml/mantenimiento_predictivo_analisis.md`.
 
 ---
 
@@ -29,7 +31,7 @@ Esta fase es la implementación concreta acordada tras el análisis documentado 
 - Actualización pipeline ML (`features.py`, `dataset.py`, reentrenamiento)
 - Script de migración: `backend/tools/migrate_fase7.php`
 
-### Fuera de alcance (Sprint 8+)
+### Fuera de alcance (incremento 8+)
 
 - Tabla `v2_fallos`
 - Agente automático WMI/SMART
@@ -242,7 +244,7 @@ mysql -u root gestion_equipos_mpa_v2 < backend/sql/v2_extension_fase7.sql
 
 ## Referencias
 
-- Análisis completo: `documents/ml/mantenimiento_predictivo_analisis.md`
+- Análisis completo: `documents/02_diseno/ml/mantenimiento_predictivo_analisis.md`
 - Esquema base: `backend/sql/v2_estructura.sql`
 - Migración Fase 1: `backend/sql/v2_extension_fase7.sql`
-- ML actual: `ml/data/README.md`, `documents/sprints/sprint_6.md`
+- ML actual: `ml/data/README.md`, `documents/03_implementacion/incrementos/incremento_6.md`

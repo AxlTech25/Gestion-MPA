@@ -1,4 +1,6 @@
-# Resumen - Sprint 6: Machine Learning Predictivo
+# Incremento 6 — Machine Learning predictivo
+
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
 
 **Fecha planificada:** 2026-06-21 — 2026-07-15  
 **Fecha de cierre:** 2026-06-21  
@@ -7,22 +9,22 @@
 
 ---
 
-## Objetivos del Sprint
+## Objetivos del incremento
 
-Integrar un **microservicio de Machine Learning** que aproveche los datos estructurados recopilados desde los Sprints 1–5 (y mejoras posteriores) para:
+Integrar un **microservicio de Machine Learning** que aproveche los datos estructurados recopilados desde los incrementos 1–5 (y mejoras posteriores) para:
 
 1. **Predecir el riesgo de falla** de cada equipo del inventario.
 2. **Sugerir la categoría de falla más probable** ante una intervención correctiva.
 3. **Priorizar mantenimiento preventivo** según antigüedad, historial y estado del equipo.
 4. **Exponer resultados en el Dashboard e Inventario** mediante indicadores visuales (semáforo de riesgo).
 
-El sprint cierra el ciclo de valor del diseño **ML-ready** definido en `architecture.md` y en `v2_estructura.sql`.
+El incremento cierra el ciclo de valor del diseño **ML-ready** definido en `documents/02_diseno/architecture.md` y en `v2_estructura.sql`.
 
 ---
 
 ## Contexto: datos ya disponibles
 
-Los sprints anteriores dejaron preparado el *dataset* sin texto libre en campos críticos:
+Los incrementos anteriores dejaron preparado el *dataset* sin texto libre en campos críticos:
 
 | Fuente | Tabla | Campos útiles para ML |
 |--------|-------|------------------------|
@@ -61,7 +63,7 @@ python ml/scripts/build_dataset.py
 - **Actor:** Técnico / Administrador  
 - **Entrada:** `equipo_id`  
 - **Salida:** Puntuación 0–100, nivel (`Bajo`, `Medio`, `Alto`, `Crítico`), factores explicativos (top 3 features).  
-- **UI:** Badge en tabla de inventario. *(Pendiente Sprint 7: bloque en `FichaTecnicaPanel.jsx`.)*
+- **UI:** Badge en tabla de inventario. *(Pendiente incremento 7: bloque en `FichaTecnicaPanel.jsx`.)*
 
 ### UC-2: Predicción de categoría de falla
 - **Actor:** Técnico al registrar mantenimiento correctivo  
@@ -117,7 +119,7 @@ python ml/scripts/build_dataset.py
 
 ---
 
-## Modelos propuestos (MVP Sprint 6)
+## Modelos propuestos (MVP incremento 6)
 
 ### Modelo A — Clasificador de riesgo de falla
 - **Tipo:** Clasificación multiclase → `Bajo`, `Medio`, `Alto`, `Crítico`
@@ -142,7 +144,7 @@ python ml/scripts/build_dataset.py
 
 > **Nota:** Si el dataset es pequeño (<100 correctivos), Modelo B se implementa como **reglas + frecuencia histórica por tipo de equipo** y se migra a ML cuando haya más datos.
 
-**Estado Sprint 6:** Modelo B implementado como **heurístico** en `ml/app/services/dataset.py` (`fetch_categoria_sugerencias`) y expuesto vía `/predict/categoria`.
+**Estado incremento 6:** Modelo B implementado como **heurístico** en `ml/app/services/dataset.py` (`fetch_categoria_sugerencias`) y expuesto vía `/predict/categoria`.
 
 ---
 
@@ -263,7 +265,7 @@ Script de migración: `backend/sql/v2_ml_predicciones.sql`
 | `src/features/inventario/components/InventarioPage.jsx` | Columna **Riesgo ML** con badge | ✅ |
 | `src/features/dashboard/components/DashboardPage.jsx` | Panel **Alertas predictivas** (top 10) | ✅ |
 | `src/features/mantenimiento/components/MantenimientoForm.jsx` | Sugerencia IA de `categoria_falla_id` | ✅ |
-| `src/features/inventario/components/FichaTecnicaPanel.jsx` | Bloque **Evaluación predictiva** | ⏳ Sprint 7 |
+| `src/features/inventario/components/FichaTecnicaPanel.jsx` | Bloque **Evaluación predictiva** | ⏳ Incremento 7 |
 | `src/App.jsx` + `Navbar.jsx` | Ruta `/v2/predicciones` dedicada | ⏳ Opcional |
 
 **Semáforo visual (convención UI):**
@@ -282,7 +284,7 @@ Script de migración: `backend/sql/v2_ml_predicciones.sql`
 - [x] `architecture.md` — diagrama e integración ML.
 - [x] `ml/README.md` — instalación, entrenamiento y arranque FastAPI.
 - [x] Registro en `changelog.md` versión **0.7.0**.
-- [x] Este documento (`sprint_6.md`) marcado como **Completado**.
+- [x] Este documento (`incremento_6.md`) marcado como **Completado**.
 
 ---
 
@@ -340,7 +342,7 @@ MySQL
 - [x] Con dataset insuficiente, el sistema responde con modo **heurístico** (`inference_service.py`, campo `modo: heuristic`).
 - [x] Documentación de despliegue en `ml/README.md`.
 
-### Pendiente para Sprint 7
+### Pendiente para incremento 7
 
 - [ ] Bloque **Evaluación predictiva** en `FichaTecnicaPanel.jsx`.
 - [ ] Modelo B con clasificador ML (actualmente heurístico por frecuencia histórica).
@@ -372,16 +374,16 @@ MySQL
 
 ---
 
-## Dependencias del Sprint 6
+## Dependencias del incremento 6
 
-- Sprints 1–5 completados (API V2, inventario, mantenimiento, dashboard).
-- Auth JWT operativo (Sprint post-0.5).
+- Incrementos 1–5 completados (API V2, inventario, mantenimiento, dashboard).
+- Auth JWT operativo (tras incremento 5).
 - Python 3.10+ instalado en el entorno de desarrollo.
 - Extensión `pdo_mysql` en PHP y acceso de lectura del servicio ML a MySQL.
 
 ---
 
-## Fuera de alcance (Sprint 7+)
+## Fuera de alcance (incremento 7+)
 
 - Deep Learning / redes neuronales.
 - Predicción de series temporales (LSTM).
@@ -393,7 +395,7 @@ MySQL
 
 ## Referencias internas
 
-- `documents/architecture.md` — Visión V2 y stack ML propuesto.
+- `documents/02_diseno/architecture.md` — Visión V2 y stack ML propuesto.
 - `backend/sql/v2_estructura.sql` — Esquema ML-ready.
-- `documents/sprints/sprint_3.md` — Dataset de mantenimiento estructurado.
-- `documents/sprints/sprint_2.md` — Campos numéricos del inventario.
+- `documents/03_implementacion/incrementos/incremento_3.md` — Dataset de mantenimiento estructurado.
+- `documents/03_implementacion/incrementos/incremento_2.md` — Campos numéricos del inventario.

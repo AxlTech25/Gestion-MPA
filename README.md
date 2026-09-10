@@ -4,6 +4,7 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
 
 **Stack:** React (Vite) · PHP API REST · MySQL · FastAPI (ML)
 
+**Metodología:** Prompt-Centered SDLC v1.2  
 **Versión actual:** 0.9.0
 
 ---
@@ -22,6 +23,8 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
 - [Roles y credenciales](#roles-y-credenciales)
 - [Documentación adicional](#documentación-adicional)
 - [Desarrollo](#desarrollo)
+
+El marco de trabajo es la propuesta **Prompt-Centered SDLC v1.2** (en validación con este sistema; no Scrum). Ver [`documents/metodologia.md`](documents/metodologia.md).
 
 ---
 
@@ -219,7 +222,7 @@ En mantenimiento **correctivo**, si el ML está activo, puede aparecer una **sug
 
 ### 6. Configuración
 
-Panel de administración organizacional (requiere rol **Administrador**).
+Panel de administración organizacional (requiere rol **Administrador** en UI y en API).
 
 #### Pestaña Áreas
 
@@ -282,11 +285,13 @@ Más detalle en [`ml/README.md`](ml/README.md).
 | Configuración | ✓ | — | — |
 | Carga masiva Excel | ✓ | — | — |
 
+La API refuerza lo mismo: `POST`/`PUT`/`PATCH`/`DELETE` `/usuarios` responden **403** si el token no es de Administrador. No basta con ocultar botones en la interfaz.
+
 ---
 
 ## Despliegue en Hostinger
 
-Guía completa: [`documents/deploy/hostinger.md`](documents/deploy/hostinger.md)
+Guía completa: [`documents/05_mantenimiento/hostinger.md`](documents/05_mantenimiento/hostinger.md)
 
 ### Resumen rápido
 
@@ -320,12 +325,18 @@ npm run build:hostinger
 
 | Documento | Contenido |
 |-----------|-----------|
-| [`documents/deploy/hostinger.md`](documents/deploy/hostinger.md) | Guía de despliegue en Hostinger |
-| [`documents/changelog.md`](documents/changelog.md) | Historial de versiones |
-| [`documents/historias_usuario/`](documents/historias_usuario/) | Historias de usuario por épica |
-| [`documents/pruebas/`](documents/pruebas/) | Planes de pruebas funcionales y unitarias |
-| [`documents/sprints/`](documents/sprints/) | Registro de sprints |
+| [`documents/metodologia.md`](documents/metodologia.md) | Propuesta SDLC centrada en prompts (validación vs Scrum) |
+| [`documents/desarrollo_softwareIA/`](documents/desarrollo_softwareIA/) | Libros y artículos del estado del arte |
+| [`documents/README.md`](documents/README.md) | Índice por fases del ciclo de vida |
+| [`prompts/`](prompts/) | Repositorio de prompts por fase |
+| [`documents/05_mantenimiento/hostinger.md`](documents/05_mantenimiento/hostinger.md) | Guía de despliegue en Hostinger |
+| [`documents/05_mantenimiento/changelog.md`](documents/05_mantenimiento/changelog.md) | Historial de versiones |
+| [`documents/01_requisitos/historias_usuario/`](documents/01_requisitos/historias_usuario/) | Historias de usuario por épica |
+| [`documents/04_testing/`](documents/04_testing/) | Planes de pruebas funcionales y unitarias |
+| [`documents/03_implementacion/incrementos/`](documents/03_implementacion/incrementos/) | Incrementos de implementación |
 | [`ml/README.md`](ml/README.md) | Microservicio ML y entrenamiento |
+| [`documents/entregables/Manual_Sigemad_MPA.pdf`](documents/entregables/Manual_Sigemad_MPA.pdf) | Documentación técnica y manual de usuario en PDF |
+| [`documents/entregables/Manual_Sigemad_MPA.docx`](documents/entregables/Manual_Sigemad_MPA.docx) | Versión editable para Microsoft Word |
 
 ---
 
@@ -353,7 +364,8 @@ gestion_mpa/
 │   ├── api/v2/             # API REST PHP
 │   └── sql/                # Scripts de base de datos
 ├── ml/                     # Microservicio FastAPI + modelos
-└── documents/              # Documentación del proyecto
+├── documents/              # Documentación por fases SDLC
+└── prompts/                # Prompt-Centered SDLC v1.2
 ```
 
 ### API base

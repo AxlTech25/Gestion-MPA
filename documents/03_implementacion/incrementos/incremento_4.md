@@ -1,9 +1,11 @@
-# Resumen - Sprint 4: Reportes PDF y Filtros Avanzados
+# Incremento 4 — Reportes PDF y filtros avanzados
+
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado
 
-## Objetivos del Sprint
+## Objetivos del incremento
 Brindar capacidades de consulta avanzada sobre el inventario y permitir la extracción física/digital de la información de los equipos mediante generación de documentos PDF oficiales.
 
 ## Entregables
@@ -19,4 +21,4 @@ Brindar capacidades de consulta avanzada sobre el inventario y permitir la extra
 
 3. **Documentación**
    - El `changelog.md` se actualizó a la versión **0.4.0**.
-   - Se redactó este registro de sprint y el *Walkthrough* final del hito.
+   - Se redactó este registro de incremento y el *Walkthrough* final del hito.

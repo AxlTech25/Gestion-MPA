@@ -1,9 +1,11 @@
-# Resumen - Sprint 2: Módulo de Inventario Avanzado
+# Incremento 2 — Módulo de inventario avanzado
+
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado
 
-## Objetivos del Sprint
+## Objetivos del incremento
 Desarrollar el CRUD fundamental de equipos utilizando la arquitectura V2 y la base de datos optimizada. Proveer al usuario de una tabla interactiva y un formulario moderno para dar de alta equipos con atributos detallados necesarios para el posterior análisis predictivo.
 
 ## Entregables
@@ -19,4 +21,4 @@ Desarrollar el CRUD fundamental de equipos utilizando la arquitectura V2 y la ba
 
 3. **Documentación**
    - Actualización del Changelog a la versión 0.2.0.
-   - Creación de este registro del Sprint 2.
+   - Creación de este registro del incremento 2.

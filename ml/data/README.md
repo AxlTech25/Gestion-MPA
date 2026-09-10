@@ -1,4 +1,4 @@
-# Dataset A — Riesgo por equipo (Sprint 6)
+# Dataset A — Riesgo por equipo (incremento 6)
 
 Una fila = **un equipo** con features agregadas de mantenimiento y variable objetivo `nivel_riesgo`.
 

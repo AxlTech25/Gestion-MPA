@@ -1,9 +1,11 @@
-# Resumen - Sprint 3: Fichas Técnicas y Mantenimiento
+# Incremento 3 — Fichas técnicas y mantenimiento
+
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado
 
-## Objetivos del Sprint
+## Objetivos del incremento
 Implementar el registro histórico de mantenimientos e incidentes de cada equipo. La meta principal fue garantizar que la recolección de datos esté estructurada mediante identificadores fijos (Categoría de Fallas) en lugar de texto libre, sentando las bases para el modelo de Machine Learning.
 
 ## Entregables
@@ -18,4 +20,4 @@ Implementar el registro histórico de mantenimientos e incidentes de cada equipo
 
 3. **Documentación**
    - El `changelog.md` ha sido actualizado a la versión **0.3.0**.
-   - Creación de este registro de sprint.
+   - Creación de este registro de incremento.
