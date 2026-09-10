@@ -1,7 +1,7 @@
 # Análisis — Optimización de Mantenimiento Predictivo
 
 **Fecha:** 2026-06-21  
-**Contexto:** Evaluación de propuesta de ampliación de esquema (`equipos`, `fichas_mantenimiento`, `fallos`, `metricas_equipo`) frente al sistema V2 + ML implementado en Sprint 6.  
+**Contexto:** Evaluación de propuesta de ampliación de esquema (`equipos`, `fichas_mantenimiento`, `fallos`, `metricas_equipo`) frente al sistema V2 + ML implementado en el incremento 6.  
 **Versión actual del sistema:** 0.7.0
 
 ---
@@ -20,7 +20,7 @@ La propuesta analizada es un **buen diseño objetivo** para mantenimiento predic
 
 ---
 
-## Estado actual del ML (Sprint 6)
+## Estado actual del ML (incremento 6)
 
 ### Fuentes de datos en producción
 
@@ -61,7 +61,7 @@ El modelo actual predice **riesgo agregado de falla** a partir del historial est
 | `categoria_falla` | `v2_categorias_falla` (con `severidad`) |
 | Mantenimiento predictivo (cronograma) | `v2_cronograma_mantenimiento` |
 | Especificaciones hardware/software | `v2_fichas_tecnicas` |
-| Microservicio ML + predicciones | Sprint 6 (`ml/app/`, `v2_predicciones_ml`) |
+| Microservicio ML + predicciones | Incremento 6 (`ml/app/`, `v2_predicciones_ml`) |
 
 ### Aportes nuevos de la propuesta (valor real)
 
@@ -172,10 +172,10 @@ v2_predicciones_ml + badges en UI
 
 | Fase | Alcance | Plazo estimado | Documento |
 |------|---------|----------------|-----------|
-| **1** | Extender `v2_equipos` + `v2_fichas_mantenimiento` | 1–2 semanas | `documents/sprints/sprint_7_extension_schema_v2.md` |
+| **1** | Extender `v2_equipos` + `v2_fichas_mantenimiento` | 1–2 semanas | `documents/03_implementacion/incrementos/incremento_7_extension_schema_v2.md` |
 | **2** | Tabla `v2_metricas_equipo` + formulario lectura periódica | 3–4 semanas | Por definir |
 | **3** | Agente/script captura SMART, temps, horas_uso | 1–2 meses | Por definir |
-| **4** | Modelo B por componente; series temporales | Sprint 8+ | Por definir |
+| **4** | Modelo B por componente; series temporales | Incremento 8+ | Por definir |
 
 ---
 
@@ -204,6 +204,6 @@ v2_predicciones_ml + badges en UI
 
 - Esquema actual: `backend/sql/v2_estructura.sql`
 - Dataset ML: `ml/data/README.md`
-- Sprint 6 completado: `documents/sprints/sprint_6.md`
-- Plan de extensión Fase 1: `documents/sprints/sprint_7_extension_schema_v2.md`
+- Incremento 6 completado: `documents/03_implementacion/incrementos/incremento_6.md`
+- Plan de extensión Fase 1: `documents/03_implementacion/incrementos/incremento_7_extension_schema_v2.md`
 - SQL migración Fase 1: `backend/sql/v2_extension_fase7.sql`
