@@ -1,6 +1,6 @@
 # Incremento 4 — Reportes PDF y filtros avanzados
 
-> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum. Prompt: [I-004](../../../prompts/03_implementacion/I-004_reportes_pdf_v1.md).
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado

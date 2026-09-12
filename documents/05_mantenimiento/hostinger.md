@@ -274,6 +274,33 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 ---
 
+## Rollback (M-004)
+
+El hosting no tiene `git checkout`. El rollback es **restaurar artefactos**, no un force-push.
+
+### Antes de cada publicación
+
+1. Exportar la base MySQL (phpMyAdmin → Exportar, o `mysqldump`). Guardar el `.sql` **fuera** del repo, con fecha.
+2. Copiar la carpeta actual `public_html/` (al menos `index.html`, `assets/`, `backend/` excepto `local.php` si va a reutilizarse).
+3. No sobrescribir `local.php` del servidor con una plantilla vacía.
+
+### Cómo volver atrás
+
+1. Poner el sitio en aviso breve si es posible (o aceptar downtime corto).
+2. Restaurar `dist/` anterior en `public_html/` (HTML + `assets/` + `.htaccess` SPA).
+3. Restaurar `public_html/backend/` (código PHP + `vendor/`). **Reponer** `backend/api/v2/config/local.php` con las credenciales vigentes.
+4. Si el cambio incluía migración SQL: importar el dump **previo**. No aplicar a ciegas un ALTER inverso si no está ensayado en XAMPP.
+5. Smoke: `POST /backend/api/v2/auth/login` y una pantalla `/v2/inventario`.
+6. ML: si `ml_service_url` está vacío, no es un fallo de rollback.
+
+### Secretos
+
+- `local.php`, JWT secret y passwords de hPanel **no** van a Git ni a un prompt.
+- Tras un restore, confirmar que no quedó un `local.php` de ejemplo en una URL pública.
+- Rotar `admin` / `admin123` si ese seed se reimportó.
+
+---
+
 ## Checklist rápido
 
 - [ ] BD creada e importada en phpMyAdmin
@@ -285,6 +312,7 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 - [ ] SSL activo y `cors_origins` con https
 - [ ] Login probado
 - [ ] Contraseña de admin cambiada
+- [ ] Dump de BD y copia de `public_html/` guardados (rollback)
 
 ---
 

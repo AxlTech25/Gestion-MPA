@@ -1,6 +1,6 @@
 # Incremento 1 — Cimientos y arquitectura core
 
-> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum. Prompt: [I-001](../../../prompts/03_implementacion/I-001_cimientos_v1.md).
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado

@@ -1,19 +1,26 @@
 # Repositorio de prompts — Sigemad MPA
 
-Estructura según la propuesta **Prompt-Centered SDLC v1.2** (en validación con Sigemad). Algunos registros se documentaron de forma retrospectiva; eso es una limitación conocida del caso.
+Estructura según **Prompt-Centered SDLC v1.2**. Cada registro es una instrucción de ingeniería (D1) con evaluación (D2), no el volcado de un chat.
+
+**Oleada 1:** plantilla y anatomía. **Oleada 2:** I-001…I-009. **Oleada 3 (2026-09-11):** R-003–R-005, D-003–D-006, T-002–T-005, M-002–M-004.
 
 ```
 prompts/
-├── 01_requisitos/       R-001, R-002
-├── 02_diseno/           D-001, D-002
-├── 03_implementacion/   I-001, I-002
-├── 04_testing/          T-001
-├── 05_mantenimiento/    M-001
-└── gobernanza/          registro_metricas.md, politicas_uso_ia.md
+├── 01_requisitos/          R-001 … R-005
+├── 02_diseno/              D-001 … D-006
+├── 03_implementacion/      I-001 … I-009 (+ 2 macros Superados)
+├── 04_testing/             T-001 … T-005
+├── 05_mantenimiento/       M-001 … M-004
+└── gobernanza/
 ```
 
-Cada registro incluye: código, fase, versión, prompt, resultado, métricas y decisión D2.
+| Recurso | Uso |
+|---------|-----|
+| [Plantilla](./gobernanza/_plantilla_prompt.md) | Copiar antes de un prompt nuevo |
+| [Catálogo](./gobernanza/catalogo.md) | Mapa vigente |
+| [Implementación](./03_implementacion/README.md) | I-001…I-009 |
+| [Métricas D2](./gobernanza/registro_metricas.md) | Decisión y lección |
+| [Política de IA](./gobernanza/politicas_uso_ia.md) | Revisión humana, secretos, ADR |
 
-Trazabilidad de mantenimiento (prompt → commit GitHub → archivo): [matriz de doble entrada](../documents/matriz_doble_entrada/README.md).
-
-Metodología del producto: [documents/metodologia.md](../documents/metodologia.md).
+Trazabilidad: [matriz de doble entrada](../documents/matriz_doble_entrada/README.md).  
+Metodología: [documents/metodologia.md](../documents/metodologia.md).

@@ -66,7 +66,7 @@ Ver `documents/03_implementacion/incrementos/incremento_6.md` y `ml/README.md`.
 React  →  PHP API V2 (/api/v2/ml/*)  →  FastAPI (:8000)  →  MySQL
 ```
 
-PHP actúa como proxy autenticado; el servicio Python no es expuesto directamente al navegador.
+PHP actúa como proxy autenticado; el servicio Python no es expuesto directamente al navegador. Si FastAPI no responde, el resto del sistema sigue: [ADR-002](./adr/ADR-002-degradacion-ml.md).
 
 ## Autenticación y autorización (RBAC)
 

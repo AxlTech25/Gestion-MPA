@@ -6,7 +6,7 @@ Documentación de requisitos desde la perspectiva del usuario final y los roles 
 
 | Documento | Descripción |
 |-----------|-------------|
-| [personas.md](./personas.md) | Perfiles de usuario y necesidades |
+| [personas.md](./personas.md) | Perfiles de usuario y necesidades ([R-003](../../../prompts/01_requisitos/R-003_personas_v1.md)) |
 | [historias_por_epica.md](./historias_por_epica.md) | Catálogo completo de historias con criterios de aceptación |
 | [matriz_trazabilidad.md](./matriz_trazabilidad.md) | Relación historia ↔ incremento SDLC ↔ versión |
 
@@ -50,6 +50,8 @@ Incluye: prioridad (Alta/Media/Baja), estado (Implementada / En progreso / Pendi
 
 ## Relación con otras carpetas
 
+- Ambigüedades: `documents/01_requisitos/ambiguedades.md` ([R-004](../../../prompts/01_requisitos/R-004_ambiguedades_v1.md))
+- RNF: `documents/01_requisitos/requisitos_no_funcionales.md` ([R-005](../../../prompts/01_requisitos/R-005_rnf_v1.md))
 - Metodología: `documents/metodologia.md`
 - Incrementos de implementación: `documents/03_implementacion/incrementos/`
 - Pruebas funcionales: `documents/04_testing/plan_pruebas_funcionales.md`

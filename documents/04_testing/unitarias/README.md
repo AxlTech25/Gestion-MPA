@@ -6,7 +6,7 @@ Suite de pruebas automatizadas para lógica de negocio aislada (sin navegador ni
 
 | Documento | Descripción |
 |-----------|-------------|
-| [plan_pruebas_unitarias.md](./plan_pruebas_unitarias.md) | Alcance, matriz de casos y comandos de ejecución |
+| [plan_pruebas_unitarias.md](./plan_pruebas_unitarias.md) | Alcance, matriz de casos y comandos de ejecución ([T-002](../../../prompts/04_testing/T-002_phpunit_v1.md), [T-003](../../../prompts/04_testing/T-003_vitest_v1.md), [T-004](../../../prompts/04_testing/T-004_pytest_ml_v1.md)) |
 
 ## Ejecución rápida
 

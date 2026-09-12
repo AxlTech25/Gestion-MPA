@@ -1,0 +1,73 @@
+# Contrato API V2
+
+**Prompt:** [D-003](../../prompts/02_diseno/D-003_contrato_api_v1.md)  
+**Base:** `/gestion_mpa/backend/api/v2/` (XAMPP) o `https://{dominio}/backend/api/v2/` (Hostinger)  
+**Producto:** 0.9.1
+
+## Sobre
+
+- `Content-Type: application/json` salvo PDF (binario) y carga Excel (`multipart`).
+- Cuerpo de éxito / error de negocio:
+
+```json
+{ "success": true, "data": {}, "message": "Operación exitosa" }
+```
+
+- Autenticación: `Authorization: Bearer <JWT>` en todas las rutas excepto `POST /auth/login`.
+- Fechas: `YYYY-MM-DD` o `YYYY-MM-DD HH:MM:SS`.
+
+| HTTP | Uso |
+|------|-----|
+| 200 / 201 | OK / creado |
+| 400 | Validación |
+| 401 | Sin token o token inválido |
+| 403 | Rol insuficiente |
+| 404 | Recurso no encontrado |
+| 500 | Error interno (no filtrar secretos) |
+
+---
+
+## Recursos
+
+| Método | Ruta | Auth | Notas |
+|--------|------|------|-------|
+| POST | `/auth/login` | Pública | `{usuario, password}` → token + usuario |
+| GET | `/equipos` | JWT | Listado |
+| POST | `/equipos` | JWT | Alta; `codigo_patrimonial` 12 dígitos |
+| GET | `/equipos/{id}` | JWT | Detalle |
+| PUT | `/equipos/{id}` | JWT | Edición |
+| DELETE | `/equipos/{id}` | JWT | No priorizado en HU |
+| GET | `/equipos/plantilla` | JWT | Excel de carga |
+| POST | `/equipos/carga-masiva` | JWT | Multipart |
+| GET | `/fichas-tecnicas/{id}` | JWT | |
+| GET | `/fichas-tecnicas/buscar/{codigo}` | JWT | Código 12 dígitos |
+| PUT/POST | `/fichas-tecnicas/{id}` | JWT | Evaluación |
+| GET | `/mantenimientos` | JWT | Timeline |
+| POST | `/mantenimientos` | JWT | Alta; puede disparar recálculo ML |
+| GET | `/mantenimientos/{id}` | JWT | Detalle |
+| GET | `/mantenimientos/historial/{codigo}` | JWT | |
+| GET | `/areas` | JWT | |
+| POST | `/areas` | JWT | |
+| GET | `/usuarios` | JWT | Lectura autenticada |
+| POST/PUT/PATCH/DELETE | `/usuarios` | JWT + **Administrador** | I-009 |
+| GET | `/dashboard` | JWT | Métricas |
+| GET | `/dashboard/consulta` | JWT | Query: `tipo_equipo`, `estado_operativo`, `estado_conservacion`, `tipo_otro` |
+| GET | `/reportes/equipo/{id}` | JWT | PDF (blob) |
+| GET | `/reportes/mantenimiento/historial/{codigo}` | JWT | PDF |
+| GET | `/reportes/mantenimiento/{id}` | JWT | PDF |
+| GET | `/ml/status` | JWT | Salud del proxy / FastAPI |
+| GET | `/ml/alertas` | JWT | Top riesgo; vacío/N/A si ML down |
+| GET | `/ml/equipos/riesgo` | JWT | Batch |
+| GET | `/ml/equipos/{id}/riesgo` | JWT | |
+| POST | `/ml/predict/categoria` | JWT | |
+| POST | `/ml/train` | JWT + **Administrador** | |
+
+El cliente de FastAPI es **solo PHP** (`MlService`). Contrato interno Python: `/health`, `/predict/riesgo`, `/predict/riesgo/batch` (objeto `{}`, no `[]`), `/predict/categoria`, `/train`, `/metrics`.
+
+---
+
+## Errores de integración conocidos (no repetir)
+
+- Batch hacia FastAPI: cuerpo objeto, no array (I-007).
+- PDF: enviar Bearer; no `window.open` anónimo (I-006).
+- 403 vs 401: sin token = 401; token de Técnico en `/usuarios` escritura = 403.

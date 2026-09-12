@@ -1,6 +1,6 @@
 # Incremento 3 — Fichas técnicas y mantenimiento
 
-> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum. Prompt: [I-003](../../../prompts/03_implementacion/I-003_fichas_mantenimiento_v1.md).
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado

@@ -1,6 +1,6 @@
 # Incremento 5 — Módulo de configuración organizacional
 
-> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum. Prompt: [I-005](../../../prompts/03_implementacion/I-005_configuracion_v1.md). RBAC de `/usuarios`: [I-009](../../../prompts/03_implementacion/I-009_rbac_plantilla_excel_v1.md).
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado

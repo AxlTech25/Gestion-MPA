@@ -1,6 +1,6 @@
 # Incremento 7 — Extensión de esquema V2 para ML predictivo (Fase 1)
 
-> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum. Prompt: [I-008](../../../prompts/03_implementacion/I-008_telemetria_ficha_predictiva_v1.md).
 
 **Fecha planificada:** 2026-07-01 — 2026-07-31  
 **Estado:** Completado (Fase 1 + Fase 2)  

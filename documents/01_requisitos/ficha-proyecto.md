@@ -54,3 +54,5 @@ Ver [historias_usuario/personas.md](./historias_usuario/personas.md). Roles de s
 - [Historias de usuario](./historias_usuario/README.md)
 - [Arquitectura](../02_diseno/architecture.md)
 - [ADR-001](../02_diseno/adr/ADR-001-stack-arquitectura.md)
+- [ADR-002](../02_diseno/adr/ADR-002-degradacion-ml.md)
+- [Ambigüedades](./ambiguedades.md) · [RNF](./requisitos_no_funcionales.md)

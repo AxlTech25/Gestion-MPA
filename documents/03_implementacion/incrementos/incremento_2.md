@@ -1,6 +1,6 @@
 # Incremento 2 — Módulo de inventario avanzado
 
-> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum. Prompt: [I-002](../../../prompts/03_implementacion/I-002_inventario_v1.md).
 
 **Fecha de finalización:** 2026-04-30
 **Estado:** Completado

@@ -1,6 +1,6 @@
 # Incremento 6 — Machine Learning predictivo
 
-> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum.
+> Registro de la **fase de implementación** (Prompt-Centered SDLC v1.2). No es un sprint Scrum. Prompt: [I-007](../../../prompts/03_implementacion/I-007_microservicio_ml_v1.md) (versión 0.7.0). El JWT 0.6.0 es [I-006](../../../prompts/03_implementacion/I-006_auth_dashboard_v1.md).
 
 **Fecha planificada:** 2026-06-21 — 2026-07-15  
 **Fecha de cierre:** 2026-06-21  
