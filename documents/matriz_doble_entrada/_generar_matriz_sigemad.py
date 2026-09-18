@@ -102,231 +102,14 @@ def file_url(path: str, sha: str) -> str:
     return github_blob(path, sha) if sha_published(sha) else github_main(path)
 
 
-# Una fila por épica (solo implementación). Capa = archivo principal.
-FUNCIONES = [
-    {
-        "id": "F-001",
-        "modulo": "auth",
-        "funcion": "Autenticación JWT y sesión (login, RBAC)",
-        "fase": "Implementación",
-        "capa": "Presentation (React)",
-        "impacto": "Alto (integración/validación)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "Parcial",
-        "monitor": "No",
-        "prompt": "I-006",
-        "tecnica": "CoT guiado",
-        "ver_prompt": "v1",
-        "iter": 0,
-        "criterio": "Aprobado",
-        "resultado": "Login JWT, AuthContext, middleware y protección de rutas API/UI",
-        "ruta": "src/features/auth/",
-        "archivo": "Login.jsx",
-        "completa": "src/features/auth/Login.jsx",
-        "commit": "5ce7575",
-        "test": "backend/tests/AuthMiddlewareTest.php",
-        "obs": "Origen JWT: 5ce7575 [I-006]. RBAC en servidor: I-009. PHPUnit de requireRole. E2E AUTH en plan_pruebas_funcionales.md.",
-    },
-    {
-        "id": "F-002",
-        "modulo": "configuracion",
-        "funcion": "Áreas, gerencias y personal (RBAC organizacional)",
-        "fase": "Implementación",
-        "capa": "Presentation (React)",
-        "impacto": "Medio (entrega/despliegue)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "Parcial",
-        "monitor": "No",
-        "prompt": "I-005",
-        "tecnica": "Few-shot",
-        "ver_prompt": "v1",
-        "iter": 2,
-        "criterio": "Aprobado",
-        "resultado": "CRUD de áreas y gerencias; usuarios con roles Administrador / Técnico / Practicante",
-        "ruta": "src/features/configuracion/",
-        "archivo": "ConfiguracionPage.jsx",
-        "completa": "src/features/configuracion/components/ConfiguracionPage.jsx",
-        "commit": "4e08b9e",
-        "test": "backend/tests/AreaTest.php",
-        "obs": "SHA origen: 4e08b9e [I-005]. requireRole: I-009. Gerencias y PUT/DELETE áreas: I-017 (3394712). También UsuarioTest.php.",
-    },
-    {
-        "id": "F-003",
-        "modulo": "inventario",
-        "funcion": "Inventario patrimonial de equipos (CRUD, filtros, carga Excel)",
-        "fase": "Implementación",
-        "capa": "API (PHP)",
-        "impacto": "Alto (integración/validación)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "Parcial",
-        "monitor": "No",
-        "prompt": "I-002",
-        "tecnica": "Few-shot",
-        "ver_prompt": "v1",
-        "iter": 0,
-        "criterio": "Aprobado",
-        "resultado": "CRUD equipos, código de 12 dígitos, tipos personalizados y carga masiva",
-        "ruta": "backend/api/v2/controllers/",
-        "archivo": "EquipoController.php",
-        "completa": "backend/api/v2/controllers/EquipoController.php",
-        "commit": "f086a63",
-        "test": "src/lib/equipoTipo.test.js",
-        "obs": "SHA vigente: f086a63 [I-002]. Telemetría: I-008. Plantilla Excel: I-009. Test unitario de tipo de equipo (Vitest).",
-    },
-    {
-        "id": "F-004",
-        "modulo": "ficha",
-        "funcion": "Ficha técnica y evaluación de hardware/software",
-        "fase": "Implementación",
-        "capa": "API (PHP)",
-        "impacto": "Alto (integración/validación)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "No",
-        "monitor": "No",
-        "prompt": "I-003",
-        "tecnica": "Few-shot",
-        "ver_prompt": "v1",
-        "iter": 0,
-        "criterio": "Aprobado",
-        "resultado": "Alta/edición de ficha, evaluación y bloque predictivo en UI",
-        "ruta": "backend/api/v2/controllers/",
-        "archivo": "FichaTecnicaController.php",
-        "completa": "backend/api/v2/controllers/FichaTecnicaController.php",
-        "commit": "f086a63",
-        "test": "documents/04_testing/plan_pruebas_funcionales.md (casos FIC)",
-        "obs": "SHA vigente: f086a63 [I-003]. Bloque predictivo en ficha: 8b20337 [I-008].",
-    },
-    {
-        "id": "F-005",
-        "modulo": "mantenimiento",
-        "funcion": "Historial de mantenimiento, telemetría y correctivo estructurado",
-        "fase": "Implementación",
-        "capa": "API (PHP)",
-        "impacto": "Alto (integración/validación)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "Parcial",
-        "monitor": "No",
-        "prompt": "I-003",
-        "tecnica": "Few-shot",
-        "ver_prompt": "v1",
-        "iter": 0,
-        "criterio": "Aprobado",
-        "resultado": "Timeline, registro estructurado y sync de telemetría post-mantenimiento",
-        "ruta": "backend/api/v2/controllers/",
-        "archivo": "MantenimientoController.php",
-        "completa": "backend/api/v2/controllers/MantenimientoController.php",
-        "commit": "8b20337",
-        "test": "backend/tests/MantenimientoTest.php",
-        "obs": "SHA de timeline/categoría: 8b20337 [I-003]. Sync de telemetría: I-008. PHPUnit: sync de telemetría.",
-    },
-    {
-        "id": "F-006",
-        "modulo": "dashboard",
-        "funcion": "Indicadores operativos y consulta de equipos por etiquetas",
-        "fase": "Implementación",
-        "capa": "Presentation (React)",
-        "impacto": "Medio (entrega/despliegue)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "Parcial",
-        "monitor": "No",
-        "prompt": "I-006",
-        "tecnica": "CoT guiado",
-        "ver_prompt": "v1",
-        "iter": 0,
-        "criterio": "Aprobado",
-        "resultado": "Dashboard de métricas, alertas ML y panel de consulta con filtros",
-        "ruta": "src/features/dashboard/",
-        "archivo": "DashboardPage.jsx",
-        "completa": "src/features/dashboard/components/DashboardPage.jsx",
-        "commit": "5ce7575",
-        "test": "backend/tests/DashboardConsultaTest.php",
-        "obs": "Commit 5ce7575 [I-006] (dashboard de métricas + JWT). Alertas ML: I-007. Consulta tipo_otro: I-008.",
-    },
-    {
-        "id": "F-007",
-        "modulo": "ml",
-        "funcion": "Riesgo predictivo, lote, categoría de falla y reentrenamiento",
-        "fase": "Implementación",
-        "capa": "ML (FastAPI)",
-        "impacto": "Alto (integración/validación)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "Parcial",
-        "monitor": "No",
-        "prompt": "I-007",
-        "tecnica": "CoT guiado",
-        "ver_prompt": "v1",
-        "iter": 2,
-        "criterio": "Aprobado",
-        "resultado": "Microservicio FastAPI + proxy PHP /api/v2/ml/* + badges de riesgo en UI",
-        "ruta": "ml/app/",
-        "archivo": "main.py",
-        "completa": "ml/app/main.py",
-        "commit": "e9a0965",
-        "test": "ml/tests/test_features.py",
-        "obs": "Commit e9a0965 [I-007] (FastAPI). Telemetría/ficha predictiva: I-008. pytest: test_features.py y test_ml_schemas.py.",
-    },
-    {
-        "id": "F-008",
-        "modulo": "reportes",
-        "funcion": "Reportes PDF de ficha, mantenimiento y cronograma",
-        "fase": "Implementación",
-        "capa": "API (PHP)",
-        "impacto": "Medio (entrega/despliegue)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "Parcial",
-        "monitor": "No",
-        "prompt": "I-004",
-        "tecnica": "Zero-shot + few-shot",
-        "ver_prompt": "v1",
-        "iter": 1,
-        "criterio": "Aprobado",
-        "resultado": "PDF de ficha, historial de mantenimiento y matriz de cronograma (A4 L–V) con JWT",
-        "ruta": "backend/api/v2/controllers/",
-        "archivo": "ReporteController.php",
-        "completa": "backend/api/v2/controllers/ReporteController.php",
-        "commit": "f086a63",
-        "test": "backend/tests/CronogramaTest.php",
-        "obs": "SHA origen ficha: f086a63 [I-004]. Descarga JWT: 5ce7575 [I-006]. PDF cronograma (matriz papel A4): I-012…I-016 (3394712).",
-    },
-    {
-        "id": "F-009",
-        "modulo": "cronograma",
-        "funcion": "Cronograma anual de preventivo (historial, matriz Xn, PDF, gerencias)",
-        "fase": "Implementación",
-        "capa": "Presentation (React)",
-        "impacto": "Alto (integración/validación)",
-        "ci": "No",
-        "cd": "No",
-        "test_auto": "Parcial",
-        "monitor": "No",
-        "prompt": "I-010",
-        "tecnica": "Few-shot",
-        "ver_prompt": "v1",
-        "iter": 7,
-        "criterio": "Aprobado",
-        "resultado": "Historial de planes, matriz área×día×cantidad, personal, PDF A4 y bandas de gerencia",
-        "ruta": "src/features/cronograma/",
-        "archivo": "CronogramaMatrizPage.jsx",
-        "completa": "src/features/cronograma/components/CronogramaMatrizPage.jsx",
-        "commit": SHA_INC8,
-        "test": "backend/tests/CronogramaTest.php",
-        "obs": "Incremento 8 cerrado 2026-09-17 (0.10.0–0.10.7). Origen I-010; parches I-011…I-017. SHA: 3394712. También cronogramaUtils.test.js. API: CronogramaController.php.",
-    },
-]
+# Una fila por función atómica (grano Money Me: login, registro, …).
+from _funciones_atomicas import FUNCIONES
 
 # Una fila por función (hoja Prompts Detallados, instrumento Jiang). Texto = resumen D1.
 PROMPTS = [
     {
         "id": "I-006",
-        "funcion": "F-001",
+        "funcion": "F-001, F-002, F-003, F-004, F-031, F-041",
         "prompt": (
             "Actúa como desarrollador senior PHP (firebase/php-jwt) y React (AuthContext, Axios). "
             "Contexto: API v2 y módulos INV/MNT/CFG sin JWT obligatorio; ADR-001 exige Bearer salvo /auth. "
@@ -348,7 +131,7 @@ PROMPTS = [
     },
     {
         "id": "I-005",
-        "funcion": "F-002",
+        "funcion": "F-006, F-007, F-010, F-011",
         "prompt": (
             "Actúa como desarrollador senior PHP/React. Contexto: áreas y responsables no deben "
             "estar hardcodeados en EquipoForm; tablas v2_areas y v2_usuarios existen; ruta "
@@ -371,7 +154,7 @@ PROMPTS = [
     },
     {
         "id": "I-002",
-        "funcion": "F-003",
+        "funcion": "F-014, F-015, F-016, F-019",
         "prompt": (
             "Actúa como desarrollador senior PHP/React sobre el esqueleto I-001. "
             "Contexto: v2_equipos ya existe; CRUD mínimo ML-ready (ram_gb, almacenamiento_gb, fechas); "
@@ -394,7 +177,7 @@ PROMPTS = [
     },
     {
         "id": "I-003",
-        "funcion": "F-004",
+        "funcion": "F-021, F-022, F-023",
         "prompt": (
             "Actúa como desarrollador senior PHP/React; replica el patrón I-002. "
             "Contexto: equipos ya se listan; hace falta consultar/editar ficha técnica del equipo. "
@@ -415,7 +198,7 @@ PROMPTS = [
     },
     {
         "id": "I-003",
-        "funcion": "F-005",
+        "funcion": "F-025, F-026, F-027, F-028",
         "prompt": (
             "Actúa como desarrollador senior PHP/React; patrón I-002. "
             "Contexto: historial de intervenciones con categoria_falla_id del catálogo "
@@ -438,7 +221,7 @@ PROMPTS = [
     },
     {
         "id": "I-006",
-        "funcion": "F-006",
+        "funcion": "F-031",
         "prompt": (
             "Actúa como desarrollador senior PHP/React (mismo incremento 0.6.0 que F-001). "
             "Objetivo: métricas operativas en GET /api/v2/dashboard y UI DashboardPage (conteos, no ML). "
@@ -459,7 +242,7 @@ PROMPTS = [
     },
     {
         "id": "I-007",
-        "funcion": "F-007",
+        "funcion": "F-020, F-030, F-032, F-034, F-035, F-036, F-037",
         "prompt": (
             "Actúa como ingeniero de ML aplicado y backend PHP. "
             "Contexto: datos estructurados (I-002, I-003); JWT (I-006); FastAPI en :8000; "
@@ -482,7 +265,7 @@ PROMPTS = [
     },
     {
         "id": "I-004",
-        "funcion": "F-008",
+        "funcion": "F-017, F-038, F-039, F-040",
         "prompt": (
             "Actúa como desarrollador senior PHP (dompdf) y React. "
             "Contexto: inventario y ficha ya existen. "
@@ -504,7 +287,7 @@ PROMPTS = [
     },
     {
         "id": "I-008",
-        "funcion": "F-003, F-005, F-006, F-007",
+        "funcion": "F-024, F-029, F-033",
         "prompt": (
             "Actúa como desarrollador PHP/React e ingeniero de datos ML. "
             "Contexto: ML 0.7.0 ya opera (I-007). Ampliar v2_equipos y v2_fichas_mantenimiento "
@@ -526,7 +309,7 @@ PROMPTS = [
     },
     {
         "id": "I-009",
-        "funcion": "F-001, F-002, F-003",
+        "funcion": "F-005, F-012, F-018",
         "prompt": (
             "Actúa como desarrollador senior de API PHP y React. "
             "Contexto: 0.9.1; JWT existe; un Técnico puede mutar /usuarios; plantilla Excel "
@@ -547,7 +330,7 @@ PROMPTS = [
     },
     {
         "id": "I-010",
-        "funcion": "F-009",
+        "funcion": "F-043, F-044, F-051",
         "prompt": (
             "Actúa como desarrollador senior PHP 8 / React 19. "
             "Contexto: 0.9.1; R-006 y D-007; ADR-003 (v2_cronogramas / v2_cronograma_celdas); "
@@ -570,7 +353,7 @@ PROMPTS = [
     },
     {
         "id": "I-011",
-        "funcion": "F-009",
+        "funcion": "F-047",
         "prompt": (
             "Actúa como desarrollador senior PHP 8 / React 19. "
             "Contexto: 0.10.0. Faltan subtotal/total; hay que programar hora de cada equipo; "
@@ -592,7 +375,7 @@ PROMPTS = [
     },
     {
         "id": "I-012",
-        "funcion": "F-008, F-009",
+        "funcion": "F-042",
         "prompt": (
             "Actúa como desarrollador senior PHP 8 / Dompdf. "
             "Contexto: el PDF era un listado; el papel 2024 es una matriz N°/área/PC/"
@@ -614,7 +397,7 @@ PROMPTS = [
     },
     {
         "id": "I-013",
-        "funcion": "F-009",
+        "funcion": "F-048",
         "prompt": (
             "Actúa como desarrollador senior PHP 8 / React 19. "
             "Contexto: el recuadro HORA PROGRAMADA del papel son las personas que "
@@ -636,7 +419,7 @@ PROMPTS = [
     },
     {
         "id": "I-014",
-        "funcion": "F-009",
+        "funcion": "F-045, F-046",
         "prompt": (
             "Actúa como desarrollador senior PHP 8 / React 19. "
             "Contexto: X1/X2 no son mañana/tarde: son cuántos PC/laptop se atienden ese día. "
@@ -657,7 +440,7 @@ PROMPTS = [
     },
     {
         "id": "I-015",
-        "funcion": "F-009",
+        "funcion": "F-049",
         "prompt": (
             "Actúa como desarrollador senior PHP 8 / React 19 / Dompdf. "
             "Contexto: PDF A3 4 meses con sábados/domingos; hace falta A4, L–V, "
@@ -678,7 +461,7 @@ PROMPTS = [
     },
     {
         "id": "I-016",
-        "funcion": "F-008, F-009",
+        "funcion": "F-042",
         "prompt": (
             "Actúa como desarrollador senior PHP 8 / Dompdf. "
             "Contexto: el PDF A4 aplastaba ÁREA (colspan calendario vs L–V); N° enorme; "
@@ -698,7 +481,7 @@ PROMPTS = [
     },
     {
         "id": "I-017",
-        "funcion": "F-002, F-009",
+        "funcion": "F-008, F-009, F-013, F-050",
         "prompt": (
             "Actúa como desarrollador senior PHP 8 / React 19. "
             "Contexto: el papel agrupa áreas bajo filas de gerencia; v2_areas solo tenía alta. "
@@ -778,7 +561,7 @@ def fill_guia(ws):
     ws["B7"] = (
         "Aporta el modelo de versionado y gestión de calidad de prompts (control de iteraciones, criterio de aceptación). "
         "Se refleja en 'ID Prompt', 'Versión del prompt', 'N.º de iteraciones' y 'Criterio de aceptación'. "
-        "En Sigemad los IDs vigentes son I-002…I-017 (una fila por función F-001…F-009 en Prompts Detallados, más refinamientos I-008…I-017)."
+        "En Sigemad cada fila de Matriz Consolidada es una función atómica (F-001 inicio de sesión, F-011 registro de usuario, …), no un módulo entero. Los IDs de prompt vigentes son I-002…I-017."
     )
     ws["B8"] = (
         "Ninguna de las dos fuentes por separado construye un instrumento aplicado que conecte capacidades DevOps + "
@@ -787,7 +570,7 @@ def fill_guia(ws):
         "Granularidad: una fila por módulo/épica. Fase documentada: Implementación. Capas: Presentation (React), API (PHP), "
         "Data (modelos/SQL), ML (FastAPI), Core/Infra — no Clean Architecture de Flutter."
     )
-    ws["B11"] = "Busca en 'Matriz Consolidada' por 'Feature/Módulo' (auth, inventario, ficha, mantenimiento, dashboard, ml, reportes, configuracion, cronograma) o 'ID Función' (F-001 a F-009)."
+    ws["B11"] = "Busca en 'Matriz Consolidada' por 'Feature/Módulo' (auth, configuracion, inventario, ficha, mantenimiento, dashboard, ml, reportes, cronograma) o 'ID Función' (F-001 a F-051). Una fila = una función (login distinto de registro, alta de área distinta de baja)."
     ws["B12"] = (
         "Observa las 5 columnas DevOps (Amaro): verde = Sí implementado, amarillo = Parcial, rojo = No implementado. "
         "En este caso: Control de Versiones = Sí (Git); CI y CD = No (no hay pipeline GitHub Actions ni despliegue automático; "
@@ -899,11 +682,14 @@ def fill_matriz(ws):
                 hyperlink = link_commit
                 font = FONT_LINK
             apply_data_cell(cell, val, fill=fill, font=font, hyperlink=hyperlink)
-        ws.row_dimensions[i].height = 48
+        ws.row_dimensions[i].height = 36
 
     ws.auto_filter.ref = f"A1:Z{1 + len(FUNCIONES)}"
     ws.freeze_panes = "A2"
     ws.row_dimensions[1].height = 50
+    ws.column_dimensions["A"].width = 12
+    ws.column_dimensions["B"].width = 16
+    ws.column_dimensions["C"].width = 38
     for col in range(1, 27):
         cell = ws.cell(row=1, column=col)
         cell.font = FONT_HEADER
@@ -970,8 +756,8 @@ def fill_diccionario(ws):
             row[2].value = "Original (adaptado a Sigemad; no Clean Architecture Flutter)"
         if row[0].value and str(row[0].value).startswith("ID Prompt"):
             row[1].value = (
-                "Identificador del prompt vigente (I-002…I-017). Una fila por función F-001…F-009 "
-                "en Prompts Detallados, más refinamientos. Hipervínculo al markdown en GitHub (prompts/)."
+                "Identificador del prompt vigente (I-002…I-017). Varias funciones F-00N pueden compartir un I-* "
+                "(el prompt generó más de un componente). Hipervínculo al markdown en GitHub (prompts/)."
             )
         if row[0].value and str(row[0].value) == "Link GitHub (línea exacta)":
             row[1].value = (
