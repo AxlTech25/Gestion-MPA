@@ -40,6 +40,8 @@ switch ($resource) {
                 http_response_code(400);
                 echo json_encode(["success" => false, "message" => "Ruta de reporte de mantenimiento inválida."]);
             }
+        } elseif (isset($request[1]) && $request[1] === 'cronograma' && isset($request[2]) && is_numeric($request[2])) {
+            $controller->cronograma((int) $request[2]);
         } else {
             http_response_code(400);
             echo json_encode(["success" => false, "message" => "Ruta de reporte inválida."]);
@@ -48,6 +50,10 @@ switch ($resource) {
 
     case 'areas':
         require_once 'routes/areas.php';
+        break;
+
+    case 'gerencias':
+        require_once 'routes/gerencias.php';
         break;
 
     case 'usuarios':
@@ -64,6 +70,10 @@ switch ($resource) {
 
     case 'ml':
         require_once 'routes/ml.php';
+        break;
+
+    case 'cronogramas':
+        require_once 'routes/cronogramas.php';
         break;
 
     case 'auth':

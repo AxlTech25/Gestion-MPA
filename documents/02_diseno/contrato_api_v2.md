@@ -2,7 +2,7 @@
 
 **Prompt:** [D-003](../../prompts/02_diseno/D-003_contrato_api_v1.md)  
 **Base:** `/gestion_mpa/backend/api/v2/` (XAMPP) o `https://{dominio}/backend/api/v2/` (Hostinger)  
-**Producto:** 0.9.1
+**Producto:** 0.10.7. Recurso `/cronogramas` ([I-010](../../prompts/03_implementacion/I-010_cronograma_v1.md) … [I-017](../../prompts/03_implementacion/I-017_gerencias_crud_areas_v1.md)).
 
 ## Sobre
 
@@ -46,8 +46,10 @@
 | POST | `/mantenimientos` | JWT | Alta; puede disparar recálculo ML |
 | GET | `/mantenimientos/{id}` | JWT | Detalle |
 | GET | `/mantenimientos/historial/{codigo}` | JWT | |
-| GET | `/areas` | JWT | |
-| POST | `/areas` | JWT | |
+| GET | `/areas` | JWT | Incluye `gerencia_id` y nombre de gerencia |
+| POST/PUT/PATCH/DELETE | `/areas` | JWT + **Administrador** | PUT/DELETE `?id=`; DELETE 409 si hay equipos |
+| GET | `/gerencias` | JWT | |
+| POST/PUT/PATCH/DELETE | `/gerencias` | JWT + **Administrador** | PUT/DELETE `?id=`; DELETE SET NULL en áreas |
 | GET | `/usuarios` | JWT | Lectura autenticada |
 | POST/PUT/PATCH/DELETE | `/usuarios` | JWT + **Administrador** | I-009 |
 | GET | `/dashboard` | JWT | Métricas |
@@ -61,6 +63,15 @@
 | GET | `/ml/equipos/{id}/riesgo` | JWT | |
 | POST | `/ml/predict/categoria` | JWT | |
 | POST | `/ml/train` | JWT + **Administrador** | |
+| GET | `/cronogramas` | JWT | Historial; query `anio` opcional |
+| POST | `/cronogramas` | JWT + **Tecnico o Administrador** | `{ anio, nombre }` |
+| GET | `/cronogramas/{id}` | JWT | Cabecera + matriz (áreas, conteos, celdas) |
+| DELETE | `/cronogramas/{id}` | JWT + Tec/Admin | Borra el plan (CASCADE celdas/personal/horarios) |
+| POST | `/cronogramas/{id}/celdas` | JWT + Tec/Admin | `{ area_id, fecha, cantidad }` — upsert; cantidad 0 libera; 400 si la fecha no es del `anio` o es sábado/domingo |
+| DELETE | `/cronogramas/{id}/celdas/{id}` | JWT + Tec/Admin | Libera asiento |
+| GET | `/cronogramas/{id}/cobertura` | JWT | Áreas sin celdas en ese documento |
+| GET | `/reportes/cronograma/{id}` | JWT | PDF A4 apaisado, 2 meses/hoja, L–V, año del documento; HORA PROGRAMADA con borde |
+| PUT | `/cronogramas/{id}/celdas/{celdaId}/horarios` | JWT + **Tecnico o Administrador** | Horas por equipo |
 
 El cliente de FastAPI es **solo PHP** (`MlService`). Contrato interno Python: `/health`, `/predict/riesgo`, `/predict/riesgo/batch` (objeto `{}`, no `[]`), `/predict/categoria`, `/train`, `/metrics`.
 

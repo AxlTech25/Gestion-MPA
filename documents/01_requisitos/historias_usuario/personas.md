@@ -81,5 +81,6 @@ Perfiles ficticios que representan a los usuarios del sistema. Sirven como refer
 | Dashboard | ● | ○ | ● | ● | ○ |
 | ML / Alertas | ● | ● | — | ● | — |
 | Reportes PDF | ● | ● | ● | ○ | ○ |
+| Cronograma (propuesto) | ● | ● | ○ | ○ | ○ |
 
 ● Uso principal · ○ Uso ocasional · — No aplica en v0.8.0

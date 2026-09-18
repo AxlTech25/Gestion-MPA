@@ -34,32 +34,35 @@ api.interceptors.response.use(
   }
 );
 
-export const downloadPdf = async (path) => {
+export const downloadPdf = async (path, filename = 'reporte.pdf') => {
   const response = await api.get(path, { responseType: 'blob' });
-  const contentType = response.headers['content-type'] || '';
+  const blob = response.data;
+  const prefix = await blob.slice(0, 8).text();
+  const looksPdf = prefix.startsWith('%PDF');
 
-  if (!contentType.includes('application/pdf')) {
-    const errorText = await response.data.text();
+  if (!looksPdf) {
     let message = 'El servidor no devolvió un PDF válido.';
-
     try {
+      const errorText = await blob.text();
       const errorData = JSON.parse(errorText);
       message = errorData.message || message;
     } catch {
-      if (errorText.trim()) {
-        message = errorText.trim();
-      }
+      /* cuerpo no JSON */
     }
-
     throw new Error(message);
   }
 
-  const url = URL.createObjectURL(response.data);
+  const pdfBlob = blob.type && blob.type.includes('pdf')
+    ? blob
+    : new Blob([blob], { type: 'application/pdf' });
+  const url = URL.createObjectURL(pdfBlob);
   const link = document.createElement('a');
   link.href = url;
-  link.target = '_blank';
+  link.download = filename;
   link.rel = 'noopener';
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
 };
 

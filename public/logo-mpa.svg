@@ -1,0 +1,7 @@
+<svg width="120" height="76" viewBox="0 0 120 76" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MPA logo">
+  <rect width="120" height="76" fill="#d91f26"/>
+  <rect x="6" y="6" width="108" height="64" fill="#c51820" stroke="#f4f4f4" stroke-width="2"/>
+  <circle cx="28" cy="38" r="10" fill="#f8f8f8"/>
+  <circle cx="28" cy="38" r="4" fill="#d91f26"/>
+  <text x="63" y="44" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#ffffff">MPA</text>
+</svg>

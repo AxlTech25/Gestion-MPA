@@ -1,8 +1,8 @@
 # Plan de pruebas unitarias — Gestión MPA V2
 
-**Versión:** 1.1  
-**Fecha:** 2026-09-09  
-**Alcance:** Lógica aislada en frontend (JS), backend (PHP) y microservicio ML (Python)
+**Versión:** 1.3  
+**Fecha:** 2026-09-17  
+**Alcance:** Lógica aislada en frontend (JS), backend (PHP) y microservicio ML (Python), incluido cronograma 0.10.7
 
 ---
 
@@ -72,6 +72,39 @@ Comprobar automáticamente que las reglas de negocio críticas funcionan sin dep
 | ID | Caso | Resultado esperado |
 |----|------|-------------------|
 | UT-PHP-019 | Fila ejemplo vs encabezados | Misma longitud; serie en `numero_serie`, no en `color` |
+
+### 2.3d Backend — `backend/tests/CronogramaTest.php`
+
+| ID | Caso | Resultado esperado |
+|----|------|-------------------|
+| UT-PHP-020 | Turno Manana | Código X1, 10:00–13:00 — **legado** (Xn ya no es turno) |
+| UT-PHP-021 | Turno Tarde | Código X2, 14:00–17:00 — **legado** |
+| UT-PHP-022 | Fecha del año del documento | `2026-09-16` ∈ 2026; `2025-12-31` ∉ 2026 |
+| UT-PHP-023 | Turno inválido | `Noche` → false — **legado** |
+| UT-PHP-024 | `codigoCantidad` / `cantidadValida` | X1…X10; 0 y 31 inválidos |
+| UT-PHP-025 | Laborables y PDF pares | 2028-01-03; sáb/dom fuera; 22 días sep 2026 |
+| UT-PHP-026 | Bandas de gerencia | Primera fila y cambio de gerencia; `OTRAS ÁREAS` |
+
+Caja blanca detallada: [plan_caja_blanca.md](../plan_caja_blanca.md).
+
+### 2.3e Backend — `backend/tests/AreaTest.php`
+
+| ID | Caso | Resultado esperado |
+|----|------|-------------------|
+| UT-PHP-027 | DELETE área con equipos | HTTP 409; el área permanece |
+| UT-PHP-028 | DELETE área vacía | Eliminada |
+| UT-PHP-029 | UPDATE nombre y gerencia | Persiste `gerencia_id` |
+
+### 2.1b Frontend — `src/features/cronograma/utils/cronogramaUtils.test.js`
+
+| ID | Caso | Resultado esperado |
+|----|------|-------------------|
+| UT-FE-006 | `puedeEscribirCronograma` | Admin/Técnico sí; Practicante no |
+| UT-FE-007 | `diasDelMes(2024, 2)` | 29 días; ISO `2024-02-29` |
+| UT-FE-008 | `esFinDeSemana` | sábado/domingo true |
+| UT-FE-009 | `mapaCeldas` | clave **fecha** (ya no `fecha\|turno`) |
+| UT-FE-010 | `codigoCantidad` / `maxCantidadDia` | Xn; resto de equipos |
+| UT-FE-011 | Bandas / `etiquetaGerencia` | Igual que PHP |
 
 ### 2.4 ML — `ml/tests/test_features.py`
 

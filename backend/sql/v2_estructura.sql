@@ -6,11 +6,20 @@ CREATE DATABASE IF NOT EXISTS gestion_equipos_mpa_v2;
 USE gestion_equipos_mpa_v2;
 
 -- 1. Normalizamos Áreas para evitar inconsistencias de texto
+CREATE TABLE IF NOT EXISTS v2_gerencias (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(120) NOT NULL,
+  orden SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  UNIQUE KEY uniq_gerencias_nombre (nombre)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS v2_areas (
   id INT PRIMARY KEY AUTO_INCREMENT,
   nombre VARCHAR(100) UNIQUE NOT NULL,
   jefe_encargado VARCHAR(100),
-  descripcion TEXT
+  descripcion TEXT,
+  gerencia_id INT NULL,
+  FOREIGN KEY (gerencia_id) REFERENCES v2_gerencias(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 8. Historial de Asignaciones: registra cambios de área o responsable de un equipo

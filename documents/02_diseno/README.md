@@ -10,5 +10,7 @@
 | [ml/mantenimiento_predictivo_analisis.md](./ml/mantenimiento_predictivo_analisis.md) | Viabilidad telemetría | [D-005](../../prompts/02_diseno/D-005_analisis_ml_v1.md) |
 | `backend/sql/v2_*.sql` | Esquema y migraciones | [D-001 v1](../../prompts/02_diseno/D-001_modelo_datos_v1.md) |
 | [er_v2.md](./er_v2.md) | ER Mermaid as-built (núcleo + completo) | [D-001 v2](../../prompts/02_diseno/D-001_modelo_datos_v2_refinado.md) |
+| [cronograma.md](./cronograma.md) | Módulo Cronograma (historial + matriz) | [D-007](../../prompts/02_diseno/D-007_cronograma_v1.md) |
+| [adr/ADR-003-cronograma-documento-celdas.md](./adr/ADR-003-cronograma-documento-celdas.md) | Documento + celdas por área | D-007 |
 
 Catálogo: [prompts/gobernanza/catalogo.md](../../prompts/gobernanza/catalogo.md).

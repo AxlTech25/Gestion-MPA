@@ -12,12 +12,22 @@ dist
 dist-ssr
 __pycache__
 *.pyc
+ml/venv/
+.venv/
+venv/
+backend/.phpunit.cache/
+backend/uploads/fichas_tecnicas/*
+!backend/uploads/fichas_tecnicas/.gitkeep
 backend/api/v2/config/local.php
 backend/api/v2/config/local.hostinger.php
 .env
 .env.local
 .env.production
 .env.development
+
+# Dumps locales (el esquema versionado está en backend/sql/)
+/gestion_equipos_mpa_v2.sql
+/gestion_equipos_mpa_v2 (1).sql
 
 # Editor directories and files
 .vscode/*

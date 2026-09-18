@@ -170,6 +170,42 @@
 
 ---
 
+### HU-CFG-007 — Editar y eliminar área
+**Como** administrador, **quiero** corregir o dar de baja un área, **para** mantener el organigrama alineado con la municipalidad.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.7 |
+| Estado | Implementada |
+| Personas | P1 |
+
+**Criterios de aceptación:**
+- [ ] Se puede editar nombre, jefe, descripción y gerencia; el cambio aparece en el listado y en inventario.
+- [ ] Eliminar pide confirmación. Si el área tiene equipos, la API responde 409 y el área permanece.
+- [ ] Al eliminar un área sin equipos se quitan sus marcas de cronograma (CASCADE).
+- [ ] POST/PUT/DELETE `/areas` exigen rol Administrador.
+
+---
+
+### HU-CFG-008 — Catálogo de gerencias
+**Como** administrador, **quiero** registrar gerencias y asignar cada área a una, **para** agrupar el cronograma como en el papel municipal.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.7 |
+| Estado | Implementada |
+| Personas | P1 |
+
+**Criterios de aceptación:**
+- [ ] Existe un catálogo de gerencias (alta y baja) en Configuración; el área elige gerencia con un selector (no texto libre como verdad).
+- [ ] La gerencia es opcional (Alcaldía o servidores pueden quedar sin agrupar).
+- [ ] Al borrar una gerencia, las áreas quedan sin gerencia (SET NULL); no se borran las áreas.
+- [ ] SIGA/SAF siguen siendo áreas (servidor), no gerencias inventadas.
+
+---
+
 ### HU-CFG-005 — Áreas dinámicas en inventario
 **Como** registrador de equipos, **quiero** seleccionar el área desde las áreas configuradas, **para** no depender de valores predefinidos en el formulario.
 
@@ -894,14 +930,281 @@
 
 ---
 
+## Épica EP-09 — Cronograma anual de preventivo
+
+**Prompt:** [R-006](../../../prompts/01_requisitos/R-006_cronograma_anual_v1.md).  
+No confundir con EP-05: aquí se **planifica la visita al área**; la ficha de cada equipo sigue siendo HU-MNT-002.
+
+### HU-CRN-001 — Ver el horario anual por área
+**Como** técnico, **quiero** ver el cronograma del año como en el papel (áreas × días, con cantidad de PC, laptop e impresora), **para** organizar cuántos días necesita cada área.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.0 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] La vista muestra el rango anual (o la campaña) con días como columnas.
+- [ ] Cada fila es un **área** municipal o la fila de servidor institucional.
+- [ ] Cada fila muestra conteos de PC, laptop e impresora tomados del inventario (no tecleados a mano).
+- [ ] Las celdas ocupadas se distinguen de las libres (marca **Xn** = n PC/laptop ese día).
+- [ ] Una misma área puede tener **varios días** con cantidades distintas (p. ej. X2 un día y X3 otro).
+- [ ] Lo que se muestra corresponde al **cronograma abierto** del historial (HU-CRN-008), no a “todo el año mezclado”.
+
+---
+
+### HU-CRN-002 — Marcar días y cantidades del área como asientos de cine
+**Como** técnico o administrador, **quiero** hacer clic en un día libre de la fila del área y elegir cuántos PC/laptop atenderé (X1, X2, X3…), **para** repartir el parque en varios días sin una columna por equipo.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.4 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] Clic en día libre abre selector **X1…Xn** (n = PC + laptop del área). Un área con 1 equipo marca X1 directo.
+- [ ] Un día puede ser X2 y otro X3; no hay columnas X1 y X2 por turno.
+- [ ] Las marcas de un cronograma no aparecen en otro del mismo año.
+- [ ] Un practicante autenticado no puede marcar (HTTP 403 en API si lo intenta).
+- [ ] No se calcula ni se rellena solo cuántos días hacen falta: el conteo se ve y el técnico decide.
+- [ ] Marcar celdas no crea fichas de mantenimiento.
+
+---
+
+### HU-CRN-003 — Liberar o cambiar días y cantidades de un área
+**Como** técnico o administrador, **quiero** desmarcar un día o cambiar su Xn, **para** reprogramar si el área no puede atender o si hace falta alargar la visita.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.4 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] Una celda ocupada (día + cantidad) se puede liberar o cambiar de X2 a X3.
+- [ ] Se pueden añadir o quitar días de la misma fila sin borrar el resto.
+- [ ] La impresión posterior muestra el horario actual, no el anterior.
+
+---
+
+### HU-CRN-004 — Imprimir el cronograma por área
+**Como** administrador, **quiero** imprimir el horario (áreas, conteos y días), **para** avisar a cada área cuándo irá el técnico y qué equipos cubre esa visita.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.6 |
+| Estado | Implementada |
+| Personas | P1, P2, P3 |
+
+**Criterios de aceptación:**
+- [ ] Existe acción de imprimir o exportar PDF del horario tipo matriz.
+- [ ] La salida agrupa por **área**, con N°, PC / laptop / impresora, días laborables y marca **Xn**.
+- [ ] Hoja **A4 apaisada**, **dos meses por página**, **sin sábados ni domingos**. Columnas de día compactas.
+- [ ] Las fechas (ENE-2028, weekday) son del **año del documento**, no del año civil actual.
+- [ ] Los equipos del área (código patrimonial) quedan asociados a esas fechas.
+- [ ] Áreas sin ningún día marcado se ven como pendientes de programar.
+- [ ] La descarga requiere sesión (mismo patrón JWT que HU-RPT-004).
+- [ ] El PDF indica el **año** y el identificador del cronograma impreso.
+- [ ] HORA PROGRAMADA (personas) y la nota al usuario van al pie de la última hoja.
+- [ ] HORA PROGRAMADA muestra **N°, EQUIPO y HORARIO** con borde en cada celda.
+- [ ] N° cabe en dos dígitos; **PC / LAPTOP / IMPRESORA** van con el nombre completo y columnas compactas; las áreas no se parten letra a letra.
+- [ ] La descarga es un archivo PDF (no una pestaña de búsqueda).
+
+---
+
+### HU-CRN-010 — Subtotal y total de equipos
+**Como** técnico, **quiero** ver la suma de PC, laptop e impresora por área y al pie de la matriz, **para** dimensionar la carga del preventivo de un vistazo.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.1 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] Cada fila muestra un subtotal (PC + laptop + impresora).
+- [ ] El pie muestra subtotal por tipo (PC, Lap, Imp) y un total general.
+- [ ] Las cifras coinciden con el inventario vigente (sin Baja).
+
+---
+
+### HU-CRN-011 — Horario por equipo en la visita
+**Como** técnico, **quiero** asignar hora de atención a cada equipo del área (equipo 1, equipo 2, …) cuando marco un turno, **para** que la impresión indique a qué hora se revisa cada uno.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.1 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] Al ocupar un turno se listan los equipos del área (CPU, laptop, impresora).
+- [ ] Se puede editar hora de inicio y fin de cada equipo.
+- [ ] El valor inicial es el horario del turno (X1 10:00–13:00 / X2 14:00–17:00).
+- [ ] El PDF imprime esas horas. Liberar el turno borra también los horarios.
+- [ ] Un practicante no puede guardar horas (HTTP 403).
+
+---
+
+### HU-CRN-013 — Cantidad Xn por día
+**Como** técnico, **quiero** indicar cuántos PC o laptop atenderé cada día (X1…X10) sin partir el día en turnos, **para** repartir un área grande en varios días (2 un día, 3 otro).
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.4 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] Hay una sola columna por día; la celda muestra X2, X3, etc.
+- [ ] El máximo del selector es PC + laptop del área (las impresoras no suman a Xn).
+- [ ] No se generan columnas X1…X10 ni se auto-rellenan los días restantes.
+- [ ] El PDF imprime la misma marca Xn.
+
+---
+
+### HU-CRN-014 — Eliminar un cronograma del historial
+**Como** técnico o administrador, **quiero** borrar un cronograma creado, **para** quitar planes de prueba o campañas que ya no aplican.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.5 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] En el historial hay acción de eliminar con confirmación (nombre del plan).
+- [ ] Se borran el documento, sus celdas, horarios y personal (CASCADE).
+- [ ] Un practicante no ve la acción; `DELETE /cronogramas/{id}` responde 403.
+- [ ] Tras borrar, el ítem no aparece en el listado ni en GET por id (404).
+
+---
+
+### HU-CRN-015 — Agrupar el cronograma por gerencia
+**Como** técnico, **quiero** ver las áreas bajo su gerencia (fila banda, como el papel), **para** leer el horario igual que el documento municipal.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.7 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] La matriz y el PDF insertan una fila de gerencia (sin N° de equipo y sin Xn) al cambiar de grupo.
+- [ ] El N° de área sigue 1, 2, 3… en todo el documento.
+- [ ] Si ninguna área tiene gerencia, no aparecen bandas (compatibilidad).
+- [ ] Áreas sin gerencia, cuando sí hay otras agrupadas, van al final bajo **OTRAS ÁREAS**.
+
+---
+
+### HU-CRN-005 — Incluir servidores institucionales
+**Como** técnico, **quiero** ver en el cronograma el servidor donde corren SIGA, SAF u otro sistema de la entidad, **para** no dejar ese equipo fuera del preventivo anual.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.0 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] El servidor aparece como fila (o filas) del horario, no como gerencia municipal.
+- [ ] No hay pantalla ni API de “módulo SIGA”: solo el activo de inventario que hospeda el software.
+- [ ] Se le puede marcar fecha igual que al resto.
+
+---
+
+### HU-CRN-006 — Ver cobertura del mínimo anual
+**Como** administrador, **quiero** ver qué **áreas** aún no tienen días de preventivo este año, **para** no dejar oficinas ni su parque de equipos fuera de la visita anual.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Media |
+| Incremento | 8 / 0.10.0 |
+| Estado | Implementada |
+| Personas | P1, P4 |
+
+**Criterios de aceptación:**
+- [ ] Indicador o listado de áreas con PC/laptop vigentes cuya suma de Xn aún no cubre ese parque en **ese cronograma**.
+- [ ] Se muestra el total de PC + laptop + impresora de esas áreas pendientes.
+- [ ] No exige que las fichas de mantenimiento ya estén registradas: cuenta la **planificación**.
+- [ ] El listado corresponde al cronograma abierto, no a mezclar todos los del año.
+
+---
+
+### HU-CRN-007 — Menú «Cronograma»
+**Como** técnico, **quiero** entrar por un ítem de menú llamado Cronograma, **para** no confundirlo con Mantenimiento (fichas de intervención).
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.0 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] En el menú principal el texto es **Cronograma** (no “Cronograma de mantenimiento”).
+- [ ] La ruta es distinta a `/v2/mantenimiento`.
+- [ ] Al entrar se muestra el **historial**, no la matriz vacía de un año.
+
+---
+
+### HU-CRN-008 — Historial de cronogramas por año
+**Como** administrador, **quiero** ver cada cronograma que se programó, agrupado por año, **para** tener trazabilidad (incluso 2 o 3 en el mismo año).
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.0 |
+| Estado | Implementada |
+| Personas | P1, P2, P3 |
+
+**Criterios de aceptación:**
+- [ ] Listado de cronogramas ya registrados (historial).
+- [ ] Cada ítem muestra al menos año, identificador y fecha de registro.
+- [ ] Se puede filtrar o agrupar por año.
+- [ ] Un mismo año admite varios ítems (caso típico: 2 o 3).
+- [ ] Abrir un ítem lleva a la matriz de **ese** cronograma (HU-CRN-001).
+- [ ] Los ítems no se mezclan: las celdas de uno no aparecen en otro.
+
+---
+
+### HU-CRN-009 — Registrar un cronograma nuevo
+**Como** técnico o administrador, **quiero** crear un cronograma nuevo indicando el año, **para** abrir otra campaña sin borrar las anteriores.
+
+| Campo | Valor |
+|-------|-------|
+| Prioridad | Alta |
+| Incremento | 8 / 0.10.0 |
+| Estado | Implementada |
+| Personas | P1, P2 |
+
+**Criterios de aceptación:**
+- [ ] Existe acción de crear un cronograma (año obligatorio).
+- [ ] Queda un ítem nuevo en el historial, vacío de marcas.
+- [ ] Un practicante no puede crearlo (HTTP 403 si lo intenta).
+- [ ] Crear el documento no genera fichas de mantenimiento ni rellena celdas.
+
+---
+
 ## Resumen de backlog pendiente
 
-| ID | Historia | Prioridad |
-|----|----------|-----------|
-| HU-FIC-008 | Evaluación predictiva en ficha | Media |
-| HU-ML-003 | Reentrenar modelo v2 (parcial) | Alta |
-| HU-ML-006 | Recálculo ML post-mantenimiento | Media |
-| HU-ML-007 | Tabla métricas históricas | Baja |
+EP-09 / Incremento 8 (**0.10.7**): **cerrado** el 2026-09-17. No quedan HU-CRN pendientes.
+
+| ID | Historia | Prioridad | Nota |
+|----|----------|-----------|------|
+| — | — | — | Sin backlog de cronograma. Un cambio nuevo exige R-* (no reabrir I-017). |
 
 ---
 

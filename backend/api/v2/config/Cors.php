@@ -24,9 +24,12 @@ class CorsConfig {
             header('Vary: Origin');
         }
 
-        header('Content-Type: application/json; charset=UTF-8');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+        header('Access-Control-Expose-Headers: Content-Type, Content-Disposition');
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=UTF-8');
+        }
     }
 
     public static function handlePreflight(): bool {

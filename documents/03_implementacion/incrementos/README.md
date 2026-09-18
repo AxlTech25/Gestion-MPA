@@ -13,5 +13,7 @@ Registros de la fase de implementación del **Prompt-Centered SDLC v1.2**. Cada 
 | 6 / 0.7.0 ML (`incremento_6.md`) | [I-007](../../../prompts/03_implementacion/I-007_microservicio_ml_v1.md) |
 | 7 / 0.8.0–0.9.0 | [I-008](../../../prompts/03_implementacion/I-008_telemetria_ficha_predictiva_v1.md) |
 | Parche 0.9.1 | [I-009](../../../prompts/03_implementacion/I-009_rbac_plantilla_excel_v1.md) |
+| 8 / 0.10.0 cronograma | [I-010](../../../prompts/03_implementacion/I-010_cronograma_v1.md) |
+| 8 / 0.10.4 cantidad Xn | [I-014](../../../prompts/03_implementacion/I-014_cronograma_cantidad_xn_v1.md) |
 
 Índice: [README de la fase](../README.md).

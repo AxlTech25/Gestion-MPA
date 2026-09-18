@@ -5,7 +5,7 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
 **Stack:** React (Vite) · PHP API REST · MySQL · FastAPI (ML)
 
 **Metodología:** Prompt-Centered SDLC v1.2  
-**Versión actual:** 0.9.0
+**Versión actual:** 0.10.7 (Incremento 8 cerrado)
 
 ---
 
@@ -18,8 +18,9 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
   - [Inventario](#3-inventario)
   - [Ficha técnica](#4-ficha-técnica)
   - [Mantenimiento](#5-mantenimiento)
-  - [Configuración](#6-configuración)
-  - [Alertas predictivas (ML)](#7-alertas-predictivas-ml)
+  - [Cronograma](#6-cronograma)
+  - [Configuración](#7-configuración)
+  - [Alertas predictivas (ML)](#8-alertas-predictivas-ml)
 - [Roles y credenciales](#roles-y-credenciales)
 - [Documentación adicional](#documentación-adicional)
 - [Desarrollo](#desarrollo)
@@ -45,6 +46,8 @@ El marco de trabajo es la propuesta **Prompt-Centered SDLC v1.2** (en validació
    - Si actualizas desde una versión anterior, aplicar también:
      - `backend/sql/v2_extension_fase7.sql` (o `php backend/tools/migrate_fase7.php`)
      - `backend/sql/v2_ml_predicciones.sql`
+     - `php backend/tools/migrate_cronograma.php` (Incremento 8)
+     - `php backend/tools/migrate_gerencias.php` (0.10.7)
 
 2. **Backend PHP**
    ```bash
@@ -220,15 +223,35 @@ En mantenimiento **correctivo**, si el ML está activo, puede aparecer una **sug
 
 ---
 
-### 6. Configuración
+### 6. Cronograma
+
+Plan anual de preventivo **por área** (no sustituye el historial de fichas).
+
+1. En el menú abra **Cronograma**. La primera vista es el **historial** de planes (puede haber varios en el mismo año).
+2. Cree un plan (año + nombre) o abra uno existente.
+3. En la matriz, un clic en un día laborable abre el selector **X1…Xn** (cuántos PC o laptop se atienden ese día). Las impresoras se cuentan en la tabla pero no entran en Xn.
+4. El recuadro **HORA PROGRAMADA** lista las personas del preventivo, no los bienes del área.
+5. **Imprimir PDF** descarga A4 apaisado (dos meses por hoja, lunes a viernes).
+6. Si las áreas tienen gerencia, la matriz y el PDF muestran **bandas** de agrupación.
+7. Un Practicante puede ver e imprimir; no marca ni elimina planes.
+
+Marcar una celda **no** registra una ficha de mantenimiento.
+
+---
+
+### 7. Configuración
 
 Panel de administración organizacional (requiere rol **Administrador** en UI y en API).
 
 #### Pestaña Áreas
 
-- Ver áreas registradas.
-- Crear área con nombre, jefe encargado y descripción.
-- Las áreas creadas aparecen automáticamente al registrar equipos.
+- Ver, crear, **editar y eliminar** áreas (no se elimina un área que tenga equipos).
+- Asignar cada área a una **gerencia** (selector; opcional).
+- Las áreas aparecen en inventario y en el cronograma.
+
+#### Pestaña Gerencias
+
+- Catálogo de gerencias para agrupar el cronograma como el papel municipal.
 
 #### Pestaña Personal
 
@@ -238,7 +261,7 @@ Panel de administración organizacional (requiere rol **Administrador** en UI y 
 
 ---
 
-### 7. Alertas predictivas (ML)
+### 8. Alertas predictivas (ML)
 
 Funcionalidades que dependen del microservicio FastAPI en el puerto **8000**:
 
@@ -282,6 +305,8 @@ Más detalle en [`ml/README.md`](ml/README.md).
 | Inventario (editar) | ✓ | ✓ | — |
 | Ficha técnica | ✓ | ✓ | — |
 | Mantenimiento | ✓ | ✓ | — |
+| Cronograma (ver / imprimir) | ✓ | ✓ | ✓ |
+| Cronograma (marcar / crear / borrar) | ✓ | ✓ | — |
 | Configuración | ✓ | — | — |
 | Carga masiva Excel | ✓ | — | — |
 
@@ -314,7 +339,7 @@ npm run build:hostinger
 #    - Carpeta backend/    →  public_html/backend/
 ```
 
-4. Importe `gestion_equipos_mpa_v2.sql` en phpMyAdmin (hPanel).  
+4. Importe `backend/sql/v2_estructura.sql` (instalación nueva) o ejecute las migraciones pendientes (`migrate_fase7.php`, `migrate_cronograma.php`, `migrate_gerencias.php`) sobre la BD existente.  
 5. Active SSL y cambie la contraseña del usuario `admin`.
 
 > En hosting compartido el módulo ML queda deshabilitado (`ml_service_url` vacío). El resto del sistema funciona con normalidad.
@@ -374,7 +399,7 @@ gestion_mpa/
 /gestion_mpa/backend/api/v2
 ```
 
-Rutas principales: `/auth`, `/equipos`, `/mantenimientos`, `/fichas-tecnicas`, `/dashboard`, `/reportes`, `/ml`, `/areas`, `/usuarios`.
+Rutas principales: `/auth`, `/equipos`, `/mantenimientos`, `/fichas-tecnicas`, `/dashboard`, `/reportes`, `/ml`, `/areas`, `/gerencias`, `/usuarios`, `/cronogramas`.
 
 ---
 

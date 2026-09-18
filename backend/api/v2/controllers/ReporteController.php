@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/Mantenimiento.php';
+require_once __DIR__ . '/../models/Cronograma.php';
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -165,22 +166,28 @@ class ReporteController {
         return '';
     }
 
-    private function renderPdf(string $html, string $filename): void {
+    private function renderPdf(string $html, string $filename, string $orientation = 'portrait', string $paper = 'A4'): void {
         $options = new Options();
         $options->set('defaultFont', 'Helvetica');
         $options->set('isHtml5ParserEnabled', true);
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper($paper, $orientation);
         $dompdf->render();
 
-        // La API establece JSON por defecto; este endpoint devuelve un PDF.
+        $output = $dompdf->output();
         if (ob_get_length() !== false) {
             ob_clean();
         }
+        header_remove('Content-Type');
         header('Content-Type: application/pdf');
-        $dompdf->stream($filename, ["Attachment" => false]);
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . strlen($output));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+        echo $output;
+        exit;
     }
 
     private function firmanteInfo(): array {
@@ -535,6 +542,271 @@ class ReporteController {
         </html>';
 
         $this->renderPdf($html, "ficha_mantenimiento_" . ($m['nro_orden'] ?? $id) . ".pdf");
+    }
+
+    public function cronograma(int $id): void {
+        $model = new Cronograma($this->db);
+        $data = $model->getMatriz($id);
+        if (!$data) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "message" => "Cronograma no encontrado."]);
+            return;
+        }
+
+        $doc = $data['cronograma'];
+        $anio = (int) ($doc['anio'] ?? date('Y'));
+        $pares = Cronograma::paresDeMesesParaPdf($data['filas'] ?? [], $anio);
+        $totalHojas = max(1, count($pares));
+        $paginas = [];
+        foreach ($pares as $i => $par) {
+            $ultima = ($i === count($pares) - 1);
+            $paginas[] = $this->htmlMatrizCronograma($data, $anio, $par, $i + 1, $totalHojas, $ultima);
+        }
+
+        $html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
+            . $this->estilosCronogramaPdf()
+            . '</style></head><body>'
+            . implode('', $paginas)
+            . '</body></html>';
+
+        $this->renderPdf($html, 'cronograma_' . $id . '.pdf', 'landscape', 'A4');
+    }
+
+    private function estilosCronogramaPdf(): string {
+        return '
+            @page { margin: 6mm 5mm 6mm 5mm; }
+            body { font-family: Helvetica, sans-serif; color: #111827; font-size: 7.5px; margin: 0; }
+            h1 { text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; margin: 0 0 1px; }
+            .sub { text-align: center; font-size: 8px; color: #475569; margin: 0 0 4px; }
+            .gantt { width: 100%; border-collapse: collapse; }
+            .gantt th, .gantt td { border: 0.4pt solid #334155; padding: 2px 3px; text-align: center; font-size: 6.5px; line-height: 1.2; vertical-align: middle; }
+            .gantt .nro { width: 1%; white-space: nowrap; font-size: 6.5px; padding: 2px 1px; }
+            .gantt .area { text-align: left; font-size: 7px; padding: 2px 4px; white-space: nowrap; }
+            .gantt .pc, .gantt .lap, .gantt .imp { width: 1%; white-space: nowrap; font-size: 6px; padding: 2px 2px; }
+            .gantt .eqs { font-size: 6.5px; font-weight: 700; }
+            .gantt .mes { background: #e2e8f0; font-size: 7px; font-weight: 700; }
+            .gantt .dia { font-size: 6px; color: #334155; font-weight: 600; padding: 1px 1px; white-space: nowrap; }
+            .gantt .mark { font-weight: 700; font-size: 6.5px; color: #0f172a; }
+            .gantt .tot { background: #e2e8f0; font-weight: 700; }
+            .gantt .tot .left { text-align: left; white-space: nowrap; }
+            .gantt .left { text-align: left; }
+            .gantt .ger td { background: #cbd5e1; font-weight: 700; text-align: left; font-size: 6.5px; letter-spacing: 0.4px; }
+            .bloque { page-break-after: always; }
+            .final { page-break-after: auto; }
+            .pie-grid { width: 100%; border-collapse: collapse; margin-top: 8px; }
+            .pie-grid th, .pie-grid td { border: 1px solid #334155; padding: 3px 5px; font-size: 7px; vertical-align: middle; }
+            .pie-grid th { background: #e2e8f0; font-weight: 700; text-align: center; }
+            .pie-grid .n { width: 8mm; text-align: center; }
+            .pie-grid .eq { width: 22mm; text-align: left; }
+            .pie-grid .hr { text-align: left; }
+            .pie-grid .nota-cell { width: 58%; text-align: justify; vertical-align: top; padding: 6px 8px; }
+        ';
+    }
+
+    private function nombresMesPdf(): array {
+        return [1 => 'ENE', 2 => 'FEB', 3 => 'MAR', 4 => 'ABR', 5 => 'MAY', 6 => 'JUN',
+            7 => 'JUL', 8 => 'AGO', 9 => 'SET', 10 => 'OCT', 11 => 'NOV', 12 => 'DIC'];
+    }
+
+    private function fechasDeMeses(int $anio, array $meses): array {
+        return Cronograma::fechasLaborablesDeMeses($anio, $meses);
+    }
+
+    private function textoAreaPdf(string $nombre): string {
+        $nombre = trim(preg_replace('/\s+/u', ' ', $nombre) ?? '');
+        if ($nombre === '') {
+            return '';
+        }
+        $lineas = preg_split("/\n/", wordwrap($nombre, 20, "\n", false)) ?: [$nombre];
+        $html = [];
+        foreach ($lineas as $linea) {
+            $linea = trim((string) $linea);
+            if ($linea !== '') {
+                $html[] = $this->h($linea);
+            }
+        }
+        return implode('<br />', $html);
+    }
+
+    private function conteoPdf($n): string {
+        $n = (int) $n;
+        return $n === 0 ? '-' : (string) $n;
+    }
+
+    private function esFinDeSemanaIso(string $fecha): bool {
+        $n = (int) date('w', strtotime($fecha . ' 12:00:00'));
+        return $n === 0 || $n === 6;
+    }
+
+    private function mapaCantidadFila(array $celdas): array {
+        $map = [];
+        foreach ($celdas as $celda) {
+            $fecha = (string) ($celda['fecha'] ?? '');
+            if ($fecha === '') {
+                continue;
+            }
+            $map[$fecha] = (int) ($celda['cantidad'] ?? 0);
+        }
+        return $map;
+    }
+
+    private function encabezadoCronograma(array $doc, int $hoja, int $total): string {
+        $anio = $this->h((string) ($doc['anio'] ?? ''));
+        $nombre = $this->h((string) ($doc['nombre'] ?? ''));
+        return '<h1>Cronograma de mantenimiento de equipos de cómputo ' . $anio . '</h1>'
+            . '<p class="sub">' . $nombre . ' &nbsp;·&nbsp; Hoja ' . $hoja . ' / ' . $total . '</p>';
+    }
+
+    private function htmlMatrizCronograma(array $data, int $anio, array $meses, int $hoja, int $total, bool $conPie = false): string {
+        $doc = $data['cronograma'];
+        $filas = $data['filas'] ?? [];
+        $tot = $data['totales'] ?? ['pc' => 0, 'laptop' => 0, 'impresora' => 0, 'total' => 0];
+        $nombres = $this->nombresMesPdf();
+        $fechas = $this->fechasDeMeses($anio, $meses);
+        $nDias = max(1, count($fechas));
+
+        $mesTh = '';
+        foreach ($meses as $mes) {
+            $span = Cronograma::cantidadLaborablesDelMes($anio, (int) $mes);
+            if ($span < 1) {
+                continue;
+            }
+            $mesTh .= '<th class="mes" colspan="' . $span . '">' . $nombres[$mes] . '-' . $anio . '</th>';
+        }
+
+        $diaTh = '';
+        foreach ($fechas as $fecha) {
+            $diaTh .= '<th class="dia">' . (int) substr($fecha, 8, 2) . '</th>';
+        }
+
+        $body = '';
+        $nro = 1;
+        $colSpanGer = 5 + $nDias;
+        foreach ($filas as $i => $fila) {
+            if (Cronograma::debeMostrarBandaGerencia($filas, $i)) {
+                $body .= '<tr class="ger"><td class="left" colspan="' . $colSpanGer . '">'
+                    . $this->h(Cronograma::etiquetaGerencia($fila))
+                    . '</td></tr>';
+            }
+            $map = $this->mapaCantidadFila($fila['celdas'] ?? []);
+            $body .= '<tr>'
+                . '<td class="nro">' . $nro . '</td>'
+                . '<td class="area left">' . $this->textoAreaPdf($fila['area'] ?? '') . '</td>'
+                . '<td class="pc">' . $this->conteoPdf($fila['pc'] ?? 0) . '</td>'
+                . '<td class="lap">' . $this->conteoPdf($fila['laptop'] ?? 0) . '</td>'
+                . '<td class="imp">' . $this->conteoPdf($fila['impresora'] ?? 0) . '</td>';
+            foreach ($fechas as $fecha) {
+                $marca = Cronograma::marcaEnFecha((int) ($map[$fecha] ?? 0));
+                $cls = $marca !== '' ? 'mark' : '';
+                $body .= '<td class="' . $cls . '">' . ($marca !== '' ? $this->h($marca) : '&nbsp;') . '</td>';
+            }
+            $body .= '</tr>';
+            $nro++;
+        }
+
+        $body .= '<tr class="tot">'
+            . '<td class="nro">&nbsp;</td><td class="left">SUBTOTAL</td>'
+            . '<td class="pc">' . $this->conteoPdf($tot['pc'] ?? 0) . '</td>'
+            . '<td class="lap">' . $this->conteoPdf($tot['laptop'] ?? 0) . '</td>'
+            . '<td class="imp">' . $this->conteoPdf($tot['impresora'] ?? 0) . '</td>'
+            . '<td colspan="' . $nDias . '">&nbsp;</td></tr>'
+            . '<tr class="tot">'
+            . '<td class="nro">&nbsp;</td><td class="left">TOTAL EQUIPOS</td>'
+            . '<td colspan="3">' . (int) ($tot['total'] ?? 0) . '</td>'
+            . '<td colspan="' . $nDias . '">&nbsp;</td></tr>';
+
+        return '<div class="bloque' . ($conPie ? ' final' : '') . '">'
+            . $this->encabezadoCronograma($doc, $hoja, $total)
+            . '<table class="gantt">'
+            . '<colgroup>'
+            . '<col class="nro" />'
+            . '<col class="area" />'
+            . '<col class="pc" />'
+            . '<col class="lap" />'
+            . '<col class="imp" />'
+            . '</colgroup>'
+            . '<tr>'
+            . '<th class="nro" rowspan="2">N°</th>'
+            . '<th class="area" rowspan="2">ÁREA</th>'
+            . '<th class="eqs" colspan="3">EQUIPOS DE CÓMPUTO</th>'
+            . $mesTh
+            . '</tr>'
+            . '<tr>'
+            . '<th class="pc">PC</th>'
+            . '<th class="lap">LAPTOP</th>'
+            . '<th class="imp">IMPRESORA</th>'
+            . $diaTh
+            . '</tr>'
+            . $body
+            . '</table>'
+            . ($conPie ? $this->htmlPiePersonal($data) : '')
+            . '</div>';
+    }
+
+    private function htmlPiePersonal(array $data): string {
+        $personas = $data['personal'] ?? [];
+        if ($personas === []) {
+            $personas = [
+                ['nombre' => 'PC 01', 'hora_inicio' => '10:00', 'hora_fin' => '13:00'],
+                ['nombre' => 'PC 02', 'hora_inicio' => '14:00', 'hora_fin' => '17:00'],
+            ];
+        }
+
+        $nota = '<strong>NOTA:</strong> En la fecha y hora programada para el mantenimiento preventivo, '
+            . 'los usuarios responsables de los equipos y sus periféricos deben prever y dar todas las facilidades '
+            . 'al personal técnico de la Unidad de Tecnologías de la Información y Sistemas.';
+
+        $rowspan = 2 + count($personas);
+        $filas = '';
+        $n = 1;
+        foreach ($personas as $p) {
+            $filas .= '<tr>'
+                . '<td class="n">' . $n . '</td>'
+                . '<td class="eq">' . $this->h($p['nombre'] ?? '') . '</td>'
+                . '<td class="hr">' . $this->h($this->fmtHoraPdf($p['hora_inicio'] ?? '')) . ' — '
+                . $this->h($this->fmtHoraPdf($p['hora_fin'] ?? '')) . '</td>'
+                . '</tr>';
+            $n++;
+        }
+
+        return '<table class="pie-grid" cellspacing="0" cellpadding="3">'
+            . '<colgroup>'
+            . '<col class="n" style="width:8mm;" />'
+            . '<col class="eq" style="width:22mm;" />'
+            . '<col class="hr" style="width:48mm;" />'
+            . '<col />'
+            . '</colgroup>'
+            . '<tr>'
+            . '<th colspan="3">HORA PROGRAMADA</th>'
+            . '<td class="nota-cell" rowspan="' . $rowspan . '">' . $nota . '</td>'
+            . '</tr>'
+            . '<tr>'
+            . '<th class="n">N°</th>'
+            . '<th class="eq">EQUIPO</th>'
+            . '<th class="hr">HORARIO</th>'
+            . '</tr>'
+            . $filas
+            . '</table>';
+    }
+
+    private function fmtHoraPdf(?string $hora): string {
+        $norm = Cronograma::normalizarHora((string) $hora);
+        if ($norm === null) {
+            return '—';
+        }
+        $ts = strtotime('1970-01-01 ' . $norm);
+        $h = (int) date('G', $ts);
+        $min = date('i', $ts);
+        if ($h === 0) {
+            return '12:' . $min . ' a. m.';
+        }
+        if ($h === 12) {
+            return '12:' . $min . ' p. m.';
+        }
+        if ($h > 12) {
+            return sprintf('%02d:%s p. m.', $h - 12, $min);
+        }
+        return sprintf('%02d:%s a. m.', $h, $min);
     }
 }
 ?>

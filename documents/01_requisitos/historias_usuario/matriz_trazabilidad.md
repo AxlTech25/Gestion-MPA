@@ -20,7 +20,7 @@ Relación entre historias de usuario, incrementos SDLC, versiones y módulos del
 | Incremento 7 | 0.8.0 | HU-INV-008, HU-MNT-006–012, HU-DSH-005–006, HU-ML-003 (parcial) |
 | Post-incremento 7 | 0.8.x | HU-MNT-003–005, HU-MNT-008, HU-RPT-002–003 |
 | Parche seguridad / plantilla | 0.9.1 | HU-AUTH-005, HU-CFG-006, HU-INV-004 (ajuste) |
-| Pendiente | — | — |
+| Incremento 8 | 0.10.0–0.10.7 (**cerrado** 2026-09-17) | HU-CRN-001–015, HU-CFG-007–008 ([R-006](../../../prompts/01_requisitos/R-006_cronograma_anual_v1.md), I-010…I-017) |
 
 ---
 
@@ -39,6 +39,8 @@ Relación entre historias de usuario, incrementos SDLC, versiones y módulos del
 | HU-CFG-004 | Configuración | ✅ | 5 | UsuarioForm | POST `/usuarios` |
 | HU-CFG-005 | Configuración | ✅ | 5 | EquipoForm | GET `/areas` |
 | HU-CFG-006 | Configuración | ✅ | 0.9.1 | ConfiguracionPage, UsuarioController | PUT/DELETE `/usuarios` |
+| HU-CFG-007 | Configuración | ✅ | 8 / 0.10.7 | ConfiguracionPage, AreaForm | PUT/DELETE `/areas?id=` |
+| HU-CFG-008 | Configuración | ✅ | 8 / 0.10.7 | ConfiguracionPage | `/gerencias` |
 | HU-INV-001 | Inventario | ✅ | 2 | InventarioPage | GET `/equipos` |
 | HU-INV-002 | Inventario | ✅ | 2,5,7 | EquipoForm | POST `/equipos` |
 | HU-INV-003 | Inventario | ✅ | 4 | InventarioPage | — (client-side) |
@@ -85,6 +87,20 @@ Relación entre historias de usuario, incrementos SDLC, versiones y módulos del
 | HU-RPT-002 | Reportes | ✅ | 7+ | MantenimientoPage | `/reportes/mantenimiento/historial/` |
 | HU-RPT-003 | Reportes | ✅ | 7+ | MantenimientoDetalleModal | `/reportes/mantenimiento/{id}` |
 | HU-RPT-004 | Reportes | ✅ | 0.6.0 | lib/api.js | JWT en descarga blob |
+| HU-CRN-001 | Cronograma | ✅ | 8 / 0.10.0 | CronogramaMatrizPage | GET `/cronogramas/{id}` |
+| HU-CRN-002 | Cronograma | ✅ | 8 / 0.10.0 | CronogramaMatrizPage | POST `/cronogramas/{id}/celdas` |
+| HU-CRN-003 | Cronograma | ✅ | 8 / 0.10.0 | CronogramaMatrizPage | DELETE `/cronogramas/{id}/celdas/{celdaId}` |
+| HU-CRN-004 | Cronograma | ✅ | 8 / 0.10.6 | CronogramaMatrizPage | GET `/reportes/cronograma/{id}` |
+| HU-CRN-005 | Cronograma | ✅ | 8 / 0.10.0 | CronogramaMatrizPage | Filas `v2_areas` (SIGA/SAF = área) |
+| HU-CRN-006 | Cronograma | ✅ | 8 / 0.10.0 | CronogramaMatrizPage | Cobertura en GET matriz |
+| HU-CRN-007 | Cronograma | ✅ | 8 / 0.10.0 | Navbar | `/v2/cronograma` |
+| HU-CRN-008 | Cronograma | ✅ | 8 / 0.10.0 | CronogramaListPage | GET `/cronogramas` |
+| HU-CRN-009 | Cronograma | ✅ | 8 / 0.10.0 | CronogramaListPage | POST `/cronogramas` |
+| HU-CRN-010 | Cronograma | ✅ | 8 / 0.10.1 | CronogramaMatrizPage | Totales en GET matriz |
+| HU-CRN-011 | Cronograma | ✅ | 8 / 0.10.1 | CronogramaHorariosModal | PUT `/cronogramas/{id}/celdas/{id}/horarios` |
+| HU-CRN-013 | Cronograma | ✅ | 8 / 0.10.4 | CronogramaCantidadPopover | POST `/cronogramas/{id}/celdas` `{cantidad}` |
+| HU-CRN-014 | Cronograma | ✅ | 8 / 0.10.5 | CronogramaListPage | DELETE `/cronogramas/{id}` |
+| HU-CRN-015 | Cronograma | ✅ | 8 / 0.10.7 | CronogramaMatrizPage | GET `/cronogramas/{id}` (bandas gerencia) |
 
 ---
 
@@ -92,8 +108,8 @@ Relación entre historias de usuario, incrementos SDLC, versiones y módulos del
 
 | Tipo | Documento | Historias cubiertas |
 |------|-----------|---------------------|
-| Funcional | `documents/04_testing/plan_pruebas_funcionales.md` | AUTH, CFG, INV, FIC, MNT, DSH, ML, REG |
-| Unitario | `documents/04_testing/unitarias/plan_pruebas_unitarias.md` | Lógica MNT-010, DSH-005/006, ML-003, AUTH-005, INV-004 |
+| Funcional | `documents/04_testing/plan_pruebas_funcionales.md` | AUTH, CFG, INV, FIC, MNT, DSH, ML, CRN, REG |
+| Unitario | `documents/04_testing/unitarias/plan_pruebas_unitarias.md` | Lógica MNT-010, DSH-005/006, ML-003, AUTH-005, INV-004, CRN (turnos/año) |
 
 ---
 
@@ -109,6 +125,7 @@ Relación entre historias de usuario, incrementos SDLC, versiones y módulos del
 | EP-06 Dashboard | P1, P3, P4 |
 | EP-07 ML | P4 |
 | EP-08 Reportes | P1, P2, P3 |
+| EP-09 Cronograma | P1, P2 |
 
 ---
 

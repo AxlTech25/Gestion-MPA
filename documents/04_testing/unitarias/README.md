@@ -31,16 +31,21 @@ pytest -v
 ## Estructura de archivos de prueba
 
 ```
-src/lib/equipoTipo.test.js          → Utilidades tipo de equipo (JS)
-backend/tests/MantenimientoTest.php → Sync telemetría post-mantenimiento
-backend/tests/DashboardConsultaTest.php → Filtros consulta dashboard (SQLite)
-backend/tests/UsuarioTest.php → Conteo de roles y ENUM de roles
-backend/tests/AuthMiddlewareTest.php → Comprobación de rol en payload JWT
-backend/tests/EquipoPlantillaTest.php → Alineación fila ejemplo vs encabezados Excel
-ml/tests/test_features.py           → Pipeline features ML
-ml/tests/test_ml_schemas.py         → Validación Pydantic API ML
+src/lib/equipoTipo.test.js
+src/features/cronograma/utils/cronogramaUtils.test.js
+backend/tests/MantenimientoTest.php
+backend/tests/DashboardConsultaTest.php
+backend/tests/UsuarioTest.php
+backend/tests/AuthMiddlewareTest.php
+backend/tests/EquipoPlantillaTest.php
+backend/tests/CronogramaTest.php
+backend/tests/AreaTest.php
+ml/tests/test_features.py
+ml/tests/test_ml_schemas.py
 ```
+
+Caja blanca (ramas): [plan_caja_blanca.md](../plan_caja_blanca.md). Integración HTTP: [plan_pruebas_integracion.md](../plan_pruebas_integracion.md) (T-007; scripts en oleada posterior).
 
 ## Relación con pruebas funcionales
 
-Las pruebas unitarias validan **reglas y transformaciones**; las [pruebas funcionales](./plan_pruebas_funcionales.md) validan el flujo completo en la UI. Ejecute ambas antes de un release.
+Las pruebas unitarias validan **reglas y transformaciones**; el [E2E caja negra](../plan_pruebas_funcionales.md) valida el flujo en la UI. Integración HTTP: [plan_pruebas_integracion.md](../plan_pruebas_integracion.md). Ejecute unitarias + humo antes de un release.

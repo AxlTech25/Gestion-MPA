@@ -60,5 +60,22 @@ class AuthMiddleware {
             exit;
         }
     }
+
+    public static function tieneRol(object $payload, string ...$roles): bool {
+        return in_array($payload->rol ?? '', $roles, true);
+    }
+
+    public static function requireRole(string ...$roles): object {
+        $payload = self::requireAuth();
+        if (!self::tieneRol($payload, ...$roles)) {
+            http_response_code(403);
+            echo json_encode([
+                "success" => false,
+                "message" => "No autorizado. Se requiere rol: " . implode(' o ', $roles) . ".",
+            ]);
+            exit;
+        }
+        return $payload;
+    }
 }
 ?>

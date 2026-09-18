@@ -12,6 +12,7 @@
 | Relación | Tipo | Evidencia SQL |
 |----------|------|----------------|
 | `v2_equipos` ↔ `v2_fichas_tecnicas` | 1:1 | `equipo_id UNIQUE NOT NULL` |
+| `v2_gerencias` → `v2_areas` | 1:N | `gerencia_id` FK, `ON DELETE SET NULL` |
 | `v2_areas` → `v2_equipos` | 1:N | `area_id` FK, NOT NULL |
 | `v2_usuarios` → `v2_equipos` | 1:N | `responsable_id` FK, `ON DELETE SET NULL` |
 | `v2_areas` → `v2_usuarios` | 1:N | `area_id` FK, `ON DELETE SET NULL` |
@@ -31,6 +32,7 @@ FastAPI no aparece: no tiene tablas propias.
 
 ```mermaid
 erDiagram
+  v2_gerencias ||--o{ v2_areas : "gerencia_id"
   v2_areas ||--o{ v2_usuarios : "area_id"
   v2_areas ||--o{ v2_equipos : "area_id"
   v2_usuarios ||--o{ v2_equipos : "responsable_id"
@@ -43,9 +45,14 @@ erDiagram
   v2_equipos ||--o{ v2_metricas_equipo : "equipo_id"
   v2_fichas_mantenimiento ||--o{ v2_metricas_equipo : "mantenimiento_id"
 
+  v2_gerencias {
+    int id PK
+    string nombre UK
+  }
   v2_areas {
     int id PK
     string nombre UK
+    int gerencia_id FK
   }
   v2_usuarios {
     int id PK
@@ -113,6 +120,10 @@ erDiagram
   v2_equipos ||--o{ v2_cronograma_mantenimiento : "equipo_id"
   v2_usuarios ||--o{ v2_cronograma_mantenimiento : "responsable_creado_por"
   v2_areas ||--o{ v2_cronograma_mantenimiento : "area_id"
+  v2_cronograma_celdas ||--o{ v2_cronograma_horarios : "celda_id"
+  v2_equipos ||--o{ v2_cronograma_horarios : "equipo_id"
+  v2_areas ||--o{ v2_cronograma_celdas : "area_id"
+  v2_usuarios ||--o{ v2_cronogramas : "creado_por"
   v2_equipos ||--o{ v2_hojas_baja : "equipo_id"
   v2_usuarios ||--o{ v2_hojas_baja : "creado_validado_por"
 
@@ -132,6 +143,20 @@ erDiagram
     int area_id FK
     int creado_por FK
   }
+  v2_cronogramas {
+    int id PK
+    int anio
+    string nombre
+    int creado_por FK
+  }
+  v2_cronograma_celdas {
+    int id PK
+    int cronograma_id FK
+    int area_id FK
+    date fecha
+    int cantidad
+    string turno
+  }
   v2_hojas_baja {
     int id PK
     int equipo_id FK
@@ -141,3 +166,5 @@ erDiagram
 ```
 
 `v2_historial_asignaciones` y `v2_cronograma_mantenimiento` / `v2_hojas_baja` concentran varias FK a `v2_usuarios` y `v2_areas`; en Mermaid se agrupan en una arista por par de entidades para no saturar el dibujo. El detalle está en los atributos y en el SQL.
+
+Incremento 8: `v2_cronogramas` + `v2_cronograma_celdas` (asiento área+fecha+**cantidad** Xn, I-014) + `v2_cronograma_personal` (I-013). `v2_cronograma_mantenimiento` **no** se usa. `turno` en celdas es residual.

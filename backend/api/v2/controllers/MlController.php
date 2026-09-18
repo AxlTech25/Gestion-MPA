@@ -111,11 +111,7 @@ class MlController {
     }
 
     public function train() {
-        $payload = AuthMiddleware::requireAuth();
-        if (($payload->rol ?? '') !== 'Administrador') {
-            $this->jsonError('Solo administradores pueden reentrenar el modelo.', 403);
-            return;
-        }
+        AuthMiddleware::requireRole('Administrador');
 
         $res = $this->ml->call('POST', '/train', []);
         if (!$res['success']) {

@@ -1,13 +1,14 @@
 # Evidencias de pruebas
 
-Al ejecutar el plan funcional, guarde capturas de pantalla y archivos de soporte aquí:
+Al ejecutar cualquier plan T, guarde capturas y archivos de soporte aquí (nombres = ID de caso):
 
 ```
 evidencias/
   YYYY-MM-DD/
     AUTH-001_login_ok.png
-    MNT-008_correctivo_pdf.pdf
+    INT-002_401_sin_token.json
+    SMOKE-001_dashboard.png
     ...
 ```
 
-No commitear datos sensibles reales (contraseñas, datos personales de producción).
+No commitear datos sensibles reales (contraseñas, datos personales de producción, JWT).

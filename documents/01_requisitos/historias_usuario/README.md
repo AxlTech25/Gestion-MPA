@@ -26,6 +26,7 @@ HU-{EPICA}-{NNN}
 | DSH | Dashboard y consultas |
 | ML | Machine Learning predictivo |
 | RPT | Reportes PDF |
+| CRN | Cronograma anual de preventivo |
 
 ## Formato de cada historia
 
@@ -35,18 +36,21 @@ Cada historia sigue la plantilla:
 
 Incluye: prioridad (Alta/Media/Baja), estado (Implementada / En progreso / Pendiente), incremento SDLC de origen y criterios de aceptación verificables.
 
-## Estado global (v0.9.1)
+## Estado global (v0.10.7)
+
+Incremento 8 (cronograma) **cerrado** 2026-09-17.
 
 | Épica | Implementadas | Pendientes |
 |-------|---------------|------------|
 | Autenticación | 5 | 0 |
-| Configuración | 6 | 0 |
+| Configuración | 8 | 0 |
 | Inventario | 9 | 0 |
 | Ficha técnica | 8 | 0 |
 | Mantenimiento | 12 | 0 |
 | Dashboard | 6 | 0 |
 | ML predictivo | 8 | 0 |
 | Reportes | 4 | 0 |
+| Cronograma | 14 | 0 |
 
 ## Relación con otras carpetas
 

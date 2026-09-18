@@ -1,23 +1,28 @@
-# Plan de pruebas funcionales — Gestión MPA V2
+# Plan de pruebas E2E (caja negra) — Gestión MPA V2
 
-**Versión del plan:** 1.1  
-**Versión del sistema:** 0.9.1  
-**Fecha:** 2026-09-09  
-**Alcance:** Validación funcional end-to-end de la aplicación web (React + API PHP V2 + MySQL + microservicio ML opcional)
+**Prompt:** [T-001 v1.7](../../prompts/04_testing/T-001_plan_pruebas_v1.md)  
+**Versión del plan:** 1.7  
+**Versión del sistema:** 0.10.7  
+**Fecha:** 2026-09-17  
+**Nivel / técnica:** extremo a extremo + caja negra (HU/RNF, no el código).  
+**Estrategia:** [estrategia_pruebas.md](./estrategia_pruebas.md) · Equivalencias: [plan_caja_negra.md](./plan_caja_negra.md)
+
+**Alcance:** Validación end-to-end desde la UI (React + API PHP V2 + MySQL + microservicio ML opcional + cronograma preventivo).
 
 ---
 
 ## 1. Objetivo
 
-Verificar que las funcionalidades implementadas hasta la versión **0.9.1** cumplen los requisitos de negocio y operan correctamente desde la interfaz de usuario, incluyendo:
+Verificar que las funcionalidades implementadas hasta la versión **0.10.7** cumplen los requisitos de negocio y operan correctamente desde la interfaz de usuario, incluyendo:
 
 - Autenticación y control de acceso
 - Gestión de inventario y fichas técnicas
 - Registro e historial de mantenimiento
 - Dashboard operativo y consulta filtrada de equipos
 - Integración predictiva ML (cuando el servicio FastAPI esté disponible)
+- Cronograma de preventivo por área (historial, matriz mensual, cantidad Xn, PDF A4, bandas de gerencia)
 
-Este plan **no cubre** pruebas de carga, penetración ni pruebas unitarias automatizadas (salvo mención de herramientas auxiliares).
+Este plan **no cubre** pruebas de carga, penetración, unitarias (T-002…T-004 / T-008) ni integración HTTP (T-007). Esos tipos están en [estrategia_pruebas.md](./estrategia_pruebas.md).
 
 ---
 
@@ -28,7 +33,7 @@ Este plan **no cubre** pruebas de carga, penetración ni pruebas unitarias autom
 | Componente | Requisito | Comando / verificación |
 |------------|-----------|------------------------|
 | XAMPP | Apache + MySQL activos | Panel XAMPP → Start Apache, MySQL |
-| Base de datos | `gestion_equipos_mpa_v2` creada y migrada | Ejecutar `v2_estructura.sql`, `v2_extension_fase7.sql`, `v2_ml_predicciones.sql` según instalación |
+| Base de datos | `gestion_equipos_mpa_v2` creada y migrada | Ejecutar `v2_estructura.sql`, `v2_extension_fase7.sql`, `v2_ml_predicciones.sql` y `php backend/tools/migrate_cronograma.php` |
 | Migración Fase 7 | Columnas telemetría presentes | `php backend/tools/migrate_fase7.php` |
 | Frontend | Dependencias instaladas | `npm install` |
 | Dev server | Vite en ejecución | `npm run dev` (típicamente `http://localhost:5173`) |
@@ -66,6 +71,8 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 | `/v2/inventario` | Inventario |
 | `/v2/ficha-tecnica` | Ficha técnica (búsqueda) |
 | `/v2/mantenimiento` | Mantenimiento |
+| `/v2/cronograma` | Historial de cronogramas |
+| `/v2/cronograma/:id` | Matriz del documento |
 | `/v2/configuracion` | Áreas y personal |
 
 ### 2.5 Criterios generales de aceptación
@@ -83,16 +90,17 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 
 | Módulo | ID prefijo | Casos | Prioridad |
 |--------|------------|-------|-----------|
-| Autenticación | AUTH | 6 | Alta |
-| Configuración | CFG | 5 | Media |
+| Autenticación | AUTH | 7 | Alta |
+| Configuración | CFG | 11 | Media |
 | Inventario | INV | 12 | Alta |
 | Ficha técnica | FIC | 8 | Alta |
 | Mantenimiento | MNT | 18 | Alta |
 | Dashboard | DSH | 10 | Alta |
 | Machine Learning | ML | 7 | Media |
-| Regresión / transversal | REG | 5 | Alta |
+| Cronograma | CRN | 17 | Alta |
+| Regresión / transversal | REG | 6 | Alta |
 
-**Total aproximado: 71 casos**
+**Total: 96 casos E2E** (no incluye INT/SEC/SMOKE/UAT/DEG/MIG).
 
 ---
 
@@ -175,6 +183,21 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 - **Precondición:** Sesión con rol Técnico.
 - **Pasos:** Revisar Navbar e intentar abrir `/v2/configuracion`.
 - **Resultado esperado:** Sin enlace Configuración; redirección al dashboard.
+
+#### CFG-009 — Editar área y asignar gerencia
+- **HU:** HU-CFG-007, HU-CFG-008
+- **Pasos:** Configuración → crear gerencia → editar un área → elegir gerencia → Guardar.
+- **Resultado esperado:** La tarjeta muestra la gerencia; el selector de inventario sigue listando el área.
+
+#### CFG-010 — Eliminar área con equipos
+- **HU:** HU-CFG-007
+- **Pasos:** Intentar eliminar un área que tiene equipos.
+- **Resultado esperado:** HTTP 409 / mensaje; el área permanece.
+
+#### CFG-011 — Eliminar gerencia
+- **HU:** HU-CFG-008
+- **Pasos:** Borrar una gerencia que tiene áreas asignadas.
+- **Resultado esperado:** La gerencia desaparece; las áreas quedan sin gerencia (no se borran).
 
 ---
 
@@ -425,11 +448,102 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 
 ---
 
-### 4.8 Regresión transversal (REG)
+### 4.8 Cronograma (CRN) — HU-CRN-001–015
+
+Migración previa: `php backend/tools/migrate_cronograma.php`. Roles de escritura: Administrador y Técnico. El Practicante solo consulta.
+
+#### CRN-001 — Menú Cronograma distinto de Mantenimiento
+- **Prioridad:** Alta
+- **HU:** HU-CRN-007
+- **Pasos:** Iniciar sesión → ver Navbar.
+- **Resultado esperado:** Enlace **Cronograma** (no «Cronograma de mantenimiento»). Es independiente de **Mantenimiento**. Lleva a `/v2/cronograma`.
+
+#### CRN-002 — Historial vacío o con documentos
+- **HU:** HU-CRN-008
+- **Pasos:** Abrir `/v2/cronograma`.
+- **Resultado esperado:** Título «Cronograma» y listado de planes (año, nombre, visitas, autor). Si no hay filas: mensaje de vacío, no la matriz.
+
+#### CRN-003 — Alta de un cronograma
+- **HU:** HU-CRN-009
+- **Precondición:** Sesión Administrador o Técnico.
+- **Pasos:** Nuevo cronograma → año `2026` → nombre `Preventivo 1` → Crear.
+- **Resultado esperado:** Navega a `/v2/cronograma/{id}`. El historial muestra el documento al volver.
+
+#### CRN-004 — Varios documentos el mismo año
+- **HU:** HU-CRN-009
+- **Pasos:** Crear `Preventivo 2` también en 2026. Filtrar año 2026.
+- **Resultado esperado:** Ambos ítems visibles. Abrir uno no mezcla las celdas del otro.
+
+#### CRN-005 — Matriz mensual por área
+- **HU:** HU-CRN-001, HU-CRN-005
+- **Pasos:** Abrir un cronograma. Cambiar el mes.
+- **Resultado esperado:** Filas = áreas de Configuración (incl. servidores tipo SIGA/SAF si existen como área). **Una columna por día** (sin X1/X2 de turno). Conteos PC / Lap / Imp desde inventario (CPU = PC; estado Baja excluido). Bajo el área: programados/PC-laptop.
+
+#### CRN-006 — Marcar cantidad X1 en un área de 1 equipo
+- **HU:** HU-CRN-002, HU-CRN-013
+- **Pasos:** Clic en un día libre de un área con 1 PC o laptop.
+- **Resultado esperado:** La celda muestra **X1** sin pedir turno. Persiste al recargar. No se rellenan otras celdas solas.
+
+#### CRN-007 — Repartir un área de varios equipos (X2 un día, X3 otro)
+- **HU:** HU-CRN-002, HU-CRN-013
+- **Pasos:** En un área con 10 PC/laptop, clic un día → elegir X2; clic otro día → elegir X3.
+- **Resultado esperado:** Primer día **X2**, segundo **X3**. El selector del tercer día llega como máximo a X5 (resto). No aparecen 10 columnas.
+
+#### CRN-008 — Liberar o cambiar Xn
+- **HU:** HU-CRN-003
+- **Pasos:** Clic en una celda ocupada → cambiar a otra cantidad o Liberar.
+- **Resultado esperado:** Se actualiza o queda libre. Cancelar no borra.
+
+#### CRN-009 — Cobertura de áreas sin visita
+- **HU:** HU-CRN-006
+- **Pasos:** Observar el aviso ámbar con áreas cuya suma de Xn aún no cubre PC+laptop.
+- **Resultado esperado:** Al completar la suma, esa área sale del aviso. Áreas sin PC/laptop no exigen visita.
+
+#### CRN-010 — PDF autenticado
+- **HU:** HU-CRN-004
+- **Pasos:** Imprimir PDF de un plan 2026 y de uno 2028.
+- **Resultado esperado:** Descarga `cronograma_{id}.pdf` **A4 apaisado**. Dos meses por hoja, **sin sábados ni domingos**. Cabecera ENE-2028 en el plan 2028. Incluye N°/área/**PC / LAPTOP / IMPRESORA** (nombre completo, columnas compactas), visitas y **HORA PROGRAMADA** al final con borde en N°, EQUIPO y HORARIO. Sin token: 401.
+
+#### CRN-011 — Practicante solo consulta
+- **Prioridad:** Alta
+- **Pasos:** Entrar como Practicante. Abrir historial y matriz.
+- **Resultado esperado:** Ve documentos y celdas. No aparece «Nuevo cronograma» ni eliminar. Clic en celda no crea ni libera. API POST/DELETE → 403.
+
+#### CRN-012 — Fecha fuera del año del documento
+- **Pasos:** `POST /cronogramas/{id}/celdas` con fecha de otro año (p. ej. 2025 en un plan 2026).
+- **Resultado esperado:** HTTP 400. Mensaje de año inválido. Caso unitario `CronogramaTest::test_fecha_pertenece_al_anio`.
+
+#### CRN-013 — Matriz solo días laborables
+- **HU:** HU-CRN-004
+- **Pasos:** Abrir un plan 2028 en enero.
+- **Resultado esperado:** No hay columnas sáb/dom. El 1 ene 2028 (sábado) no aparece; el primer día es lunes 3. Las fechas son 2028-01-*.
+
+#### CRN-014 — Eliminar cronograma
+- **HU:** HU-CRN-014
+- **Pasos:** Crear un plan de prueba → confirmar eliminar en el historial.
+- **Resultado esperado:** Desaparece del listado. GET por id → 404. Practicante no ve el botón.
+
+#### CRN-015 — POST en sábado o domingo
+- **Pasos:** `POST /cronogramas/{id}/celdas` con fecha sábado del año del documento.
+- **Resultado esperado:** HTTP 400 (solo lunes a viernes).
+
+#### CRN-016 — Encaje del PDF y pie bordeado
+- **HU:** HU-CRN-004
+- **Pasos:** Imprimir un plan con marcas y personal (p. ej. PC 01 / PC 02). Revisar hoja 1 (matriz) y última hoja (pie).
+- **Resultado esperado:** Áreas se leen por palabra. N° cabe en 1–2 dígitos. Cabeceras PC, LAPTOP e IMPRESORA completas. Las marcas Xn están en la fila del área. HORA PROGRAMADA tiene reja en N°, EQUIPO y HORARIO.
+
+#### CRN-017 — Bandas de gerencia
+- **HU:** HU-CRN-015
+- **Pasos:** Asignar dos áreas a la misma gerencia y una tercera sin gerencia. Abrir la matriz e imprimir.
+- **Resultado esperado:** Fila banda de gerencia (sin Xn). N° continuo. La tercera aparece al final bajo OTRAS ÁREAS. Si ninguna tiene gerencia, no hay bandas.
+
+---
+
+### 4.9 Regresión transversal (REG)
 
 #### REG-001 — Navegación Navbar
-- **Pasos:** Recorrer Dashboard → Inventario → Ficha técnica → Mantenimiento → Configuración.
-- **Resultado esperado:** Sin errores de consola críticos; rutas correctas.
+- **Pasos:** Recorrer Dashboard → Inventario → Ficha técnica → Mantenimiento → Cronograma → Configuración.
+- **Resultado esperado:** Sin errores de consola críticos; rutas correctas. Cronograma no abre fichas de `/v2/mantenimiento`.
 
 #### REG-002 — Responsive básico
 - **Pasos:** Reducir ventana a ~768px.
@@ -453,7 +567,7 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 
 ---
 
-## 5. Fuera de alcance (v0.9.1)
+## 5. Fuera de alcance (no bloquean 0.10.7)
 
 No bloquear release funcional si fallan únicamente estos ítems pendientes de roadmap:
 
@@ -520,9 +634,11 @@ curl http://localhost/gestion_mpa/backend/api/v2/dashboard/consulta?tipo_equipo=
 | Día 2 | 3–4 h | INV, FIC, PDFs |
 | Día 3 | 3–4 h | MNT completo (todos los tipos) |
 | Día 4 | 2–3 h | DSH, consulta etiquetas |
-| Día 5 | 2 h | ML + REG + cierre y reporte |
+| Día 5 | 2 h | ML (o N/A) + REG |
+| Día 6 | 2–3 h | CRN-001…017 (Xn, PDF A4, bandas, RBAC) |
+| Día 7 | 1–2 h | Humo T-009, UAT T-011, DEG T-013 si aplica |
 
-**Total estimado:** 12–16 horas de prueba manual.
+**Total estimado E2E:** 14–20 horas. Complementarios: ver T-009…T-014.
 
 ---
 
@@ -534,13 +650,15 @@ Se considera la ronda de pruebas **aprobada** cuando:
 - [ ] **0** defectos **Alta** abiertos
 - [ ] Defectos **Media** documentados con plan de corrección o aceptación explícita
 - [ ] Plantilla de resultados completada y firmada
-- [ ] Evidencias archivadas para casos críticos (login, registro equipo, mantenimiento correctivo, PDF, consulta dashboard)
+- [ ] Evidencias archivadas para casos críticos (login, registro equipo, mantenimiento correctivo, PDF, consulta dashboard, cronograma)
 
 ---
 
 ## 10. Referencias
 
-- `documents/05_mantenimiento/changelog.md` — versiones 0.6.0 a 0.9.1
+- `documents/04_testing/estrategia_pruebas.md` — T-006
+- `documents/05_mantenimiento/changelog.md` — versiones 0.6.0 a 0.10.7
+- `documents/02_diseno/cronograma.md` — D-007 / ADR-003
 - `documents/03_implementacion/incrementos/incremento_6.md` — ML predictivo
 - `documents/03_implementacion/incrementos/incremento_7_extension_schema_v2.md` — telemetría y mantenimiento Fase 7
 - `documents/02_diseno/architecture.md` — stack y rutas API
