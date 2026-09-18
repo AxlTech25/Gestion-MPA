@@ -1,8 +1,8 @@
 # Prompts detallados por función — Sigemad MPA V2
 
-Hoja equivalente a **Prompts Detallados** de la matriz V3 (Amaro + Jiang). Una fila por función del sistema (`F-001`…`F-008`), más dos refinamientos (I-008, I-009).
+Hoja equivalente a **Prompts Detallados** de la matriz V3 (Amaro + Jiang). Una fila por función del sistema (`F-001`…`F-009`), más refinamientos (I-008…I-017).
 
-El **prompt exacto** es el texto de ingeniería (resumen del bloque D1). El registro completo está en `prompts/03_implementacion/`. La **evidencia** es el commit de GitHub donde quedó el código de esa función.
+El **prompt exacto** es el texto de ingeniería (resumen del bloque D1). El registro completo está en `prompts/03_implementacion/`. La **evidencia** es el commit de GitHub donde quedó el código de esa función. I-010…I-017 (Incremento 8 / 0.10.7): [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712).
 
 Repositorio: https://github.com/AxlTech25/Gestion-MPA
 
@@ -13,15 +13,23 @@ Repositorio: https://github.com/AxlTech25/Gestion-MPA
 | ID prompt | Función asociada | Técnica | Versión prompt | N.º iteraciones | Motivo de refinamiento | Versión final | Estado | Resultado obtenido | Evidencia (commit) |
 |-----------|------------------|---------|----------------|-----------------|------------------------|---------------|--------|--------------------|-------------------|
 | [I-006](../../prompts/03_implementacion/I-006_auth_dashboard_v1.md) | F-001 auth | CoT guiado | v1 | 0 (aprobado en primera versión documentada) | N/A — registro retrospectivo | v1 | Aprobado | Login JWT, AuthContext, PrivateRoute, middleware | [5ce7575](https://github.com/AxlTech25/Gestion-MPA/commit/5ce7575) |
-| [I-005](../../prompts/03_implementacion/I-005_configuracion_v1.md) | F-002 configuracion | Few-shot | v1 | 1 (RBAC en I-009) | Autorización solo en UI; I-009 exige `requireRole` | v1 | Aprobado (CFG; RBAC = I-009) | Áreas, personal, BCRYPT, EquipoForm dinámico | [4e08b9e](https://github.com/AxlTech25/Gestion-MPA/commit/4e08b9e) |
+| [I-005](../../prompts/03_implementacion/I-005_configuracion_v1.md) | F-002 configuracion | Few-shot | v1 | 2 (RBAC I-009; gerencias I-017) | Autorización solo en UI; CRUD de área incompleto | v1 | Aprobado (CFG; RBAC = I-009; gerencias = I-017) | Áreas, gerencias, personal, BCRYPT, EquipoForm dinámico | [4e08b9e](https://github.com/AxlTech25/Gestion-MPA/commit/4e08b9e) |
 | [I-002](../../prompts/03_implementacion/I-002_inventario_v1.md) | F-003 inventario | Few-shot | v1 | 0 | N/A — no confundir con I-002-ML histórico | v1 | Aprobado | CRUD equipos, código 12 dígitos, `ram_gb` numérico | [f086a63](https://github.com/AxlTech25/Gestion-MPA/commit/f086a63) |
 | [I-003](../../prompts/03_implementacion/I-003_fichas_mantenimiento_v1.md) | F-004 ficha | Few-shot | v1 | 0 | N/A — mismo incremento que F-005 | v1 | Aprobado | GET/PUT ficha por id o código patrimonial | [f086a63](https://github.com/AxlTech25/Gestion-MPA/commit/f086a63) |
 | [I-003](../../prompts/03_implementacion/I-003_fichas_mantenimiento_v1.md) | F-005 mantenimiento | Few-shot | v1 | 0 | N/A — telemetría es I-008 | v1 | Aprobado | Timeline, `categoria_falla_id`, JOIN técnico/categoría | [8b20337](https://github.com/AxlTech25/Gestion-MPA/commit/8b20337) |
 | [I-006](../../prompts/03_implementacion/I-006_auth_dashboard_v1.md) | F-006 dashboard | CoT guiado | v1 | 0 | N/A — alertas ML son I-007; consulta I-008 | v1 | Aprobado | `GET /dashboard`, DashboardPage, métricas operativas | [5ce7575](https://github.com/AxlTech25/Gestion-MPA/commit/5ce7575) |
 | [I-007](../../prompts/03_implementacion/I-007_microservicio_ml_v1.md) | F-007 ml | CoT guiado | v1 | ≥2 | Batch `[]` vs `{}`; HTTP 503 de curl | v1 | Aprobado | FastAPI, proxy PHP, badges, degradación | [e9a0965](https://github.com/AxlTech25/Gestion-MPA/commit/e9a0965) |
 | [I-004](../../prompts/03_implementacion/I-004_reportes_pdf_v1.md) | F-008 reportes | Zero-shot + few-shot | v1 | 1 | Descarga anónima; I-006 pasa a blob+JWT | v1 | Aprobado | Dompdf, `GET /reportes/equipo/{id}`, filtros listado | [f086a63](https://github.com/AxlTech25/Gestion-MPA/commit/f086a63) |
+| [I-010](../../prompts/03_implementacion/I-010_cronograma_v1.md) | F-009 cronograma | Few-shot | v1 | 7 (I-011…I-017) | Papel 2024: Xn, A4, personal, gerencias | v1 | Aprobado (inc. 8 cerrado 2026-09-17) | Historial, matriz, PDF A4, bandas | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) |
 | [I-008](../../prompts/03_implementacion/I-008_telemetria_ficha_predictiva_v1.md) | F-003, F-005, F-006, F-007 | CoT guiado | v1 | 2 fases | Extensión de esquema; no reescribir I-007 | v1 | Aprobado | Telemetría, sync, ficha predictiva, consulta | changelog 0.8.0–0.9.0 / [8b20337](https://github.com/AxlTech25/Gestion-MPA/commit/8b20337) |
 | [I-009](../../prompts/03_implementacion/I-009_rbac_plantilla_excel_v1.md) | F-001, F-002, F-003 | CoT guiado | v1 | 1 | Cierra deuda de I-005 (API abierta) | v1 | Aprobado | `requireRole` en `/usuarios`, plantilla Excel | changelog 0.9.1 |
+| [I-011](../../prompts/03_implementacion/I-011_cronograma_totales_horarios_pdf_v1.md) | F-009 | Few-shot | v1 | 1 | Totales y download PDF | v1 | Aprobado | Totales, horarios, attachment | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) |
+| [I-012](../../prompts/03_implementacion/I-012_cronograma_pdf_matriz_v1.md) | F-008, F-009 | Few-shot | v1 | 1 | Listado ≠ grilla del papel | v1 | Aprobado | PDF tipo matriz | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) |
+| [I-013](../../prompts/03_implementacion/I-013_cronograma_personal_v1.md) | F-009 | Few-shot | v1 | 1 | HORA PROGRAMADA = personas | v1 | Aprobado | `v2_cronograma_personal` | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) |
+| [I-014](../../prompts/03_implementacion/I-014_cronograma_cantidad_xn_v1.md) | F-009 | Few-shot | v1 | 1 | X1/X2 no son turnos | v1 | Aprobado | Xn = cantidad por día | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) |
+| [I-015](../../prompts/03_implementacion/I-015_cronograma_pdf_a4_baja_v1.md) | F-009 | Few-shot | v1 | 1 | A3 calendario → A4 L–V + DELETE | v1 | Aprobado | PDF A4 2 meses/hoja; baja del plan | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) |
+| [I-016](../../prompts/03_implementacion/I-016_cronograma_pdf_encaje_v1.md) | F-008, F-009 | Few-shot | v1 | 2 | Colspan y pie sin borde | v1 | Aprobado | Encaje; HORA PROGRAMADA con reja | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) |
+| [I-017](../../prompts/03_implementacion/I-017_gerencias_crud_areas_v1.md) | F-002, F-009 | Few-shot | v1 | 1 | Papel agrupa por gerencia; áreas sin editar/borrar | v1 | Aprobado (cierra inc. 8) | Gerencias, CRUD áreas, bandas | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) |
 
 ---
 
@@ -53,8 +61,8 @@ Repositorio: https://github.com/AxlTech25/Gestion-MPA
 | **Técnica** | Few-shot (patrón CRUD I-002) |
 | **Versión prompt** | v1 |
 | **N.º de iteraciones** | 1 |
-| **Motivo de refinamiento** | La API de usuarios quedó solo autenticada. I-009 añade `requireRole` Administrador. |
-| **Versión final** | v1 (I-005) + I-009 |
+| **Motivo de refinamiento** | La API de usuarios quedó solo autenticada. I-009 añade `requireRole` Administrador. I-017 añade gerencias y PUT/DELETE de áreas. |
+| **Versión final** | v1 (I-005) + I-009 + I-017 |
 | **Estado** | Aprobado como configuración; RBAC = I-009 |
 | **Resultado obtenido** | Panel de áreas y personal; EquipoForm dinámico |
 | **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/4e08b9e — `ConfiguracionPage.jsx` |
@@ -161,7 +169,7 @@ Repositorio: https://github.com/AxlTech25/Gestion-MPA
 | **Técnica** | Zero-shot (dompdf) + few-shot (InventarioPage) |
 | **Versión prompt** | v1 |
 | **N.º de iteraciones** | 1 |
-| **Motivo de refinamiento** | `window.open` sin token; I-006 cambia a blob + Authorization. |
+| **Motivo de refinamiento** | `window.open` sin token; I-006 cambia a blob + Authorization. PDF de cronograma = I-012…I-016. |
 | **Versión final** | v1 |
 | **Estado** | Aprobado |
 | **Resultado obtenido** | PDF de ficha y filtros de inventario |
@@ -199,6 +207,94 @@ Repositorio: https://github.com/AxlTech25/Gestion-MPA
 
 ---
 
+## F-009 — Cronograma (Incremento 8 / 0.10.0–0.10.7)
+
+| Campo | Valor |
+|-------|-------|
+| **ID prompt origen** | I-010 |
+| **Función asociada** | F-009 cronograma |
+| **Prompt exacto** | Actúa como desarrollador senior PHP 8 / React 19. Contexto: 0.9.1; R-006 y D-007; ADR-003 (`v2_cronogramas` / `v2_cronograma_celdas`); no usar `v2_cronograma_mantenimiento`. Objetivo: historial, alta, matriz área×día, cobertura y PDF. Tarea: SQL+migrate; modelo; controller; `GET /reportes/cronograma/{id}`; feature `cronograma`; Navbar; PHPUnit/Vitest. Restricciones: no ML; no dual-write; Practicante GET sí / POST 403. Criterios: dos planes el mismo año; clic crea/libera celda; PDF autenticado. |
+| **Técnica** | Few-shot (I-003 / I-009) |
+| **Versión prompt** | v1 |
+| **N.º de iteraciones** | 7 (I-011…I-017) |
+| **Motivo de refinamiento** | El papel 2024 exigió totales, grilla PDF, personal, Xn (no turnos), A4 L–V, encaje tipográfico, gerencias y CRUD de áreas. |
+| **Versión final** | v1 (I-010) + I-011…I-017 |
+| **Estado** | Aprobado — Incremento 8 cerrado 2026-09-17 |
+| **Resultado obtenido** | Historial de planes, matriz Xn, personal, PDF A4 y bandas de gerencia |
+| **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/3394712 — `CronogramaMatrizPage.jsx`, `CronogramaController.php` |
+
+### I-011 — Totales, horarios e impresión (0.10.1)
+
+| Campo | Valor |
+|-------|-------|
+| **ID prompt** | I-011 |
+| **Función asociada** | F-009 |
+| **Prompt exacto** | Totales en matriz; `v2_cronograma_horarios` + modal; `downloadPdf` con attachment y `Content-Type` PDF. El asiento sigue área+fecha+turno. |
+| **Estado** | Aprobado |
+| **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/3394712 |
+
+### I-012 — PDF tipo matriz papel (0.10.2)
+
+| Campo | Valor |
+|-------|-------|
+| **ID prompt** | I-012 |
+| **Función asociada** | F-008, F-009 |
+| **Prompt exacto** | `GET /reportes/cronograma/{id}` imprime la grilla N°/área/PC/laptop/impresora × meses y días (marcas Xn), no un listado. |
+| **Estado** | Aprobado |
+| **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/3394712 |
+
+### I-013 — Personal en HORA PROGRAMADA (0.10.3)
+
+| Campo | Valor |
+|-------|-------|
+| **ID prompt** | I-013 |
+| **Función asociada** | F-009 |
+| **Prompt exacto** | Recuadro HORA PROGRAMADA = personas del preventivo (`v2_cronograma_personal`), no los bienes del área. |
+| **Estado** | Aprobado |
+| **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/3394712 |
+
+### I-014 — Cantidad Xn por día (0.10.4)
+
+| Campo | Valor |
+|-------|-------|
+| **ID prompt** | I-014 |
+| **Función asociada** | F-009 |
+| **Prompt exacto** | Xn = cuántos PC/laptop se atienden ese día. Asiento = cronograma+área+fecha+cantidad. Una columna por día. Impresoras no entran en Xn. |
+| **Estado** | Aprobado |
+| **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/3394712 |
+
+### I-015 — PDF A4 laborable y baja (0.10.5)
+
+| Campo | Valor |
+|-------|-------|
+| **ID prompt** | I-015 |
+| **Función asociada** | F-009 |
+| **Prompt exacto** | PDF A4 apaisado, lunes–viernes, 2 meses/hoja; fechas del año del documento; `DELETE /cronogramas/{id}` CASCADE. |
+| **Estado** | Aprobado |
+| **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/3394712 |
+
+### I-016 — Encaje del PDF (0.10.6)
+
+| Campo | Valor |
+|-------|-------|
+| **ID prompt** | I-016 |
+| **Función asociada** | F-008, F-009 |
+| **Prompt exacto** | Una sola tabla; colspan solo L–V; PC/LAPTOP/IMPRESORA completos; HORA PROGRAMADA con borde. |
+| **Estado** | Aprobado |
+| **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/3394712 |
+
+### I-017 — Gerencias, CRUD de áreas y bandas (0.10.7)
+
+| Campo | Valor |
+|-------|-------|
+| **ID prompt** | I-017 |
+| **Función asociada** | F-002, F-009 |
+| **Prompt exacto** | Catálogo `v2_gerencias`; `área.gerencia_id`; PUT/DELETE `/areas` (Admin, 409 si hay equipos); matriz y PDF con fila banda de gerencia. |
+| **Estado** | Aprobado (cierra Incremento 8) |
+| **Evidencia** | https://github.com/AxlTech25/Gestion-MPA/commit/3394712 |
+
+---
+
 ## Cómo copiar esto al Excel V3
 
 Hoja **Prompts Detallados**, columnas en este orden (plantilla Money Me):
@@ -215,4 +311,4 @@ Hoja **Prompts Detallados**, columnas en este orden (plantilla Money Me):
 10. Resultado obtenido
 11. Evidencia (hipervínculo a `/commit/{sha}`)
 
-El script [`_generar_matriz_sigemad.py`](./_generar_matriz_sigemad.py) usa las mismas filas. Tras publicar los markdowns en `main`, regenerar el `.xlsx`.
+El script [`_generar_matriz_sigemad.py`](./_generar_matriz_sigemad.py) usa las mismas filas. Tras publicar un incremento en `main`, regenerar el `.xlsx`.

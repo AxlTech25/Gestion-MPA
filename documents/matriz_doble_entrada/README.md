@@ -10,7 +10,7 @@ Instrumento V3 (Amaro et al. 2025 + Jiang et al. 2025) aplicado al caso **Sigema
 
 En GitHub: [carpeta](https://github.com/AxlTech25/Gestion-MPA/tree/main/documents/matriz_doble_entrada) · [Excel Sigemad](https://github.com/AxlTech25/Gestion-MPA/blob/main/documents/matriz_doble_entrada/MATRIZ-DOBLE-ENTRADA-V3-SIGEMAD-MPA.xlsx)
 
-**Traza vigente (oleada 3):** [prompts_detallados.md](./prompts_detallados.md) — mismos campos que Money Me (ID prompt, función, prompt exacto, técnica, versión, iteraciones, motivo, versión final, estado, resultado, evidencia = commit).
+**Traza vigente (Incremento 8 / 0.10.7):** [prompts_detallados.md](./prompts_detallados.md) — F-001…F-009 + I-008…I-017. Código del Incremento 8: [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712).
 
 ## Cadena de evidencia
 
@@ -39,6 +39,7 @@ En la hoja **Matriz Consolidada**:
 | F-006 | dashboard | [I-006](https://github.com/AxlTech25/Gestion-MPA/blob/main/prompts/03_implementacion/I-006_auth_dashboard_v1.md) | [5ce7575](https://github.com/AxlTech25/Gestion-MPA/commit/5ce7575) | [DashboardPage.jsx](https://github.com/AxlTech25/Gestion-MPA/blob/5ce7575/src/features/dashboard/components/DashboardPage.jsx) |
 | F-007 | ml | [I-007](https://github.com/AxlTech25/Gestion-MPA/blob/main/prompts/03_implementacion/I-007_microservicio_ml_v1.md) | [e9a0965](https://github.com/AxlTech25/Gestion-MPA/commit/e9a0965) | [ml/app/main.py](https://github.com/AxlTech25/Gestion-MPA/blob/e9a0965/ml/app/main.py) |
 | F-008 | reportes | [I-004](https://github.com/AxlTech25/Gestion-MPA/blob/main/prompts/03_implementacion/I-004_reportes_pdf_v1.md) | [f086a63](https://github.com/AxlTech25/Gestion-MPA/commit/f086a63) | [ReporteController.php](https://github.com/AxlTech25/Gestion-MPA/blob/f086a63/backend/api/v2/controllers/ReporteController.php) |
+| F-009 | cronograma | [I-010](../../prompts/03_implementacion/I-010_cronograma_v1.md) | [3394712](https://github.com/AxlTech25/Gestion-MPA/commit/3394712) | [CronogramaMatrizPage.jsx](https://github.com/AxlTech25/Gestion-MPA/blob/3394712/src/features/cronograma/components/CronogramaMatrizPage.jsx) |
 
 Evoluciones posteriores (mismo módulo, otro prompt):
 
@@ -46,6 +47,8 @@ Evoluciones posteriores (mismo módulo, otro prompt):
 |---------|------------------|------------|
 | F-001 / F-002 | [I-009](../../prompts/03_implementacion/I-009_rbac_plantilla_excel_v1.md) | `requireRole` en `/usuarios`, Navbar |
 | F-003 / F-005 / F-007 | [I-008](../../prompts/03_implementacion/I-008_telemetria_ficha_predictiva_v1.md) | Telemetría, sync, ficha predictiva |
+| F-009 | [I-011](../../prompts/03_implementacion/I-011_cronograma_totales_horarios_pdf_v1.md) … [I-016](../../prompts/03_implementacion/I-016_cronograma_pdf_encaje_v1.md) | Totales, PDF papel/A4, personal, Xn |
+| F-002 / F-009 | [I-017](../../prompts/03_implementacion/I-017_gerencias_crud_areas_v1.md) | Gerencias, CRUD de áreas, bandas (cierra 0.10.7) |
 
 `f086a63` y `4e08b9e` son commits **nuevos** que documentan código que ya existía en el working tree y no estaba en GitHub. El origen de auth/dashboard/ML no se reescribió. Un mismo SHA puede anclar dos funciones (p. ej. F-003 y F-008); los prompts igual son distintos.
 

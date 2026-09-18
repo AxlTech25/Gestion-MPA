@@ -14,9 +14,12 @@ SRC = BASE / "MATRIZ-DOBLE-ENTRADA-V3-AMARO-JIANG-MONEY-ME.xlsx"
 DST = BASE / "MATRIZ-DOBLE-ENTRADA-V3-SIGEMAD-MPA.xlsx"
 
 REPO = "https://github.com/AxlTech25/Gestion-MPA"
-COMMIT_HEAD = "56e7134"  # último commit de documentación de fases antes de actualizar la matriz
+COMMIT_HEAD = "3394712"  # Incremento 8 / 0.10.7 en origin/main
 RESPONSABLE = "AxlTech25"
 ROL = "Desarrollador"
+CHANGELOG = "documents/05_mantenimiento/changelog.md"
+SHA_LOCAL = "working-tree"  # no usar si el código ya está en GitHub
+SHA_INC8 = "3394712"
 
 PROMPT_FILES = {
     "I-002": "prompts/03_implementacion/I-002_inventario_v1.md",
@@ -27,6 +30,14 @@ PROMPT_FILES = {
     "I-007": "prompts/03_implementacion/I-007_microservicio_ml_v1.md",
     "I-008": "prompts/03_implementacion/I-008_telemetria_ficha_predictiva_v1.md",
     "I-009": "prompts/03_implementacion/I-009_rbac_plantilla_excel_v1.md",
+    "I-010": "prompts/03_implementacion/I-010_cronograma_v1.md",
+    "I-011": "prompts/03_implementacion/I-011_cronograma_totales_horarios_pdf_v1.md",
+    "I-012": "prompts/03_implementacion/I-012_cronograma_pdf_matriz_v1.md",
+    "I-013": "prompts/03_implementacion/I-013_cronograma_personal_v1.md",
+    "I-014": "prompts/03_implementacion/I-014_cronograma_cantidad_xn_v1.md",
+    "I-015": "prompts/03_implementacion/I-015_cronograma_pdf_a4_baja_v1.md",
+    "I-016": "prompts/03_implementacion/I-016_cronograma_pdf_encaje_v1.md",
+    "I-017": "prompts/03_implementacion/I-017_gerencias_crud_areas_v1.md",
 }
 
 FILL_HEADER = PatternFill(fill_type=FILL_SOLID, fgColor="1F4E78")
@@ -75,6 +86,22 @@ def github_main(path: str) -> str:
     return f"{REPO}/blob/main/{path}"
 
 
+def sha_published(sha: str) -> bool:
+    return bool(sha) and sha != SHA_LOCAL
+
+
+def commit_label(sha: str) -> str:
+    return sha if sha_published(sha) else "0.10.7 local"
+
+
+def commit_url(sha: str) -> str:
+    return github_commit(sha) if sha_published(sha) else github_main(CHANGELOG)
+
+
+def file_url(path: str, sha: str) -> str:
+    return github_blob(path, sha) if sha_published(sha) else github_main(path)
+
+
 # Una fila por épica (solo implementación). Capa = archivo principal.
 FUNCIONES = [
     {
@@ -86,7 +113,7 @@ FUNCIONES = [
         "impacto": "Alto (integración/validación)",
         "ci": "No",
         "cd": "No",
-        "test_auto": "No",
+        "test_auto": "Parcial",
         "monitor": "No",
         "prompt": "I-006",
         "tecnica": "CoT guiado",
@@ -98,32 +125,32 @@ FUNCIONES = [
         "archivo": "Login.jsx",
         "completa": "src/features/auth/Login.jsx",
         "commit": "5ce7575",
-        "test": "documents/04_testing/plan_pruebas_funcionales.md (casos AUTH)",
-        "obs": "Origen JWT: 5ce7575 [I-006]. RBAC en servidor: I-009. También AuthMiddleware.php, Jwt.php y AuthContext.jsx.",
+        "test": "backend/tests/AuthMiddlewareTest.php",
+        "obs": "Origen JWT: 5ce7575 [I-006]. RBAC en servidor: I-009. PHPUnit de requireRole. E2E AUTH en plan_pruebas_funcionales.md.",
     },
     {
         "id": "F-002",
         "modulo": "configuracion",
-        "funcion": "Áreas y personal (RBAC organizacional)",
+        "funcion": "Áreas, gerencias y personal (RBAC organizacional)",
         "fase": "Implementación",
         "capa": "Presentation (React)",
         "impacto": "Medio (entrega/despliegue)",
         "ci": "No",
         "cd": "No",
-        "test_auto": "No",
+        "test_auto": "Parcial",
         "monitor": "No",
         "prompt": "I-005",
         "tecnica": "Few-shot",
         "ver_prompt": "v1",
-        "iter": 1,
+        "iter": 2,
         "criterio": "Aprobado",
-        "resultado": "CRUD de áreas y usuarios con roles Administrador / Técnico / Practicante",
+        "resultado": "CRUD de áreas y gerencias; usuarios con roles Administrador / Técnico / Practicante",
         "ruta": "src/features/configuracion/",
         "archivo": "ConfiguracionPage.jsx",
         "completa": "src/features/configuracion/components/ConfiguracionPage.jsx",
         "commit": "4e08b9e",
-        "test": "documents/04_testing/plan_pruebas_funcionales.md (casos CFG)",
-        "obs": "SHA vigente: 4e08b9e [I-005]. requireRole Administrador: I-009. API: AreaController.php y UsuarioController.php.",
+        "test": "backend/tests/AreaTest.php",
+        "obs": "SHA origen: 4e08b9e [I-005]. requireRole: I-009. Gerencias y PUT/DELETE áreas: I-017 (3394712). También UsuarioTest.php.",
     },
     {
         "id": "F-003",
@@ -248,26 +275,50 @@ FUNCIONES = [
     {
         "id": "F-008",
         "modulo": "reportes",
-        "funcion": "Reportes PDF de ficha técnica y mantenimiento",
+        "funcion": "Reportes PDF de ficha, mantenimiento y cronograma",
         "fase": "Implementación",
         "capa": "API (PHP)",
         "impacto": "Medio (entrega/despliegue)",
         "ci": "No",
         "cd": "No",
-        "test_auto": "No",
+        "test_auto": "Parcial",
         "monitor": "No",
         "prompt": "I-004",
         "tecnica": "Zero-shot + few-shot",
         "ver_prompt": "v1",
         "iter": 1,
         "criterio": "Aprobado",
-        "resultado": "PDF de ficha de equipo e historial/detalle de mantenimiento con JWT en descarga",
+        "resultado": "PDF de ficha, historial de mantenimiento y matriz de cronograma (A4 L–V) con JWT",
         "ruta": "backend/api/v2/controllers/",
         "archivo": "ReporteController.php",
         "completa": "backend/api/v2/controllers/ReporteController.php",
         "commit": "f086a63",
-        "test": "documents/04_testing/plan_pruebas_funcionales.md (casos RPT)",
-        "obs": "SHA vigente: f086a63 [I-004]. Descarga con JWT (blob): 5ce7575 [I-006].",
+        "test": "backend/tests/CronogramaTest.php",
+        "obs": "SHA origen ficha: f086a63 [I-004]. Descarga JWT: 5ce7575 [I-006]. PDF cronograma (matriz papel A4): I-012…I-016 (3394712).",
+    },
+    {
+        "id": "F-009",
+        "modulo": "cronograma",
+        "funcion": "Cronograma anual de preventivo (historial, matriz Xn, PDF, gerencias)",
+        "fase": "Implementación",
+        "capa": "Presentation (React)",
+        "impacto": "Alto (integración/validación)",
+        "ci": "No",
+        "cd": "No",
+        "test_auto": "Parcial",
+        "monitor": "No",
+        "prompt": "I-010",
+        "tecnica": "Few-shot",
+        "ver_prompt": "v1",
+        "iter": 7,
+        "criterio": "Aprobado",
+        "resultado": "Historial de planes, matriz área×día×cantidad, personal, PDF A4 y bandas de gerencia",
+        "ruta": "src/features/cronograma/",
+        "archivo": "CronogramaMatrizPage.jsx",
+        "completa": "src/features/cronograma/components/CronogramaMatrizPage.jsx",
+        "commit": SHA_INC8,
+        "test": "backend/tests/CronogramaTest.php",
+        "obs": "Incremento 8 cerrado 2026-09-17 (0.10.0–0.10.7). Origen I-010; parches I-011…I-017. SHA: 3394712. También cronogramaUtils.test.js. API: CronogramaController.php.",
     },
 ]
 
@@ -494,6 +545,179 @@ PROMPTS = [
         "archivo": "prompts/03_implementacion/I-009_rbac_plantilla_excel_v1.md",
         "commit": "8b20337",
     },
+    {
+        "id": "I-010",
+        "funcion": "F-009",
+        "prompt": (
+            "Actúa como desarrollador senior PHP 8 / React 19. "
+            "Contexto: 0.9.1; R-006 y D-007; ADR-003 (v2_cronogramas / v2_cronograma_celdas); "
+            "no usar v2_cronograma_mantenimiento. "
+            "Objetivo: historial, alta de documento, matriz área×día×turno, cobertura y PDF. "
+            "Tarea: SQL+migrate; modelo; controller; GET /reportes/cronograma/{id}; "
+            "feature cronograma; Navbar; PHPUnit/Vitest. "
+            "Restricciones: no ML; no dual-write; Practicante GET sí / POST 403. "
+            "Criterios: dos planes el mismo año; clic crea/libera celda; PDF autenticado."
+        ),
+        "tecnica": "Few-shot",
+        "ver": "v1",
+        "iter": 0,
+        "motivo": "N/A en origen. Totales, PDF papel, Xn, A4, gerencias = I-011…I-017.",
+        "ver_final": "v1",
+        "estado": "Aprobado",
+        "resultado": "Historial, matriz y PDF autenticado (0.10.0)",
+        "archivo": "prompts/03_implementacion/I-010_cronograma_v1.md",
+        "commit": SHA_INC8,
+    },
+    {
+        "id": "I-011",
+        "funcion": "F-009",
+        "prompt": (
+            "Actúa como desarrollador senior PHP 8 / React 19. "
+            "Contexto: 0.10.0. Faltan subtotal/total; hay que programar hora de cada equipo; "
+            "Imprimir PDF abre pestaña en blanco. "
+            "Objetivo: parche 0.10.1. El asiento sigue área+fecha+turno (ADR-003). "
+            "Tarea: columna Tot y pie Subtotal/Total; v2_cronograma_horarios + modal PUT; "
+            "downloadPdf con attachment y Content-Type PDF. "
+            "Criterios: pie de totales; modal horas; PDF descarga archivo."
+        ),
+        "tecnica": "Few-shot",
+        "ver": "v1",
+        "iter": 1,
+        "motivo": "I-010 no tenía totales ni horas por equipo; downloadPdf sin attachment.",
+        "ver_final": "v1",
+        "estado": "Aprobado",
+        "resultado": "Totales, horarios por equipo e impresión con download",
+        "archivo": "prompts/03_implementacion/I-011_cronograma_totales_horarios_pdf_v1.md",
+        "commit": SHA_INC8,
+    },
+    {
+        "id": "I-012",
+        "funcion": "F-008, F-009",
+        "prompt": (
+            "Actúa como desarrollador senior PHP 8 / Dompdf. "
+            "Contexto: el PDF era un listado; el papel 2024 es una matriz N°/área/PC/"
+            "laptop/impresora × meses y días con marcas X1/X2. "
+            "Objetivo: GET /reportes/cronograma/{id} imprime esa grilla. "
+            "Tarea: A3 apaisado; rango de meses con marca; un día = una columna; "
+            "última hoja leyenda y nota. No cambiar el asiento. "
+            "Criterios: el PDF se parece al papel; las X coinciden con la UI."
+        ),
+        "tecnica": "Few-shot",
+        "ver": "v1",
+        "iter": 1,
+        "motivo": "I-011 imprimía listado, no la grilla del papel.",
+        "ver_final": "v1",
+        "estado": "Aprobado",
+        "resultado": "PDF tipo matriz (papel 2024)",
+        "archivo": "prompts/03_implementacion/I-012_cronograma_pdf_matriz_v1.md",
+        "commit": SHA_INC8,
+    },
+    {
+        "id": "I-013",
+        "funcion": "F-009",
+        "prompt": (
+            "Actúa como desarrollador senior PHP 8 / React 19. "
+            "Contexto: el recuadro HORA PROGRAMADA del papel son las personas que "
+            "hacen el preventivo, no los bienes del área. "
+            "Objetivo: recuadro editable en matriz y PDF. "
+            "Tarea: v2_cronograma_personal; PUT /cronogramas/{id}/personal; "
+            "quitar del PDF la tabla grande de horas por CPU. "
+            "Criterios: se edita el nombre y se ve igual en el PDF."
+        ),
+        "tecnica": "Few-shot",
+        "ver": "v1",
+        "iter": 1,
+        "motivo": "I-012 listaba PCs del inventario en HORA PROGRAMADA; el papel lista personas.",
+        "ver_final": "v1",
+        "estado": "Aprobado",
+        "resultado": "Personal del preventivo en HORA PROGRAMADA",
+        "archivo": "prompts/03_implementacion/I-013_cronograma_personal_v1.md",
+        "commit": SHA_INC8,
+    },
+    {
+        "id": "I-014",
+        "funcion": "F-009",
+        "prompt": (
+            "Actúa como desarrollador senior PHP 8 / React 19. "
+            "Contexto: X1/X2 no son mañana/tarde: son cuántos PC/laptop se atienden ese día. "
+            "Objetivo: asiento = cronograma + área + fecha + cantidad; una columna por día. "
+            "Tarea: SQL cantidad + UNIQUE(área,fecha); POST {cantidad}; selector X1…Xn; "
+            "cobertura = suma(cantidad) vs PC+laptop. "
+            "Restricciones: no 10 columnas; no auto-fill; impresoras no entran en Xn."
+        ),
+        "tecnica": "Few-shot",
+        "ver": "v1",
+        "iter": 1,
+        "motivo": "I-010 modeló X1/X2 como turnos; el papel usa cantidad por día.",
+        "ver_final": "v1",
+        "estado": "Aprobado",
+        "resultado": "Xn = cantidad por día (no turnos)",
+        "archivo": "prompts/03_implementacion/I-014_cronograma_cantidad_xn_v1.md",
+        "commit": SHA_INC8,
+    },
+    {
+        "id": "I-015",
+        "funcion": "F-009",
+        "prompt": (
+            "Actúa como desarrollador senior PHP 8 / React 19 / Dompdf. "
+            "Contexto: PDF A3 4 meses con sábados/domingos; hace falta A4, L–V, "
+            "2 meses/hoja, año del documento y poder borrar un plan. "
+            "Objetivo: PDF A4 apaisado laborable; DELETE /cronogramas/{id} CASCADE; "
+            "matriz UI sin fines de semana. "
+            "Restricciones: no auto-fill; Practicante no elimina; conservar N°/área/conteos."
+        ),
+        "tecnica": "Few-shot",
+        "ver": "v1",
+        "iter": 1,
+        "motivo": "I-012 era A3 calendario completo; el responsable pidió A4 laborable y baja.",
+        "ver_final": "v1",
+        "estado": "Aprobado",
+        "resultado": "PDF A4 L–V 2 meses/hoja y DELETE del plan",
+        "archivo": "prompts/03_implementacion/I-015_cronograma_pdf_a4_baja_v1.md",
+        "commit": SHA_INC8,
+    },
+    {
+        "id": "I-016",
+        "funcion": "F-008, F-009",
+        "prompt": (
+            "Actúa como desarrollador senior PHP 8 / Dompdf. "
+            "Contexto: el PDF A4 aplastaba ÁREA (colspan calendario vs L–V); N° enorme; "
+            "PC/LAP/IMP acrónimos; dos tablas desalineadas; HORA PROGRAMADA sin reja. "
+            "Objetivo: una sola tabla; textos sin distorsión; pie N°/EQUIPO/HORARIO con borde. "
+            "Criterios: áreas se leen; PC/LAPTOP/IMPRESORA completos; filas Xn alineadas."
+        ),
+        "tecnica": "Few-shot",
+        "ver": "v1",
+        "iter": 2,
+        "motivo": "I-015 encajaba mal colspan y el pie no tenía borde.",
+        "ver_final": "v1",
+        "estado": "Aprobado",
+        "resultado": "PDF encajado; HORA PROGRAMADA con borde",
+        "archivo": "prompts/03_implementacion/I-016_cronograma_pdf_encaje_v1.md",
+        "commit": SHA_INC8,
+    },
+    {
+        "id": "I-017",
+        "funcion": "F-002, F-009",
+        "prompt": (
+            "Actúa como desarrollador senior PHP 8 / React 19. "
+            "Contexto: el papel agrupa áreas bajo filas de gerencia; v2_areas solo tenía alta. "
+            "Objetivo: catálogo v2_gerencias; área.gerencia_id; CRUD de área (Admin); "
+            "matriz y PDF con fila banda. "
+            "Restricciones: no auto-fill; SIGA/SAF son áreas, no gerencias; "
+            "no borrar área con equipos (409); no etiqueta libre. "
+            "Criterios: asignar gerencia; 409 si hay equipos; bandas en cronograma/PDF."
+        ),
+        "tecnica": "Few-shot",
+        "ver": "v1",
+        "iter": 1,
+        "motivo": "Cierre del Incremento 8: gerencias del papel y CRUD de áreas pendiente desde I-005.",
+        "ver_final": "v1",
+        "estado": "Aprobado",
+        "resultado": "Gerencias, CRUD de áreas y bandas en cronograma (0.10.7)",
+        "archivo": "prompts/03_implementacion/I-017_gerencias_crud_areas_v1.md",
+        "commit": SHA_INC8,
+    },
 ]
 
 PROMPT_HEADERS = [
@@ -554,7 +778,7 @@ def fill_guia(ws):
     ws["B7"] = (
         "Aporta el modelo de versionado y gestión de calidad de prompts (control de iteraciones, criterio de aceptación). "
         "Se refleja en 'ID Prompt', 'Versión del prompt', 'N.º de iteraciones' y 'Criterio de aceptación'. "
-        "En Sigemad los IDs vigentes son I-002…I-009 (una fila por función F-001…F-008 en Prompts Detallados)."
+        "En Sigemad los IDs vigentes son I-002…I-017 (una fila por función F-001…F-009 en Prompts Detallados, más refinamientos I-008…I-017)."
     )
     ws["B8"] = (
         "Ninguna de las dos fuentes por separado construye un instrumento aplicado que conecte capacidades DevOps + "
@@ -563,11 +787,11 @@ def fill_guia(ws):
         "Granularidad: una fila por módulo/épica. Fase documentada: Implementación. Capas: Presentation (React), API (PHP), "
         "Data (modelos/SQL), ML (FastAPI), Core/Infra — no Clean Architecture de Flutter."
     )
-    ws["B11"] = "Busca en 'Matriz Consolidada' por 'Feature/Módulo' (auth, inventario, ficha, mantenimiento, dashboard, ml, reportes, configuracion) o 'ID Función' (F-001 a F-008)."
+    ws["B11"] = "Busca en 'Matriz Consolidada' por 'Feature/Módulo' (auth, inventario, ficha, mantenimiento, dashboard, ml, reportes, configuracion, cronograma) o 'ID Función' (F-001 a F-009)."
     ws["B12"] = (
         "Observa las 5 columnas DevOps (Amaro): verde = Sí implementado, amarillo = Parcial, rojo = No implementado. "
         "En este caso: Control de Versiones = Sí (Git); CI y CD = No (no hay pipeline GitHub Actions ni despliegue automático; "
-        "Hostinger es manual); Test Automation = Parcial en inventario, mantenimiento, dashboard y ML; Continuous Monitoring = No."
+        "Hostinger es manual); Test Automation = Parcial en auth, configuración, inventario, mantenimiento, dashboard, ML, reportes (PDF cronograma) y cronograma; Continuous Monitoring = No."
     )
     ws["B14"] = (
         "Consulta 'ID Prompt' (enlace al markdown en GitHub, rama main) y ve a 'Prompts Detallados' "
@@ -595,8 +819,8 @@ def fill_config(ws):
     ws["B2"] = REPO
     ws["B3"] = COMMIT_HEAD
     ws["B4"] = (
-        "B3 es el HEAD de origin/main al publicar la matriz. Cada fila de 'Matriz Consolidada' tiene su propio SHA "
-        "en la columna Commit (hipervínculo al diff). Los prompts se leen en rama main: prompts/03_implementacion/."
+        "B3 es el HEAD de origin/main al regenerar la matriz. Cada fila de Matriz Consolidada tiene su propio SHA "
+        "en Commit (F-009 / I-010…I-017 → 3394712). Los prompts se leen en rama main: prompts/03_implementacion/."
     )
     ws["A5"] = "URL de esta matriz en GitHub"
     ws["B5"] = github_main("documents/matriz_doble_entrada/MATRIZ-DOBLE-ENTRADA-V3-SIGEMAD-MPA.xlsx")
@@ -624,8 +848,8 @@ def fill_matriz(ws):
 
     for i, f in enumerate(FUNCIONES, start=2):
         sha = f["commit"]
-        link_file = github_blob(f["completa"], sha)
-        link_commit = github_commit(sha)
+        link_file = file_url(f["completa"], sha)
+        link_commit = commit_url(sha)
         link_prompt = github_main(PROMPT_FILES[f["prompt"]])
         valores = [
             f["id"],
@@ -649,7 +873,7 @@ def fill_matriz(ws):
             f["archivo"],
             f["completa"],
             link_file,
-            sha,
+            commit_label(sha),
             f["test"],
             RESPONSABLE,
             ROL,
@@ -719,8 +943,8 @@ def fill_prompts(ws):
         ws.cell(row=i, column=1).hyperlink = github_main(p["archivo"])
         ws.cell(row=i, column=1).font = FONT_LINK
         evid_cell = ws.cell(row=i, column=11)
-        evid_cell.value = p["commit"]
-        evid_cell.hyperlink = github_commit(p["commit"])
+        evid_cell.value = commit_label(p["commit"]) if sha_published(p["commit"]) else "changelog 0.10.7"
+        evid_cell.hyperlink = commit_url(p["commit"])
         evid_cell.font = FONT_LINK
         evid_cell.alignment = WRAP
         ws.row_dimensions[i].height = 90
@@ -746,8 +970,8 @@ def fill_diccionario(ws):
             row[2].value = "Original (adaptado a Sigemad; no Clean Architecture Flutter)"
         if row[0].value and str(row[0].value).startswith("ID Prompt"):
             row[1].value = (
-                "Identificador del prompt vigente (I-002…I-009). Una fila por función F-001…F-008 "
-                "en Prompts Detallados. Hipervínculo al markdown en GitHub (prompts/)."
+                "Identificador del prompt vigente (I-002…I-017). Una fila por función F-001…F-009 "
+                "en Prompts Detallados, más refinamientos. Hipervínculo al markdown en GitHub (prompts/)."
             )
         if row[0].value and str(row[0].value) == "Link GitHub (línea exacta)":
             row[1].value = (
