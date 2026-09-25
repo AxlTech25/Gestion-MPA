@@ -1,6 +1,6 @@
 <?php
 /**
- * Copie como local.php (desarrollo) o use local.hostinger.php en el servidor.
+ * Copie como local.php (desarrollo o producción).
  * No suba archivos con credenciales a repositorios públicos.
  */
 return [
@@ -14,5 +14,5 @@ return [
 
     'cors_origins' => 'http://localhost:5173,http://localhost,http://127.0.0.1',
 
-    // En Hostinger deje vacío: 'ml_service_url' => '',
+    // Sin FastAPI: 'ml_service_url' => '',
 ];

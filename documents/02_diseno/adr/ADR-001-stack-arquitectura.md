@@ -9,7 +9,7 @@
 
 ## Contexto
 
-Se requería una versión 2 del sistema de gestión de equipos, con API desacoplada, datos numéricos aptos para ML y despliegue en XAMPP / hosting PHP compartido.
+Se requería una versión 2 del sistema de gestión de equipos, con API desacoplada, datos numéricos aptos para ML y despliegue en XAMPP (desarrollo) y un servidor de producción Apache + PHP + MySQL.
 
 ## Decisión
 
@@ -22,7 +22,7 @@ Se requería una versión 2 del sistema de gestión de equipos, con API desacopl
 ## Consecuencias
 
 - El navegador no llama a Python de forma directa (menor superficie de ataque).
-- En Hostinger compartido el ML puede quedar deshabilitado sin romper el resto del sistema.
+- En producción el ML puede quedar deshabilitado (sin FastAPI) sin romper el resto del sistema.
 - El esquema debe mantener campos estructurados (no texto libre en categorías de falla).
 
 ## Alternativas descartadas

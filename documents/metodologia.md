@@ -105,7 +105,7 @@ Esto es deliberado: **validar implica encontrar fallos**.
 | Quedan nombres técnicos de la etapa Scrum (`verify_sprint6_ml.py`) | Renombrar en un incremento de higiene, sin reescribir historia |
 | I-001 fue un macro-prompt; las iteraciones de origen no se midieron en caliente | Oleada 2 (2026-09-11): I-001…I-009 por incremento; macros en Superado. Medir iteraciones en el próximo cambio |
 | Había un solo ADR (stack) | Oleada 3 (2026-09-11): ADR-002 degradación FastAPI. Nuevas decisiones de arquitectura → ADR, no solo `architecture.md` |
-| El ML es opcional y el hosting compartido no lo corre | El caso no cubre un SDLC de ML en producción (ver también CRISP-ML(Q) en `metodologia CRISP_ML/`) |
+| El ML es opcional y FastAPI no es obligatorio en el servidor web | El caso no cubre un SDLC de ML en producción (ver también CRISP-ML(Q) en `metodologia CRISP_ML/`) |
 | La calidad del código generado no es uniforme | Añadir linters/Sonar y no tratar el plan funcional como único filtro |
 | Un solo producto municipal no generaliza la metodología | Hace falta comparar con otro caso (p. ej. SGMI) y con un equipo Scrum “clásico” |
 | Riesgos de GenAI (alucinación, secretos en prompts, IP) | La política de IA existe; hay que auditar cumplimiento de forma periódica |

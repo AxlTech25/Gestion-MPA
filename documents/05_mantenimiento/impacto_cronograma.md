@@ -26,7 +26,7 @@
 | ML / FastAPI | **Nulo** | Ninguno | El cronograma no alimenta el modelo en este incremento |
 | Tests | **Medio** | PHPUnit (unicidad área+fecha+turno+cronograma, RBAC); Vitest (año, turnos); T-001 casos CRN | Hueco si no hay casos de “dos cronogramas el mismo año” |
 | Documentación | **Medio** | ER, contrato API, frontend_features, changelog (M-003 post I-010), T-001 | Contrato D-003 hoy no lista el recurso |
-| Despliegue / Hostinger | **Medio** | Migración `CREATE TABLE` en XAMPP y Hostinger | PHP/MySQL basta; no hay Python |
+| Despliegue / producción | **Medio** | Migración `CREATE TABLE` en XAMPP y producción | PHP/MySQL basta; no hay Python |
 | Datos existentes | **Bajo** | Inventario y áreas se leen; no se migran celdas desde el papel 2024 | Historial empieza vacío. Áreas “servidor SIGA/SAF” se dan de alta en Configuración si no existen |
 
 ### Rollback

@@ -1,6 +1,6 @@
 <?php
 /**
- * Configuración local de producción (Hostinger, VPS, etc.).
+ * Configuración local (desarrollo o producción).
  * Copie local.example.php → local.php y ajuste los valores.
  * Las variables de entorno del servidor tienen prioridad.
  */

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Equipo de desarrollo Sigemad MPA">
+  <meta name="description" content="Documentación técnica y manual de usuario de Sigemad MPA V2">
+  <title>Documentación técnica y manual de usuario — Sigemad MPA V2</title>
+  <style>
+    @page { size: A4; margin: 2.2cm 2cm 2cm 2.3cm; }
+    body { font-family: "Liberation Sans", Arial, sans-serif; color: #243247; font-size: 10.5pt; line-height: 1.45; }
+    h1, h2, h3 { color: #163a63; page-break-after: avoid; }
+    h1 { font-size: 22pt; border-bottom: 2px solid #2f7dbd; padding-bottom: 6px; margin-top: 24px; }
+    h2 { font-size: 16pt; margin-top: 22px; }
+    h3 { font-size: 12pt; margin-top: 16px; }
+    p, li { text-align: justify; }
+    a { color: #1d66a5; text-decoration: none; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; page-break-inside: avoid; }
+    th { background: #163a63; color: white; font-weight: bold; text-align: left; }
+    th, td { border: 1px solid #aebdca; padding: 7px; vertical-align: top; }
+    tr:nth-child(even) td { background: #f2f6f9; }
+    code, pre { font-family: "Liberation Mono", Consolas, monospace; font-size: 9pt; }
+    code { background: #eef3f7; padding: 1px 3px; }
+    pre { color: #eef6ff; background: #1e2c3a; padding: 12px; border-radius: 4px; white-space: pre-wrap; page-break-inside: avoid; }
+    .cover { text-align: center; padding-top: 4.2cm; page-break-after: always; }
+    .cover h1 { border: 0; font-size: 30pt; color: #163a63; margin-bottom: 12px; }
+    .cover .subtitle { font-size: 18pt; color: #2f7dbd; margin: 8px 0 50px; text-align: center; }
+    .cover .system { display: inline-block; padding: 12px 28px; background: #163a63; color: white; font-size: 15pt; letter-spacing: 1px; }
+    .cover .meta { margin: 70px auto 0; width: 70%; border-top: 1px solid #aebdca; padding-top: 18px; }
+    .cover .meta p { text-align: center; margin: 5px; }
+    .page-break { page-break-before: always; }
+    .note { border-left: 4px solid #2f7dbd; background: #eef6fc; padding: 10px 14px; margin: 12px 0; }
+    .warning { border-left: 4px solid #c77a12; background: #fff7e8; padding: 10px 14px; margin: 12px 0; }
+    .diagram { font-family: "Liberation Mono", Consolas, monospace; background: #f5f7f9; border: 1px solid #aebdca; padding: 14px; text-align: center; page-break-inside: avoid; }
+    .toc li { margin: 6px 0; }
+    .small { font-size: 9pt; color: #526579; }
+    .check { color: #176b3a; font-weight: bold; }
+    .footer-note { margin-top: 35px; border-top: 1px solid #aebdca; padding-top: 8px; font-size: 8.5pt; color: #62758a; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="system">SIGEMAD MPA V2</div>
+    <h1>Documentación técnica y<br>manual de usuario</h1>
+    <p class="subtitle">Sistema de gestión de equipos y mantenimiento predictivo</p>
+    <div class="meta">
+      <p><strong>Versión del sistema:</strong> 0.9.1</p>
+      <p><strong>Tipo de documento:</strong> Manual integral del proyecto</p>
+      <p><strong>Elaborado por:</strong> Equipo de desarrollo</p>
+      <p><strong>Fecha:</strong> 18 de agosto de 2026</p>
+    </div>
+  </section>
+
+  <h1 class="page-break">Control del documento</h1>
+  <table>
+    <tr><th>Versión del documento</th><td>1.1</td></tr>
+    <tr><th>Fecha</th><td>18 de agosto de 2026</td></tr>
+    <tr><th>Descripción</th><td>Actualización que incorpora cambios recientes en API, frontend, migraciones y ML (ver resumen de cambios).</td></tr>
+    <tr><th>Responsable</th><td>Equipo de desarrollo</td></tr>
+  </table>
+
+  <h2>Resumen de cambios recientes</h2>
+  <ul>
+    <li>Actualizaciones en controladores y rutas: `backend/api/v2` (usuarios, fichas técnicas, reportes).</li>
+    <li>Mejoras en frontend: `src/features/configuracion` y `src/features/inventario` (páginas y servicios).</li>
+    <li>Nueva versión del logo: `public/logo-mpa.svg`.</li>
+    <li>Migraciones y scripts SQL actualizados: `backend/sql/v2_estructura.sql`, `v2_extension_fase7.sql` y utilitarios en `backend/tools/`.</li>
+    <li>Actualizaciones en el servicio ML y scripts en `ml/` (reentrenamiento e inferencia).</li>
+  </ul>
+
+  <h2>Cambios implementados (detallado)</h2>
+  <ul>
+    <li><strong>API / Backend</strong>: Se añadieron y actualizan controladores y rutas para gestión de usuarios (`backend/api/v2/controllers/UsuarioController.php`, `backend/api/v2/routes/usuarios.php`), autenticación mejorada (`backend/api/v2/routes/auth.php`) y generación de reportes (`backend/api/v2/controllers/ReporteController.php`). El modelo `Usuario` se ajustó a nuevas validaciones (`backend/api/v2/models/Usuario.php`).</li>
+    <li><strong>Ficha técnica</strong>: Mejoras en `FichaTecnicaController.php` y las rutas relacionadas para búsqueda, edición y exportación de fichas técnicas (incluye generación de PDFs desde el backend).</li>
+    <li><strong>Frontend</strong>: Nuevas vistas y formularios en `src/features/configuracion` (página de configuración, `UsuarioForm.jsx` y `organizacionService.js`) y componentes de inventario `FichaTecnicaPanel.jsx` junto con su servicio `fichaTecnicaService.js` para interacción con la API y mejor experiencia de carga/edición.</li>
+    <li><strong>Migraciones y base de datos</strong>: Actualización de esquemas y extensiones con `backend/sql/v2_estructura.sql` y `backend/sql/v2_extension_fase7.sql`. Scripts de migración en `backend/tools/` (p. ej. `migrate_ficha_evaluacion.php`) para aplicar cambios estructurales.</li>
+    <li><strong>ML</strong>: Cambios en scripts y modelos dentro de `ml/` (inferencia y reentrenamiento). Se actualizan referencias y dependencias del servicio FastAPI para soportar nuevas rutas de predicción y métricas.</li>
+    <li><strong>Activos y recursos</strong>: Actualizado el logotipo en `public/logo-mpa.svg` y varias imágenes de evidencias en `backend/uploads/fichas_tecnicas/`.</li>
+  </ul>
+
+  <p class="small">Nota: esta lista se generó a partir de los archivos modificados en el repositorio. Para más detalles técnicos consulte cada ruta indicada en el apartado <strong>Documentos fuente del repositorio</strong>.</p>
+
+  <h2>Propósito</h2>
+  <p>Este documento presenta de forma unificada la descripción funcional, arquitectura, instalación, configuración, operación, seguridad, pruebas y despliegue de <strong>Sigemad MPA V2</strong>. Está dirigido a administradores, personal técnico, usuarios operativos y desarrolladores responsables de mantener o ampliar la solución.</p>
+
+  <h2>Tabla de contenido</h2>
+  <ol class="toc">
+    <li><a href="#introduccion">Introducción</a></li>
+    <li><a href="#alcance">Alcance y funcionalidades</a></li>
+    <li><a href="#arquitectura">Arquitectura de la solución</a></li>
+    <li><a href="#requisitos">Requisitos del sistema</a></li>
+    <li><a href="#instalacion">Instalación en entorno local</a></li>
+    <li><a href="#configuracion">Configuración</a></li>
+    <li><a href="#usuario">Manual de usuario</a></li>
+    <li><a href="#roles">Roles y permisos</a></li>
+    <li><a href="#api">Referencia técnica de la API</a></li>
+    <li><a href="#ml">Mantenimiento predictivo y ML</a></li>
+    <li><a href="#datos">Base de datos y gestión de información</a></li>
+    <li><a href="#pruebas">Pruebas y calidad</a></li>
+    <li><a href="#despliegue">Despliegue en producción</a></li>
+    <li><a href="#seguridad">Seguridad y operación</a></li>
+    <li><a href="#problemas">Solución de problemas</a></li>
+    <li><a href="#mantenimiento">Mantenimiento del software</a></li>
+    <li><a href="#glosario">Glosario</a></li>
+  </ol>
+
+  <h1 id="introduccion" class="page-break">1. Introducción</h1>
+  <p>Sigemad MPA V2 es una aplicación web para gestionar el inventario patrimonial de equipos de cómputo, sus fichas técnicas y el historial de intervenciones de mantenimiento. La plataforma incorpora un componente opcional de aprendizaje automático que estima el riesgo operativo y apoya la priorización del mantenimiento.</p>
+
+  <h2>1.1 Objetivo general</h2>
+  <p>Centralizar y mantener trazable la información del parque tecnológico, facilitando el registro, consulta, evaluación, mantenimiento y generación de reportes de los equipos.</p>
+
+  <h2>1.2 Objetivos específicos</h2>
+  <ul>
+    <li>Controlar el inventario por código patrimonial, tipo, área, condición y estado operativo.</li>
+    <li>Conservar fichas técnicas y evaluaciones actualizadas por equipo.</li>
+    <li>Registrar intervenciones preventivas, predictivas, correctivas y de evaluación.</li>
+    <li>Proporcionar indicadores y gráficos para apoyar la supervisión del parque tecnológico.</li>
+    <li>Generar fichas e historiales en PDF.</li>
+    <li>Estimar el nivel de riesgo de los equipos mediante un microservicio ML opcional.</li>
+  </ul>
+
+  <h2>1.3 Público objetivo</h2>
+  <table>
+    <tr><th>Perfil</th><th>Uso principal del documento</th></tr>
+    <tr><td>Administrador</td><td>Configuración organizacional, usuarios, seguridad y supervisión.</td></tr>
+    <tr><td>Técnico</td><td>Inventario, fichas técnicas y registro de mantenimientos.</td></tr>
+    <tr><td>Practicante</td><td>Consulta y registro básico del inventario, según permisos.</td></tr>
+    <tr>    <td>Desarrollador / soporte</td><td>Instalación, API, base de datos, pruebas y mantenimiento.</td></tr>
+  </table>
+
+  <h2>1.4 Metodología de desarrollo</h2>
+  <p>El proyecto aplica la propuesta <strong>Prompt-Centered SDLC v1.2</strong>, en validación: se usa este software para comprobar si un ciclo de vida centrado en prompts puede sustituir a Scrum cuando la IA comprime los tiempos de implementación. No se aplican ceremonias ni sprints; las entregas se documentan como <strong>incrementos</strong>. La metodología puede tener lagunas; el detalle, las fuentes y las limitaciones están en <code>documents/metodologia.md</code> y en <code>documents/desarrollo_softwareIA/</code>.</p>
+
+  <h1 id="alcance">2. Alcance y funcionalidades</h1>
+  <table>
+    <tr><th>Módulo</th><th>Capacidades principales</th></tr>
+    <tr><td>Autenticación</td><td>Inicio y cierre de sesión, protección de rutas y autorización mediante JWT.</td></tr>
+    <tr><td>Dashboard</td><td>Indicadores, distribución por estado, tipo y área; fallas frecuentes; mantenimientos recientes y alertas predictivas.</td></tr>
+    <tr><td>Inventario</td><td>Registro, consulta, edición, filtros, tipos personalizados, carga masiva desde Excel y exportación de ficha.</td></tr>
+    <tr><td>Ficha técnica</td><td>Búsqueda por código patrimonial, datos generales, hardware/software, evaluación, observaciones y PDF.</td></tr>
+    <tr><td>Mantenimiento</td><td>Historial cronológico, intervenciones, telemetría, diagnóstico, reparación, evidencias y reportes PDF.</td></tr>
+    <tr><td>Configuración</td><td>Administración de áreas, responsables y personal.</td></tr>
+    <tr><td>ML predictivo</td><td>Riesgo individual y por lotes, alertas, sugerencia de categoría y reentrenamiento.</td></tr>
+  </table>
+  <div class="note"><strong>Operación degradada:</strong> el módulo ML es opcional. Si no está disponible, continúan funcionando autenticación, inventario, fichas, mantenimiento, configuración y reportes.</div>
+
+  <h1 id="arquitectura" class="page-break">3. Arquitectura de la solución</h1>
+  <h2>3.1 Vista general</h2>
+  <div class="diagram">NAVEGADOR<br>React 19 + Vite 7<br>│ HTTPS / JSON<br>▼<br>API REST PHP 8.1+ ─────► MySQL<br>│ Proxy autenticado<br>▼<br>FastAPI + Scikit-learn (opcional, puerto 8000)</div>
+  <p>La interfaz React consume una API REST desarrollada en PHP. El backend centraliza autenticación, reglas de negocio, acceso a MySQL y generación de documentos. Para las funciones predictivas, PHP actúa como proxy autenticado hacia FastAPI, evitando exponer directamente el servicio Python al navegador.</p>
+
+  <h2>3.2 Tecnologías</h2>
+  <table>
+    <tr><th>Capa</th><th>Tecnología</th><th>Responsabilidad</th></tr>
+    <tr><td>Frontend</td><td>React 19, React Router, Axios, Bootstrap, Tailwind/PostCSS, jsPDF</td><td>Interfaz SPA, navegación, formularios y consumo de API.</td></tr>
+    <tr><td>Backend</td><td>PHP, PDO, Firebase JWT, Dompdf, OpenSpout</td><td>API, autenticación, persistencia, reportes e importación Excel.</td></tr>
+    <tr><td>Datos</td><td>MySQL</td><td>Inventario, usuarios, áreas, mantenimientos, métricas y predicciones.</td></tr>
+    <tr><td>ML</td><td>Python, FastAPI, Scikit-learn</td><td>Entrenamiento e inferencia de riesgo.</td></tr>
+    <tr><td>Calidad</td><td>Vitest, PHPUnit, pytest, ESLint</td><td>Pruebas unitarias y análisis del frontend.</td></tr>
+  </table>
+
+  <h2>3.3 Organización del código</h2>
+  <pre>gestion_mpa/
+├── src/                  Frontend React organizado por funcionalidades
+├── backend/api/v2/       API: config, controladores, modelos, rutas y middleware
+├── backend/sql/          Estructura y migraciones de base de datos
+├── backend/tools/        Utilidades de migración y verificación
+├── ml/                   Microservicio, scripts, datos, modelos y pruebas
+├── documents/            Documentación por fases SDLC (requisitos, diseño, implementación, pruebas, mantenimiento)
+├── prompts/              Repositorio de prompts Prompt-Centered SDLC v1.2
+└── gestion_equipos_mpa_v2.sql  Exportación integral de la base de datos</pre>
+
+  <h2>3.4 Flujo de una solicitud protegida</h2>
+  <ol>
+    <li>El usuario inicia sesión con su usuario y contraseña.</li>
+    <li>La API valida el hash de contraseña y emite un token JWT.</li>
+    <li>El frontend incluye el token como <code>Bearer</code> en las solicitudes posteriores.</li>
+    <li>El middleware valida vigencia, firma e identidad antes de ejecutar la ruta.</li>
+    <li>La API responde en JSON; para reportes responde con el archivo correspondiente.</li>
+  </ol>
+
+  <h1 id="requisitos">4. Requisitos del sistema</h1>
+  <h2>4.1 Servidor y herramientas</h2>
+  <table>
+    <tr><th>Componente</th><th>Versión recomendada</th><th>Observación</th></tr>
+    <tr><td>Apache + MySQL + PHP</td><td>PHP 8.1 o superior</td><td>Puede utilizarse XAMPP/LAMPP en desarrollo.</td></tr>
+    <tr><td>Node.js</td><td>18 o superior</td><td>Necesario para desarrollo y compilación del frontend.</td></tr>
+    <tr><td>Composer</td><td>Compatible con PHP 8.1+</td><td>Instala dependencias del backend.</td></tr>
+    <tr><td>Python</td><td>3.10 o superior</td><td>Solo si se habilita ML.</td></tr>
+    <tr><td>Navegador</td><td>Versión moderna</td><td>Chrome, Edge o Firefox con JavaScript habilitado.</td></tr>
+  </table>
+  <p>En PHP deben estar habilitadas, como mínimo, las extensiones <code>pdo_mysql</code>, <code>curl</code>, <code>mbstring</code> y <code>json</code>.</p>
+
+  <h1 id="instalacion" class="page-break">5. Instalación en entorno local</h1>
+  <h2>5.1 Base de datos</h2>
+  <ol>
+    <li>Inicie Apache y MySQL.</li>
+    <li>Cree la base de datos e importe <code>backend/sql/v2_estructura.sql</code>.</li>
+    <li>Para una actualización previa, aplique las migraciones requeridas, especialmente <code>v2_extension_fase7.sql</code> y <code>v2_ml_predicciones.sql</code>.</li>
+  </ol>
+
+  <h2>5.2 Backend PHP</h2>
+  <pre>cd backend
+composer install</pre>
+
+  <h2>5.3 Frontend</h2>
+  <pre>npm install
+npm run dev</pre>
+  <p>La dirección de desarrollo predeterminada es <code>http://localhost:5173</code>. La API local se publica normalmente en <code>http://localhost/gestion_mpa/backend/api/v2</code>.</p>
+
+  <h2>5.4 Microservicio ML opcional</h2>
+  <pre>cd ml
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000</pre>
+
+  <h2>5.5 Verificación inicial</h2>
+  <ul>
+    <li>La pantalla de inicio de sesión carga sin errores.</li>
+    <li>La API devuelve JSON y no una página HTML de error.</li>
+    <li>El usuario puede autenticarse y acceder al dashboard.</li>
+    <li>Si ML está habilitado, <code>GET http://127.0.0.1:8000/health</code> responde correctamente.</li>
+  </ul>
+
+  <h1 id="configuracion">6. Configuración</h1>
+  <h2>6.1 Frontend</h2>
+  <p>Las variables de compilación más importantes son:</p>
+  <table>
+    <tr><th>Variable</th><th>Finalidad</th><th>Ejemplo</th></tr>
+    <tr><td><code>VITE_API_BASE_URL</code></td><td>Ruta pública de la API.</td><td><code>/backend/api/v2</code></td></tr>
+    <tr><td><code>VITE_BASE_PATH</code></td><td>Ruta base de la aplicación.</td><td><code>/</code> o <code>/gestion_mpa/</code></td></tr>
+  </table>
+
+  <h2>6.2 Backend</h2>
+  <p>La configuración local parte de <code>backend/api/v2/config/local.example.php</code>. La copia local debe definir conexión MySQL, secreto JWT, orígenes CORS y URL del servicio ML. El archivo real de configuración no debe publicarse ni versionarse.</p>
+  <div class="warning"><strong>Importante:</strong> use un secreto JWT largo y exclusivo; limite CORS a dominios conocidos y nunca incluya contraseñas reales en documentación, capturas o repositorios.</div>
+
+  <h2>6.3 ML</h2>
+  <table>
+    <tr><th>Variable</th><th>Valor predeterminado</th></tr>
+    <tr><td><code>DB_HOST</code></td><td><code>localhost</code></td></tr>
+    <tr><td><code>DB_USER</code></td><td><code>root</code></td></tr>
+    <tr><td><code>DB_PASSWORD</code></td><td>Vacío en desarrollo</td></tr>
+    <tr><td><code>DB_NAME</code></td><td><code>gestion_equipos_mpa_v2</code></td></tr>
+  </table>
+
+  <h1 id="usuario" class="page-break">7. Manual de usuario</h1>
+  <h2>7.1 Inicio y cierre de sesión</h2>
+  <ol>
+    <li>Abra la dirección de la aplicación.</li>
+    <li>Ingrese usuario y contraseña.</li>
+    <li>Seleccione la opción de acceso. Tras una validación correcta se mostrará el dashboard.</li>
+    <li>Para finalizar, use <strong>Salir</strong> en la barra superior.</li>
+  </ol>
+
+  <h2>7.2 Dashboard</h2>
+  <p>Presenta el total de equipos, mantenimientos, áreas y equipos dañados; gráficos por estado, tipo y área; categorías de falla; alertas predictivas y mantenimientos recientes.</p>
+  <h3>Consulta por etiquetas</h3>
+  <ol>
+    <li>Seleccione <strong>Consultar equipos</strong>.</li>
+    <li>Aplique una o más etiquetas de tipo, estado operativo o conservación.</li>
+    <li>Revise la tabla de coincidencias. Para tipos no estándar, seleccione <strong>Otro</strong> y escriba el tipo específico.</li>
+  </ol>
+
+  <h2>7.3 Inventario</h2>
+  <h3>Registrar un equipo</h3>
+  <ol>
+    <li>Seleccione <strong>Nuevo Equipo</strong>.</li>
+    <li>Ingrese un código patrimonial de exactamente 12 dígitos.</li>
+    <li>Seleccione área y tipo. Si el tipo es <strong>Otro</strong>, especifíquelo.</li>
+    <li>Para CPU o laptop, complete RAM, almacenamiento, procesador y sistema operativo.</li>
+    <li>Verifique la información y seleccione <strong>Registrar Equipo</strong>.</li>
+  </ol>
+  <h3>Buscar, editar y exportar</h3>
+  <ul>
+    <li>Busque por código patrimonial, identificativo, marca o modelo.</li>
+    <li>Combine filtros de tipo y conservación.</li>
+    <li>Use el lápiz para editar, el documento para obtener la ficha PDF y el engranaje para abrir la evaluación técnica.</li>
+  </ul>
+  <h3>Carga masiva</h3>
+  <ol>
+    <li>Seleccione <strong>Carga Excel</strong> y descargue la plantilla.</li>
+    <li>Complete la plantilla sin alterar sus encabezados.</li>
+    <li>Suba el archivo y revise el resumen de registros aceptados y errores.</li>
+    <li>Corrija las filas observadas antes de repetir la importación.</li>
+  </ol>
+
+  <h2>7.4 Ficha técnica</h2>
+  <ol>
+    <li>Abra <strong>Ficha Técnica</strong>.</li>
+    <li>Ingrese el código patrimonial y seleccione <strong>Buscar Equipo</strong>.</li>
+    <li>Revise datos generales, hardware, software, ubicación y condición.</li>
+    <li>Actualice conservación, estado operativo y observaciones.</li>
+    <li>Seleccione <strong>Guardar Evaluación</strong>. Use <strong>PDF</strong> para exportar.</li>
+  </ol>
+
+  <h2>7.5 Mantenimiento</h2>
+  <p>El módulo muestra una línea de tiempo con intervenciones recientes y permite consultar un equipo mediante su código patrimonial.</p>
+  <h3>Registrar una intervención</h3>
+  <ol>
+    <li>Seleccione <strong>Registrar Intervención</strong>.</li>
+    <li>Ingrese el código patrimonial y confirme el equipo identificado.</li>
+    <li>Seleccione el tipo: preventivo, predictivo, correctivo o evaluación.</li>
+    <li>Complete actividades, estado posterior y, según el equipo, telemetría.</li>
+    <li>En un correctivo, documente síntoma, componente, causa raíz, diagnóstico, piezas y costo cuando corresponda.</li>
+    <li>Guarde la ficha y verifique su aparición en el historial.</li>
+  </ol>
+  <table>
+    <tr><th>Tipo de equipo</th><th>Datos específicos de mantenimiento</th></tr>
+    <tr><td>Laptop / CPU</td><td>Polvo, temperaturas, horas de uso, batería e inactividad.</td></tr>
+    <tr><td>Impresora</td><td>Contador de páginas.</td></tr>
+    <tr><td>Monitor / Otro</td><td>Datos generales, diagnóstico y actividades.</td></tr>
+  </table>
+
+  <h2>7.6 Configuración organizacional</h2>
+  <p>Disponible para el administrador. La pestaña <strong>Áreas</strong> permite registrar unidades, jefes y descripciones. La pestaña <strong>Personal</strong> permite crear usuarios, asignar rol y relacionarlos con un área.</p>
+
+  <h1 id="roles">8. Roles y permisos</h1>
+  <table>
+    <tr><th>Operación</th><th>Administrador</th><th>Técnico</th><th>Practicante</th></tr>
+    <tr><td>Dashboard</td><td class="check">Sí</td><td class="check">Sí</td><td class="check">Sí</td></tr>
+    <tr><td>Ver y registrar inventario</td><td class="check">Sí</td><td class="check">Sí</td><td class="check">Sí</td></tr>
+    <tr><td>Editar inventario</td><td class="check">Sí</td><td class="check">Sí</td><td>No</td></tr>
+    <tr><td>Ficha técnica</td><td class="check">Sí</td><td class="check">Sí</td><td>No</td></tr>
+    <tr><td>Mantenimiento</td><td class="check">Sí</td><td class="check">Sí</td><td>No</td></tr>
+    <tr><td>Configuración</td><td class="check">Sí</td><td>No</td><td>No</td></tr>
+    <tr><td>Carga masiva Excel</td><td class="check">Sí</td><td>No</td><td>No</td></tr>
+  </table>
+  <div class="warning">La instalación de desarrollo puede incluir un usuario inicial. Antes de publicar el sistema se debe cambiar su contraseña y revisar todas las cuentas activas.</div>
+
+  <h1 id="api" class="page-break">9. Referencia técnica de la API</h1>
+  <p>Ruta base local habitual: <code>/gestion_mpa/backend/api/v2</code>. Salvo autenticación, los recursos requieren token JWT.</p>
+  <table>
+    <tr><th>Recurso</th><th>Finalidad</th></tr>
+    <tr><td><code>/auth</code></td><td>Inicio de sesión y emisión del token.</td></tr>
+    <tr><td><code>/equipos</code></td><td>Consulta, alta, edición, filtros e importación del inventario.</td></tr>
+    <tr><td><code>/mantenimientos</code></td><td>Registro y consulta de intervenciones e historiales.</td></tr>
+    <tr><td><code>/fichas-tecnicas</code></td><td>Evaluación y detalle técnico de equipos.</td></tr>
+    <tr><td><code>/dashboard</code></td><td>Métricas, distribuciones y consultas consolidadas.</td></tr>
+    <tr><td><code>/reportes</code></td><td>Fichas e historiales en PDF.</td></tr>
+    <tr><td><code>/areas</code></td><td>Administración de áreas.</td></tr>
+    <tr><td><code>/usuarios</code></td><td>Administración de personal y roles.</td></tr>
+    <tr><td><code>/ml</code></td><td>Proxy hacia inferencia, entrenamiento y métricas ML.</td></tr>
+  </table>
+  <h2>9.1 Convención de respuesta</h2>
+  <pre>{
+  "success": true,
+  "data": {},
+  "message": "Operación exitosa"
+}</pre>
+  <p>Los consumidores deben interpretar además el código HTTP. Los errores de validación, autorización, recurso inexistente o servidor deben mostrarse sin revelar trazas ni detalles internos.</p>
+
+  <h1 id="ml">10. Mantenimiento predictivo y ML</h1>
+  <h2>10.1 Funciones</h2>
+  <table>
+    <tr><th>Función</th><th>Presentación</th></tr>
+    <tr><td>Riesgo por equipo</td><td>Badge en inventario y evaluación predictiva de la ficha.</td></tr>
+    <tr><td>Priorización</td><td>Top de equipos con mayor riesgo en dashboard.</td></tr>
+    <tr><td>Categoría sugerida</td><td>Apoyo en mantenimiento correctivo.</td></tr>
+    <tr><td>Actualización</td><td>Recálculo después de registrar mantenimiento y reentrenamiento controlado.</td></tr>
+  </table>
+  <h2>10.2 Endpoints FastAPI</h2>
+  <table>
+    <tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr>
+    <tr><td>GET</td><td><code>/health</code></td><td>Estado y versión del modelo.</td></tr>
+    <tr><td>POST</td><td><code>/predict/riesgo</code></td><td>Predicción individual.</td></tr>
+    <tr><td>POST</td><td><code>/predict/riesgo/batch</code></td><td>Predicción por lote.</td></tr>
+    <tr><td>POST</td><td><code>/predict/categoria</code></td><td>Sugerencia heurística de categoría.</td></tr>
+    <tr><td>POST</td><td><code>/train</code></td><td>Reentrenamiento desde MySQL.</td></tr>
+    <tr><td>GET</td><td><code>/metrics</code></td><td>Métricas del último entrenamiento.</td></tr>
+  </table>
+  <div class="note"><strong>Criterio de uso:</strong> la predicción es un apoyo a la decisión; no reemplaza la inspección ni el diagnóstico del técnico. Deben conservarse versión del modelo, fecha, factores y resultado para asegurar trazabilidad.</div>
+
+  <h1 id="datos">11. Base de datos y gestión de información</h1>
+  <p>La base usa tablas con prefijo <code>v2_</code> y columnas en <code>snake_case</code>. Los principales dominios son usuarios, áreas, equipos, fichas de mantenimiento, métricas por equipo y predicciones ML.</p>
+  <h2>11.1 Reglas relevantes</h2>
+  <ul>
+    <li>El código patrimonial contiene exactamente 12 dígitos y actúa como identificador operativo.</li>
+    <li>Los usuarios se autentican con contraseñas almacenadas mediante hash.</li>
+    <li>Las fechas siguen formato SQL o ISO 8601.</li>
+    <li>La telemetría del equipo se sincroniza al registrar determinadas intervenciones.</li>
+    <li>Las migraciones deben aplicarse en orden y respaldarse antes de ejecutarlas.</li>
+  </ul>
+  <h2>11.2 Respaldo recomendado</h2>
+  <ol>
+    <li>Genere un volcado completo de MySQL antes de cada despliegue o migración.</li>
+    <li>Respalde las evidencias cargadas en <code>backend/uploads</code>.</li>
+    <li>Proteja las copias con cifrado y acceso restringido.</li>
+    <li>Pruebe periódicamente la restauración en un entorno aislado.</li>
+  </ol>
+
+  <h2>11.3 Diagrama del modelo relacional</h2>
+  <p>El siguiente diagrama muestra las tablas principales y sus relaciones clave (FK) en la versión V2 de la base de datos.</p>
+  <div class="diagram">
+    <img src="Manual_Sigemad_MPA_er.jpeg" alt="Diagrama del modelo relacional" style="max-width:100%; height:auto;" />
+  </div>
+
+  <h1 id="pruebas" class="page-break">12. Pruebas y calidad</h1>
+  <h2>12.1 Comandos automatizados</h2>
+  <pre>npm test
+npm run lint
+cd backend &amp;&amp; composer test
+cd ml &amp;&amp; pytest -v</pre>
+  <h2>12.2 Secuencia funcional recomendada</h2>
+  <ol>
+    <li>Preparar el entorno y datos controlados.</li>
+    <li>Validar autenticación y expiración de sesión.</li>
+    <li>Probar configuración de áreas y usuarios.</li>
+    <li>Probar alta, edición, filtros y carga masiva de inventario.</li>
+    <li>Probar ficha técnica y generación de PDF.</li>
+    <li>Probar mantenimiento, historial y actualización del estado.</li>
+    <li>Validar dashboard y coherencia de indicadores.</li>
+    <li>Con FastAPI activo, validar predicciones y comportamiento ante indisponibilidad.</li>
+    <li>Ejecutar regresión transversal y registrar evidencias.</li>
+  </ol>
+  <p>Estados sugeridos para resultados: <strong>OK</strong>, <strong>FALLA</strong>, <strong>BLOQUEADO</strong> y <strong>N/A</strong>. El plan detallado se encuentra en <code>documents/04_testing/plan_pruebas_funcionales.md</code>.</p>
+
+  <h1 id="despliegue">13. Despliegue en producción</h1>
+  <h2>13.1 Compilación</h2>
+  <pre>cd backend
+composer install --no-dev --optimize-autoloader
+
+cd ..
+npm install
+npm run build</pre>
+  <h2>13.2 Distribución típica</h2>
+  <pre>{DocumentRoot}/
+├── index.html y assets/       Contenido compilado de dist/
+└── backend/
+    ├── vendor/
+    └── api/v2/</pre>
+  <ol>
+    <li>Cree la base MySQL e importe el esquema o volcado aprobado.</li>
+    <li>Configure el backend mediante un archivo local no versionado.</li>
+    <li>Compile el frontend con la ruta base y API de producción.</li>
+    <li>Suba el contenido de <code>dist/</code> y el backend con sus dependencias.</li>
+    <li>Active HTTPS, revise CORS y pruebe rutas profundas de la SPA.</li>
+    <li>Cambie la contraseña inicial y ejecute pruebas de humo.</li>
+  </ol>
+  <div class="note">Si el servidor no ejecuta procesos Python persistentes, deje deshabilitado ML. Para habilitarlo despliegue FastAPI en el mismo servidor o en una red privada.</div>
+
+  <h1 id="seguridad">14. Seguridad y operación</h1>
+  <ul>
+    <li>Publicar únicamente mediante HTTPS.</li>
+    <li>Usar contraseñas únicas, robustas y rotarlas cuando exista una exposición.</li>
+    <li>Mantener el secreto JWT fuera del código y limitar su vigencia.</li>
+    <li>Aplicar el principio de menor privilegio a usuarios, base de datos y archivos.</li>
+    <li>Restringir CORS a los dominios autorizados.</li>
+    <li>No mostrar excepciones de base de datos al cliente en producción.</li>
+    <li>Actualizar dependencias de npm, Composer y Python después de validar compatibilidad.</li>
+    <li>Supervisar errores, accesos fallidos, espacio de almacenamiento y copias de seguridad.</li>
+    <li>Validar tipo, tamaño y nombre de archivos cargados.</li>
+  </ul>
+
+  <h1 id="problemas">15. Solución de problemas</h1>
+  <table>
+    <tr><th>Síntoma</th><th>Causa probable</th><th>Acción recomendada</th></tr>
+    <tr><td>Error 500 de API</td><td>Conexión o configuración MySQL incorrecta.</td><td>Verificar configuración local, permisos, extensiones PHP y registro del servidor.</td></tr>
+    <tr><td>Login falla o aparece CORS</td><td>Origen no autorizado o URL de API incorrecta.</td><td>Revisar <code>cors_origins</code>, protocolo, dominio y <code>VITE_API_BASE_URL</code>.</td></tr>
+    <tr><td>404 al recargar una ruta</td><td>Reglas de reescritura SPA ausentes.</td><td>Comprobar <code>.htaccess</code>, <code>mod_rewrite</code> y ruta base.</td></tr>
+    <tr><td>PDF no descarga</td><td>Token ausente, permisos o dependencia incompleta.</td><td>Revisar sesión, respuesta de API y la instalación de Dompdf.</td></tr>
+    <tr><td>Sin alertas ML</td><td>FastAPI detenido o URL incorrecta.</td><td>Consultar <code>/health</code> y revisar <code>ml_service_url</code>. El resto del sistema puede continuar.</td></tr>
+    <tr><td>Importación Excel rechazada</td><td>Plantilla alterada o datos inválidos.</td><td>Usar la plantilla oficial y corregir las filas señaladas.</td></tr>
+  </table>
+
+  <h1 id="mantenimiento">16. Mantenimiento del software</h1>
+  <h2>16.1 Antes de liberar una versión</h2>
+  <ol>
+    <li>Actualizar número de versión y registro de cambios.</li>
+    <li>Respaldar base de datos y archivos cargados.</li>
+    <li>Ejecutar lint, pruebas frontend, backend y ML.</li>
+    <li>Aplicar migraciones en un entorno de ensayo.</li>
+    <li>Compilar producción y ejecutar pruebas de humo.</li>
+    <li>Documentar cambios funcionales, configuración y procedimiento de reversión.</li>
+  </ol>
+  <h2>16.2 Documentos fuente del repositorio</h2>
+  <table>
+    <tr><th>Ruta</th><th>Contenido</th></tr>
+    <tr><td><code>README.md</code></td><td>Guía principal de instalación y uso.</td></tr>
+    <tr><td><code>documents/metodologia.md</code></td><td>Prompt-Centered SDLC v1.2.</td></tr>
+    <tr><td><code>prompts/</code></td><td>Prompts por fase del ciclo de vida.</td></tr>
+    <tr><td><code>documents/02_diseno/architecture.md</code></td><td>Arquitectura V2.</td></tr>
+    <tr><td><code>documents/05_mantenimiento/produccion.md</code></td><td>Despliegue detallado.</td></tr>
+    <tr><td><code>documents/04_testing/</code></td><td>Planes y evidencias de pruebas.</td></tr>
+    <tr><td><code>documents/03_implementacion/incrementos/</code></td><td>Incrementos de implementación.</td></tr>
+    <tr><td><code>documents/05_mantenimiento/changelog.md</code></td><td>Historial de versiones.</td></tr>
+    <tr><td><code>ml/README.md</code></td><td>Pipeline y servicio predictivo.</td></tr>
+  </table>
+
+  <h1 id="glosario">17. Glosario</h1>
+  <table>
+    <tr><th>Término</th><th>Definición</th></tr>
+    <tr><td>Prompt-Centered SDLC</td><td>Ciclo de vida de software centrado en prompts versionados por fase (requisitos, diseño, implementación, pruebas, mantenimiento).</td></tr>
+    <tr><td>Incremento</td><td>Entrega acumulativa de la fase de implementación; no equivale a un sprint Scrum.</td></tr>
+    <tr><td>API REST</td><td>Interfaz HTTP utilizada para comunicar frontend y servicios.</td></tr>
+    <tr><td>JWT</td><td>Token firmado que representa una sesión autenticada.</td></tr>
+    <tr><td>ML</td><td>Aprendizaje automático aplicado a la estimación de riesgo.</td></tr>
+    <tr><td>SPA</td><td>Aplicación web de página única gestionada en el navegador.</td></tr>
+    <tr><td>Telemetría</td><td>Lecturas operativas como temperatura, horas, batería o páginas.</td></tr>
+    <tr><td>Mantenimiento preventivo</td><td>Intervención programada para reducir la probabilidad de falla.</td></tr>
+    <tr><td>Mantenimiento predictivo</td><td>Intervención priorizada con base en condición, telemetría o estimación de riesgo.</td></tr>
+    <tr><td>Código patrimonial</td><td>Identificador institucional de 12 dígitos asociado a un equipo.</td></tr>
+  </table>
+
+  <p class="footer-note">Documento elaborado a partir del código y la documentación disponible en el repositorio Sigemad MPA V2. Los nombres de responsables, institución, dominio de producción y políticas internas pueden personalizarse antes de la entrega formal.</p>
+</body>
+</html>

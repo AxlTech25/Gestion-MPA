@@ -246,7 +246,7 @@ PROMPTS = [
         "prompt": (
             "Actúa como ingeniero de ML aplicado y backend PHP. "
             "Contexto: datos estructurados (I-002, I-003); JWT (I-006); FastAPI en :8000; "
-            "PHP único cliente; Hostinger sin Python. "
+            "PHP único cliente; FastAPI opcional. "
             "Objetivo: riesgo por equipo, sugerencia de categoría, proxy JWT y UI degradable. "
             "Tarea: dataset sintético ~200; Random Forest; /health, /predict/riesgo, batch, "
             "/predict/categoria, /train; tabla v2_predicciones_ml; proxy /api/v2/ml/*; badges. "
@@ -574,7 +574,7 @@ def fill_guia(ws):
     ws["B12"] = (
         "Observa las 5 columnas DevOps (Amaro): verde = Sí implementado, amarillo = Parcial, rojo = No implementado. "
         "En este caso: Control de Versiones = Sí (Git); CI y CD = No (no hay pipeline GitHub Actions ni despliegue automático; "
-        "Hostinger es manual); Test Automation = Parcial en auth, configuración, inventario, mantenimiento, dashboard, ML, reportes (PDF cronograma) y cronograma; Continuous Monitoring = No."
+        "la publicación a producción es manual); Test Automation = Parcial en auth, configuración, inventario, mantenimiento, dashboard, ML, reportes (PDF cronograma) y cronograma; Continuous Monitoring = No."
     )
     ws["B14"] = (
         "Consulta 'ID Prompt' (enlace al markdown en GitHub, rama main) y ve a 'Prompts Detallados' "

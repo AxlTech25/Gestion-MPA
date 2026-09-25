@@ -19,8 +19,8 @@
 ```text
 Rol: Actúa como arquitecto de software. Redacta ADR, no código.
 
-Contexto: ADR-001 eligió FastAPI detrás de PHP. Hostinger no corre
-Python. HU-ML-005 exige fallback. architecture.md lo dice en prosa;
+Contexto: ADR-001 eligió FastAPI detrás de PHP. El servidor web no
+exige Python. HU-ML-005 exige fallback. architecture.md lo dice en prosa;
 no hay ADR.
 
 Objetivo: ADR-002 con plantilla 10.3: contexto, decisión, alternativas,
@@ -36,7 +36,7 @@ Formato: documents/02_diseno/adr/ADR-002-degradacion-ml.md.
 Restricciones: no contradecir “PHP único cliente”; no exigir VPS
 para el MVP.
 
-Criterios: una opción ganadora; Hostinger con ml_service_url vacío
+Criterios: una opción ganadora; producción con ml_service_url vacío
 queda permitido; T-001 puede marcar ML como N/A.
 
 Proceso: restricciones → tabla de alternativas → decisión → riesgos.

@@ -14,7 +14,7 @@
 | **Fecha del artefacto** | 2026-04-30 (ADR-001; incremento 1) |
 | **Fecha de reconstrucción** | 2026-09-11 |
 | **Incremento / versión producto** | Incremento 1; evolución ML en incrementos 6–7 |
-| **Historias o ADR** | ADR-001; R-001 (restricción Hostinger); RNF de ML opcional |
+| **Historias o ADR** | ADR-001; R-001 (producción PHP); RNF de ML opcional |
 | **Plantilla** | [`gobernanza/_plantilla_prompt.md`](../gobernanza/_plantilla_prompt.md) |
 
 Publicado con [87d5765](https://github.com/AxlTech25/Gestion-MPA/commit/87d5765).
@@ -27,7 +27,7 @@ Publicado con [87d5765](https://github.com/AxlTech25/Gestion-MPA/commit/87d5765)
 Rol: Actúa como arquitecto de software senior.
 
 Contexto: Sigemad MPA V2. Equipo pequeño (un desarrollador principal).
-Hosting objetivo: PHP compartido (Hostinger) + desarrollo local en XAMPP.
+Hosting objetivo: servidor de producción PHP + desarrollo local en XAMPP.
 Necesidad de ML opcional (riesgo de falla, categoría de falla) sin que el
 núcleo de inventario dependa de Python. Ya existe una V1 a migrar de forma
 progresiva (Strangler Fig). Ficha R-001: sin portal ciudadano ni SIGA/SIAF.
@@ -46,7 +46,7 @@ Tarea:
 
 Entradas disponibles:
 - R-001: stack tentativo React / PHP / MySQL / FastAPI.
-- Restricción: Hostinger no ejecuta el microservicio Python.
+- Restricción: FastAPI no es obligatorio en el servidor web.
 - Comparación informal con SGMI (Laravel + Vue) — otro producto, no este.
 - D-001 (prefijo v2_, MySQL).
 
@@ -80,7 +80,7 @@ Criterios de aceptación:
 
 Proceso sugerido: 1) fijar restricciones de hosting y equipo, 2) comparar
 A/B/C, 3) elegir, 4) dibujar flujo React → PHP → FastAPI → MySQL, 5) listar
-consecuencias negativas (ML ausente en Hostinger).
+consecuencias negativas (ML ausente si FastAPI no está desplegado).
 
 No hacer: no recomendar Laravel “porque es más profesional”; no poner el
 token JWT solo en el front; no asumir VPS para el MVP; no inventar cola
@@ -141,6 +141,6 @@ Salida usada como entrada de **I-001…I-007**.
 | Relación | Valor |
 |----------|-------|
 | **Fase anterior** | R-001, D-001 |
-| **Fase siguiente** | I-001…I-007, M-001 (Hostinger sin Python) |
+| **Fase siguiente** | I-001…I-007, M-001 (producción; ML opcional) |
 | **Matriz doble entrada** | Arquitectura transversal a F-001…F-008 |
 | **Commit sugerido** | `docs(diseno): ADR-001 stack React/PHP/MySQL/FastAPI [D-002]` |

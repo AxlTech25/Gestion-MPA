@@ -26,7 +26,7 @@ Completar una ficha por cambio. No sustituye el ADR si la decisión es arquitect
 | ML / FastAPI | | | |
 | Tests | | | |
 | Documentación | | | |
-| Despliegue / Hostinger | | | |
+| Despliegue / producción | | | |
 | Datos existentes | | | |
 
 ### Rollback
@@ -58,4 +58,4 @@ Completar una ficha por cambio. No sustituye el ADR si la decisión es arquitect
 | Despliegue | Medio | Correr `migrate_fase7.php` en cada entorno |
 | Datos existentes | Bajo–medio | DEFAULT 0 / NULL; no DELETE |
 
-Rollback: restore dump pre-ALTER o no aplicar migrate en Hostinger hasta validar XAMPP.
+Rollback: restore dump pre-ALTER o no aplicar migrate en producción hasta validar XAMPP.

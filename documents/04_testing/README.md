@@ -38,7 +38,7 @@ Catálogo: [prompts/gobernanza/catalogo.md](../../prompts/gobernanza/catalogo.md
 7. UAT (T-011)
 8. Regresión INC si hubo cambio (T-012)
 9. Migración sobre **copia** de BD (T-014)
-10. Compatibilidad / humo Hostinger (T-009 → M-001)
+10. Compatibilidad / humo de producción (T-009 → M-001)
 
 Estados: **OK** | **FALLA** | **BLOQUEADO** | **N/A**
 
@@ -58,3 +58,5 @@ Estados: **OK** | **FALLA** | **BLOQUEADO** | **N/A**
 | `MIG-*` | Migración |
 
 No commitear evidencias con secretos: [evidencias/](./evidencias/).
+
+Análisis estático (SonarQube) y no conformidades de código: [06_calidad/](../06_calidad/). Las pruebas funcionales de esta carpeta no se mezclan con esa evidencia.

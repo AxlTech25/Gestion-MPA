@@ -20,7 +20,7 @@
 ```text
 Rol: Actúa como QA de resiliencia. ADR-002 opción D.
 
-Contexto: FastAPI :8000 opcional. Hostinger ml_service_url vacío.
+Contexto: FastAPI :8000 opcional. Producción puede dejar ml_service_url vacío.
 PHP único cliente. Inventario/auth/fichas/mantenimiento siguen.
 POST mantenimientos persiste si falla recálculo.
 
@@ -62,5 +62,5 @@ Ejemplos: DEG-001 = ML-003 con criterio “resto del dashboard OK”.
 | Relación | Valor |
 |----------|-------|
 | Anterior | D-006 / ADR-002, T-006 |
-| Siguiente | M-001 Hostinger; INT-013 |
+| Siguiente | M-001 producción; INT-013 |
 | Commit | `docs(testing): plan degradación ML [T-013]` |

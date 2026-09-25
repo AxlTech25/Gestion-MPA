@@ -11,7 +11,9 @@ Organizada según la propuesta **Prompt-Centered SDLC v1.2**, en validación con
 | Implementación | [03_implementacion/](./03_implementacion/) | Incrementos de entrega 1–7 |
 | Pruebas | [04_testing/](./04_testing/) | Estrategia T-006; E2E, unitarias, integración y planes complementarios |
 | Mantenimiento | [05_mantenimiento/](./05_mantenimiento/) | Changelog y despliegue |
-| Trazabilidad | [matriz_doble_entrada/](./matriz_doble_entrada/) | Matriz V3: prompt → commit GitHub → archivo |
+| Calidad | [06_calidad/](./06_calidad/) | Pruebas estáticas (SonarQube) y no conformidades; evidencia de la matriz V4 |
+| ISO 9001 | [ISO/plantillas/](./ISO/plantillas/) | Fichas de macroproceso, procedimiento, actividad e inventario MP/PR/ACT |
+| Trazabilidad | [matriz_doble_entrada/](./matriz_doble_entrada/) | Matriz V3 (caso lleno) y V4 (ISO + SonarQube) |
 | Simulación | [simulador_impacto_scrum_ia/](./simulador_impacto_scrum_ia/) | Impacto de tiempos y costes: Scrum vs flujo IA + ISO 12207 |
 | Entregables | [entregables/](./entregables/) | Manual HTML |
 

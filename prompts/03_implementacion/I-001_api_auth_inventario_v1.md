@@ -34,7 +34,7 @@ Contexto: Sigemad MPA V2. Diseño aprobado: D-002 (SPA React + API PHP +
 MySQL, JWT, features en src/features, MVC en backend/api/v2) y D-001
 (tablas v2_*). Respuesta JSON {success, data, message}. Roles:
 Administrador, Técnico, Practicante. Migración progresiva desde V1
-(rutas /v2/*, no apagar V1 de golpe). Hosting futuro Hostinger: sin
+(rutas /v2/*, no apagar V1 de golpe). Producción: sin
 dependencias que no instalen Composer/npm.
 
 Objetivo: Código funcional del núcleo de gestión (auth, inventario, ficha,

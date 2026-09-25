@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simulador de impacto — Scrum vs flujo IA + ISO 12207</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #141a22;
+      --panel-2: #1a2230;
+      --line: #2a3444;
+      --text: #e8eef6;
+      --muted: #9aa8b8;
+      --blue: #3b82f6;
+      --blue-dim: #1e3a5f;
+      --green: #22c55e;
+      --green-dim: #14532d;
+      --yellow: #f5c518;
+      --white: #f8fafc;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; }
+    body { min-height: 100vh; }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    header h1 {
+      font-size: 1.15rem;
+      font-weight: 650;
+      margin: 0 0 6px;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+      max-width: 640px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      background: #13233a;
+      border: 1px solid #1e3a5f;
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px 22px 18px;
+    }
+
+    .row-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .label {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .play {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #0f141b;
+      color: var(--text);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
+    .play[aria-pressed="true"] { border-color: var(--yellow); color: var(--yellow); }
+
+    .track-block { margin-bottom: 22px; }
+    .track-block h2 {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .track {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      padding-top: 18px;
+    }
+
+    .stage {
+      min-height: 58px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 0.84rem;
+      padding: 8px;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+
+    .scrum .stage { background: #1c2430; color: #dbe7f3; }
+    .ia .stage:nth-child(1) { background: #17325a; }
+    .ia .stage:nth-child(2) { background: #14532d; }
+    .ia .stage:nth-child(3) { background: #1c2430; }
+
+    .stage.active { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18); }
+
+    .rail {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 8px;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      top: 0;
+    }
+
+    .dot.yellow { background: var(--yellow); box-shadow: 0 0 0 4px rgba(245,197,24,0.15); }
+    .dot.blue { background: #7dd3fc; box-shadow: 0 0 0 4px rgba(125,211,252,0.15); }
+
+    .connector {
+      position: relative;
+      height: 36px;
+      margin: -6px 0 8px;
+    }
+
+    .connector svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 22px 0 8px;
+      text-align: center;
+    }
+
+    .kpis .name { color: var(--muted); font-size: 0.8rem; margin-bottom: 6px; }
+    .kpis .val { font-size: 1.35rem; font-weight: 700; }
+
+    .controls { margin-top: 18px; }
+
+    .sliders {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-bottom: 22px;
+    }
+
+    .slider-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .slider-head strong { color: var(--text); font-size: 0.95rem; }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #60a5fa;
+    }
+
+    .density h3 {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin: 0 0 10px;
+    }
+
+    .density-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .density-btns button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 8px;
+      cursor: pointer;
+      background: #223044;
+      color: #d7e3f0;
+      font-size: 0.86rem;
+    }
+
+    .density-btns button[aria-pressed="true"] {
+      background: var(--blue);
+      color: white;
+    }
+
+    .extras {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      align-items: center;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .extras label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .presets button {
+      background: #0f141b;
+      color: #c9d6e4;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+
+    .roi {
+      margin-top: 16px;
+      background: linear-gradient(180deg, #151c27, #10161e);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .roi .amount {
+      font-size: 1.55rem;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+    }
+
+    .roi .sub { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+    .roi .note { color: var(--muted); font-size: 0.84rem; line-height: 1.45; }
+
+    .breakdown {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 7px 8px;
+      border-bottom: 1px solid #243041;
+    }
+
+    th { color: var(--muted); font-weight: 500; }
+    .fine {
+      margin-top: 14px;
+      color: #7f8b99;
+      font-size: 0.72rem;
+      line-height: 1.45;
+    }
+
+    a { color: #93c5fd; }
+
+    @media (max-width: 720px) {
+      .sliders, .kpis, .roi, .breakdown { grid-template-columns: 1fr; }
+      header { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Impacto simulado de tiempos y costes</h1>
+        <p>Scrum tradicional (semanas) frente a un flujo IA orquestado sobre implementación, verificación y validación ISO/IEC 12207 (horas). Instrumento didáctico de la propuesta Prompt-Centered SDLC v1.2.</p>
+      </div>
+      <span class="badge">Simulación · no es medición de campo</span>
+    </header>
+
+    <section class="card">
+      <div class="row-head">
+        <span class="label">Comparación de carriles</span>
+        <button id="playBtn" class="play" type="button" aria-pressed="false" aria-label="Reproducir o pausar la animación">▶</button>
+      </div>
+
+      <div class="track-block scrum">
+        <h2>Scrum tradicional (semanas)</h2>
+        <div class="track" id="scrumTrack">
+          <div class="stage" data-stage="0">Sprint 1</div>
+          <div class="stage" data-stage="1">Sprint 2</div>
+          <div class="stage" data-stage="2">Sprint 3+</div>
+          <div class="rail"><span class="dot yellow" id="scrumDot"></span></div>
+        </div>
+      </div>
+
+      <div class="connector" aria-hidden="true">
+        <svg viewBox="0 0 100 36" preserveAspectRatio="none">
+          <line id="linkLine" x1="50" y1="0" x2="86" y2="36" stroke="#3b82f6" stroke-width="0.6" stroke-dasharray="1.6 1.4" />
+        </svg>
+      </div>
+
+      <div class="track-block ia">
+        <h2>Flujo IA autónomo + ISO 12207 (horas)</h2>
+        <div class="track" id="iaTrack">
+          <div class="stage" data-stage="0">Implementación</div>
+          <div class="stage" data-stage="1">Verificación ISO</div>
+          <div class="stage" data-stage="2">Validación ISO</div>
+          <div class="rail"><span class="dot blue" id="iaDot"></span></div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div>
+          <div class="name">Plazo Scrum</div>
+          <div class="val" id="kpiScrum">8 semanas</div>
+        </div>
+        <div>
+          <div class="name">Plazo flujo IA</div>
+          <div class="val" id="kpiIa">16 horas</div>
+        </div>
+        <div>
+          <div class="name">Aceleración</div>
+          <div class="val" id="kpiAcc">20× más rápido</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="sliders">
+          <div>
+            <div class="slider-head">
+              <span>Requisitos totales (backlog)</span>
+              <strong id="itemsLabel">40 ítems</strong>
+            </div>
+            <input id="items" type="range" min="8" max="80" step="1" value="40" aria-label="Requisitos totales del backlog" />
+          </div>
+          <div>
+            <div class="slider-head">
+              <span>Coste promedio de ingeniería</span>
+              <strong id="rateLabel">65 USD/h</strong>
+            </div>
+            <input id="rate" type="range" min="25" max="150" step="1" value="65" aria-label="Coste promedio de ingeniería" />
+          </div>
+        </div>
+
+        <div class="density">
+          <h3>Orquestación y densidad de agentes (concurrencia ISO 12207)</h3>
+          <div class="density-btns">
+            <button type="button" data-rho="1" aria-pressed="true">Estándar (1×)</button>
+            <button type="button" data-rho="2" aria-pressed="false">Avanzado (2×)</button>
+            <button type="button" data-rho="3.5" aria-pressed="false">Enjambre (3,5×)</button>
+          </div>
+        </div>
+
+        <div class="extras">
+          <label>
+            <input id="friction" type="checkbox" />
+            Incluir fricción ceremonial Scrum (+3,48 % de horas)
+          </label>
+          <div class="presets">
+            <button type="button" id="presetDemo">Preset captura (40)</button>
+            <button type="button" id="presetSigemad">Preset Sigemad (56 HU)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="roi">
+      <div>
+        <div class="label">Ahorro estimado de presupuesto (ROI)</div>
+        <div class="amount" id="roiAmount">19.760 USD evitados</div>
+        <div class="sub" id="roiSub">en retrasos de sprint</div>
+      </div>
+      <p class="note">Sustituye semanas de fricción manual por flujos continuos certificados bajo el estándar internacional de ciclo de vida ISO/IEC 12207. El humano sigue aprobando (decisión D2).</p>
+    </section>
+
+    <section class="breakdown">
+      <div class="card">
+        <div class="label" style="margin-bottom:8px">Desglose de horas y coste</div>
+        <table>
+          <thead>
+            <tr><th>Carril</th><th>Tiempo</th><th>Coste</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Scrum</td><td id="rowScrumT">320 h / 8 sem. / 4 sprints</td><td id="rowScrumC">20.800 USD</td></tr>
+            <tr><td>Flujo IA</td><td id="rowIaT">16,0 h</td><td id="rowIaC">1.040 USD</td></tr>
+            <tr><td>Diferencia</td><td id="rowDiffT">304,0 h</td><td id="rowDiffC">19.760 USD</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="label" style="margin-bottom:8px">Reparto del flujo IA (12207)</div>
+        <table>
+          <thead>
+            <tr><th>Proceso</th><th>Peso</th><th>Horas</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Implementación</td><td>50 %</td><td id="hImp">8,0 h</td></tr>
+            <tr><td>Verificación</td><td>30 %</td><td id="hVer">4,8 h</td></tr>
+            <tr><td>Validación</td><td>20 %</td><td id="hVal">3,2 h</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="fine">
+      Constantes: 8 h/ítem en Scrum, 0,4 h/ítem en el flujo IA base, 40 h/semana, sprints de 2 semanas.
+      Fórmulas y límites en <a href="./modelo.md">modelo.md</a>.
+      Esto no afirma que Sigemad se construyó en 16 horas: ilustra el cambio de unidad de planificación.
+    </p>
+  </div>
+
+  <script>
+    const H_SEM = 40;
+    const H_ITEM_SCRUM = 8;
+    const H_ITEM_IA = 0.4;
+    const L_SPRINT = 2;
+    const FRICTION = 0.03481;
+
+    const els = {
+      items: document.getElementById("items"),
+      rate: document.getElementById("rate"),
+      friction: document.getElementById("friction"),
+      itemsLabel: document.getElementById("itemsLabel"),
+      rateLabel: document.getElementById("rateLabel"),
+      kpiScrum: document.getElementById("kpiScrum"),
+      kpiIa: document.getElementById("kpiIa"),
+      kpiAcc: document.getElementById("kpiAcc"),
+      roiAmount: document.getElementById("roiAmount"),
+      rowScrumT: document.getElementById("rowScrumT"),
+      rowScrumC: document.getElementById("rowScrumC"),
+      rowIaT: document.getElementById("rowIaT"),
+      rowIaC: document.getElementById("rowIaC"),
+      rowDiffT: document.getElementById("rowDiffT"),
+      rowDiffC: document.getElementById("rowDiffC"),
+      hImp: document.getElementById("hImp"),
+      hVer: document.getElementById("hVer"),
+      hVal: document.getElementById("hVal"),
+      playBtn: document.getElementById("playBtn"),
+      scrumDot: document.getElementById("scrumDot"),
+      iaDot: document.getElementById("iaDot"),
+    };
+
+    let rho = 1;
+    let playing = false;
+    let raf = null;
+    let t0 = 0;
+
+    const fmt = (n, d = 0) => n.toLocaleString("es-PE", { minimumFractionDigits: d, maximumFractionDigits: d });
+    const money = (n) => fmt(Math.round(n)) + " USD";
+
+    function compute() {
+      const n = Number(els.items.value);
+      const c = Number(els.rate.value);
+      let horasScrum = n * H_ITEM_SCRUM;
+      if (els.friction.checked) horasScrum *= (1 + FRICTION);
+      const semanas = horasScrum / H_SEM;
+      const sprints = Math.ceil(semanas / L_SPRINT);
+      const horasIa = (n * H_ITEM_IA) / rho;
+      const acc = horasScrum / horasIa;
+      const costeS = horasScrum * c;
+      const costeI = horasIa * c;
+      const ahorro = costeS - costeI;
+      return { n, c, horasScrum, semanas, sprints, horasIa, acc, costeS, costeI, ahorro };
+    }
+
+    function render() {
+      const m = compute();
+      els.itemsLabel.textContent = m.n + " ítems";
+      els.rateLabel.textContent = m.c + " USD/h";
+      els.kpiScrum.textContent = fmt(m.semanas, m.semanas % 1 ? 1 : 0) + " semanas";
+      els.kpiIa.textContent = fmt(m.horasIa, m.horasIa % 1 ? 1 : 0) + " horas";
+      els.kpiAcc.textContent = fmt(m.acc, m.acc % 1 ? 1 : 0) + "× más rápido";
+      els.roiAmount.textContent = money(m.ahorro) + " evitados";
+      els.rowScrumT.textContent = fmt(m.horasScrum, 1) + " h / " + fmt(m.semanas, 1) + " sem. / " + m.sprints + " sprints";
+      els.rowScrumC.textContent = money(m.costeS);
+      els.rowIaT.textContent = fmt(m.horasIa, 1) + " h";
+      els.rowIaC.textContent = money(m.costeI);
+      els.rowDiffT.textContent = fmt(m.horasScrum - m.horasIa, 1) + " h";
+      els.rowDiffC.textContent = money(m.ahorro);
+      els.hImp.textContent = fmt(m.horasIa * 0.5, 1) + " h";
+      els.hVer.textContent = fmt(m.horasIa * 0.3, 1) + " h";
+      els.hVal.textContent = fmt(m.horasIa * 0.2, 1) + " h";
+    }
+
+    function setActive(trackId, index) {
+      document.querySelectorAll("#" + trackId + " .stage").forEach((el, i) => {
+        el.classList.toggle("active", i === index);
+      });
+    }
+
+    function tick(ts) {
+      if (!t0) t0 = ts;
+      const elapsed = (ts - t0) / 1000;
+      const scrumP = (elapsed / 8) % 1;
+      const iaP = (elapsed / 1.6) % 1;
+      els.scrumDot.style.left = (8 + scrumP * 84) + "%";
+      els.iaDot.style.left = (8 + iaP * 84) + "%";
+      setActive("scrumTrack", Math.min(2, Math.floor(scrumP * 3)));
+      setActive("iaTrack", Math.min(2, Math.floor(iaP * 3)));
+      raf = requestAnimationFrame(tick);
+    }
+
+    function setPlaying(on) {
+      playing = on;
+      els.playBtn.setAttribute("aria-pressed", String(on));
+      els.playBtn.textContent = on ? "❚❚" : "▶";
+      if (on) {
+        t0 = 0;
+        raf = requestAnimationFrame(tick);
+      } else if (raf) {
+        cancelAnimationFrame(raf);
+        raf = null;
+      }
+    }
+
+    document.querySelectorAll(".density-btns button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        rho = Number(btn.dataset.rho);
+        document.querySelectorAll(".density-btns button").forEach((b) => {
+          b.setAttribute("aria-pressed", String(b === btn));
+        });
+        render();
+      });
+    });
+
+    ["input", "change"].forEach((ev) => {
+      els.items.addEventListener(ev, render);
+      els.rate.addEventListener(ev, render);
+      els.friction.addEventListener(ev, render);
+    });
+
+    document.getElementById("presetDemo").addEventListener("click", () => {
+      els.items.value = 40;
+      els.rate.value = 65;
+      els.friction.checked = false;
+      rho = 1;
+      document.querySelectorAll(".density-btns button").forEach((b) => {
+        b.setAttribute("aria-pressed", String(b.dataset.rho === "1"));
+      });
+      render();
+    });
+
+    document.getElementById("presetSigemad").addEventListener("click", () => {
+      els.items.value = 56;
+      els.rate.value = 65;
+      els.friction.checked = false;
+      rho = 1;
+      document.querySelectorAll(".density-btns button").forEach((b) => {
+        b.setAttribute("aria-pressed", String(b.dataset.rho === "1"));
+      });
+      render();
+    });
+
+    els.playBtn.addEventListener("click", () => setPlaying(!playing));
+
+    els.scrumDot.style.left = "50%";
+    els.iaDot.style.left = "86%";
+    setActive("scrumTrack", 1);
+    setActive("iaTrack", 2);
+    render();
+  </script>
+</body>
+</html>

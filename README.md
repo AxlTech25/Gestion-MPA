@@ -314,9 +314,9 @@ La API refuerza lo mismo: `POST`/`PUT`/`PATCH`/`DELETE` `/usuarios` responden **
 
 ---
 
-## Despliegue en Hostinger
+## Despliegue en producción
 
-Guía completa: [`documents/05_mantenimiento/hostinger.md`](documents/05_mantenimiento/hostinger.md)
+Guía completa: [`documents/05_mantenimiento/produccion.md`](documents/05_mantenimiento/produccion.md)
 
 ### Resumen rápido
 
@@ -325,24 +325,24 @@ Guía completa: [`documents/05_mantenimiento/hostinger.md`](documents/05_manteni
 cd backend
 composer install --no-dev
 cp api/v2/config/local.example.php api/v2/config/local.php
-# Editar local.php con credenciales MySQL de hPanel
+# Editar local.php con credenciales MySQL de producción
 
 # 2. Frontend — compilar para producción
 cd ..
 cp .env.production.example .env.production
 # Editar: VITE_API_BASE_URL=/backend/api/v2  y  VITE_BASE_PATH=/
 npm install
-npm run build:hostinger
+npm run build
 
-# 3. Subir a Hostinger (public_html)
-#    - Contenido de dist/  →  raíz del dominio
-#    - Carpeta backend/    →  public_html/backend/
+# 3. Copiar al DocumentRoot del servidor
+#    - Contenido de dist/  →  raíz del sitio
+#    - Carpeta backend/    →  {DocumentRoot}/backend/
 ```
 
 4. Importe `backend/sql/v2_estructura.sql` (instalación nueva) o ejecute las migraciones pendientes (`migrate_fase7.php`, `migrate_cronograma.php`, `migrate_gerencias.php`) sobre la BD existente.  
 5. Active SSL y cambie la contraseña del usuario `admin`.
 
-> En hosting compartido el módulo ML queda deshabilitado (`ml_service_url` vacío). El resto del sistema funciona con normalidad.
+> Si FastAPI no está desplegado, deje `ml_service_url` vacío. El resto del sistema funciona con normalidad.
 
 ---
 
@@ -354,10 +354,12 @@ npm run build:hostinger
 | [`documents/desarrollo_softwareIA/`](documents/desarrollo_softwareIA/) | Libros y artículos del estado del arte |
 | [`documents/README.md`](documents/README.md) | Índice por fases del ciclo de vida |
 | [`prompts/`](prompts/) | Repositorio de prompts por fase |
-| [`documents/05_mantenimiento/hostinger.md`](documents/05_mantenimiento/hostinger.md) | Guía de despliegue en Hostinger |
+| [`documents/05_mantenimiento/produccion.md`](documents/05_mantenimiento/produccion.md) | Guía de despliegue en producción |
 | [`documents/05_mantenimiento/changelog.md`](documents/05_mantenimiento/changelog.md) | Historial de versiones |
 | [`documents/01_requisitos/historias_usuario/`](documents/01_requisitos/historias_usuario/) | Historias de usuario por épica |
 | [`documents/04_testing/`](documents/04_testing/) | Planes de pruebas funcionales y unitarias |
+| [`documents/06_calidad/`](documents/06_calidad/) | Pruebas estáticas (SonarQube) y no conformidades |
+| [`documents/ISO/plantillas/`](documents/ISO/plantillas/) | Plantillas ISO 9001 (macroproceso, procedimiento, actividad) |
 | [`documents/03_implementacion/incrementos/`](documents/03_implementacion/incrementos/) | Incrementos de implementación |
 | [`ml/README.md`](ml/README.md) | Microservicio ML y entrenamiento |
 | [`documents/entregables/Manual_Sigemad_MPA.pdf`](documents/entregables/Manual_Sigemad_MPA.pdf) | Documentación técnica y manual de usuario en PDF |

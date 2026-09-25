@@ -73,7 +73,7 @@ Criterios de aceptación:
 Proceso sugerido: ALTER → modelos → formularios → features → train v2
 → recálculo → consulta dashboard → probar migrate en copia.
 
-No hacer: no exigir FastAPI en Hostinger; no reescribir I-007 desde cero.
+No hacer: no exigir FastAPI en producción; no reescribir I-007 desde cero.
 
 Ejemplos: N/A (seguir columnas del análisis).
 ```

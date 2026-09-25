@@ -5,7 +5,7 @@ class MlConfig {
     public static function getServiceUrl(): ?string {
         $url = LocalConfig::get('ml_service_url');
 
-        // Vacío explícito = deshabilitado (producción Hostinger)
+        // Vacío explícito = deshabilitado (producción sin FastAPI)
         if ($url === '') {
             return null;
         }

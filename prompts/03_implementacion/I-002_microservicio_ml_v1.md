@@ -36,8 +36,8 @@ Contexto: Sigemad MPA V2. Inventario y mantenimientos ya estructurados
 (D-001, I-001): ram_gb, almacenamiento_gb, categoria_falla_id, fechas.
 Objetivo de negocio: riesgo de falla por equipo y sugerencia de categoría
 de falla en correctivos. Stack ML: Python 3.10+, FastAPI, Scikit-learn,
-joblib. PHP es el único cliente de http://127.0.0.1:8000. En Hostinger el
-servicio no corre: el resto del sistema debe seguir.
+joblib. PHP es el único cliente de http://127.0.0.1:8000. Si FastAPI no
+corre, el resto del sistema debe seguir.
 
 Objetivo: Microservicio de inferencia + entrenamiento, persistencia de
 predicciones, proxy JWT y UI degradable (badges, alertas, ficha predictiva).
@@ -121,7 +121,7 @@ HU-ML-005 fallback graceful.
 | Incremento 6 | `documents/03_implementacion/incrementos/incremento_6.md` | docs asociadas |
 | Incremento 7 | `incremento_7_extension_schema_v2.md` | telemetría |
 
-Salida usada como entrada de **T-001** (casos ML condicionales) y **M-001** (ML deshabilitado en Hostinger).
+Salida usada como entrada de **T-001** (casos ML condicionales) y **M-001** (ML deshabilitado si FastAPI no está en el servidor).
 
 ---
 

@@ -7,6 +7,7 @@ Instrumento V3 (Amaro et al. 2025 + Jiang et al. 2025) aplicado al caso **Sigema
 | [prompts_detallados.md](./prompts_detallados.md) | Hoja **Prompts Detallados** (Jiang): una fila por I-*; las funciones atómicas F-001…F-051 viven en el Excel |
 | [MATRIZ-DOBLE-ENTRADA-V3-SIGEMAD-MPA.xlsx](./MATRIZ-DOBLE-ENTRADA-V3-SIGEMAD-MPA.xlsx) | Caso lleno (este software); regenerar con `_generar_matriz_sigemad.py` |
 | [MATRIZ-DOBLE-ENTRADA-V3-AMARO-JIANG-MONEY-ME.xlsx](./MATRIZ-DOBLE-ENTRADA-V3-AMARO-JIANG-MONEY-ME.xlsx) | Plantilla original (caso Flutter Money Me) |
+| [MATRIZ-DOBLE-ENTRADA-V4-SIGEMAD-MPA.xlsx](./MATRIZ-DOBLE-ENTRADA-V4-SIGEMAD-MPA.xlsx) | Plantilla en blanco: jerarquía ISO 9001 + SonarQube. Inventario: [ISO/plantillas/inventario_procesos.md](../ISO/plantillas/inventario_procesos.md). Evidencia: [06_calidad/sonarqube/](../06_calidad/sonarqube/) |
 
 En GitHub: [carpeta](https://github.com/AxlTech25/Gestion-MPA/tree/main/documents/matriz_doble_entrada) · [Excel Sigemad](https://github.com/AxlTech25/Gestion-MPA/blob/main/documents/matriz_doble_entrada/MATRIZ-DOBLE-ENTRADA-V3-SIGEMAD-MPA.xlsx)
 
@@ -53,7 +54,7 @@ Un mismo SHA puede anclar varias funciones si salieron en el mismo commit; el **
 | [D-001](https://github.com/AxlTech25/Gestion-MPA/blob/main/prompts/02_diseno/D-001_modelo_datos_v1.md) / [D-002](https://github.com/AxlTech25/Gestion-MPA/blob/main/prompts/02_diseno/D-002_decision_arquitectura_v1.md) | [87d5765](https://github.com/AxlTech25/Gestion-MPA/commit/87d5765) | `documents/02_diseno/` |
 | I-001…I-008 (índice de incrementos) | [12f881c](https://github.com/AxlTech25/Gestion-MPA/commit/12f881c) | `documents/03_implementacion/incrementos/` |
 | [T-001](https://github.com/AxlTech25/Gestion-MPA/blob/main/prompts/04_testing/T-001_plan_pruebas_v1.md) | [b58e175](https://github.com/AxlTech25/Gestion-MPA/commit/b58e175) | `documents/04_testing/` |
-| [M-001](https://github.com/AxlTech25/Gestion-MPA/blob/main/prompts/05_mantenimiento/M-001_deploy_hostinger_v1.md) | [56e7134](https://github.com/AxlTech25/Gestion-MPA/commit/56e7134) | `documents/05_mantenimiento/` |
+| [M-001](https://github.com/AxlTech25/Gestion-MPA/blob/main/prompts/05_mantenimiento/M-001_deploy_produccion_v1.md) | [56e7134](https://github.com/AxlTech25/Gestion-MPA/commit/56e7134) | `documents/05_mantenimiento/` |
 
 ## Convención a partir de ahora
 

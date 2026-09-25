@@ -5,12 +5,12 @@
 | **Estado** | Aceptado |
 | **Fecha** | 2026-09-11 (formaliza decisión de 0.7.0 / I-007) |
 | **Fase SDLC** | Diseño |
-| **Incrementos** | 6–7 (0.7.0–0.9.0), operación Hostinger (M-001) |
+| **Incrementos** | 6–7 (0.7.0–0.9.0), operación en producción (M-001) |
 | **Prompt** | [D-006](../../../prompts/02_diseno/D-006_adr_degradacion_ml_v1.md) |
 
 ## Contexto
 
-El modelo de riesgo corre en un microservicio Python (FastAPI, puerto 8000). El destino de producción previsto es **Hostinger compartido** (PHP + MySQL), que no ejecuta ese proceso. Incluso en local, uvicorn puede estar apagado. ADR-001 ya prohibió exponer Python al navegador; faltaba registrar qué ocurre cuando el proxy PHP no obtiene respuesta.
+El modelo de riesgo corre en un microservicio Python (FastAPI, puerto 8000). En producción ese proceso es **opcional**: el servidor web (Apache + PHP + MySQL) no lo implica. Incluso en local, uvicorn puede estar apagado. ADR-001 ya prohibió exponer Python al navegador; faltaba registrar qué ocurre cuando el proxy PHP no obtiene respuesta.
 
 ## Decisión
 
@@ -27,21 +27,21 @@ El modelo de riesgo corre en un microservicio Python (FastAPI, puerto 8000). El 
 
 | Opción | Por qué se descartó |
 |--------|---------------------|
-| A) FastAPI obligatorio; sin él la app no arranca | Rompe Hostinger y el alcance R-001 |
+| A) FastAPI obligatorio; sin él la app no arranca | Rompe el alcance R-001 (ML degradable) |
 | B) El navegador llama a `:8000` con fallback en React | Viola ADR-001; CORS y superficie de ataque |
 | C) Encolar predicciones y reintentar en cron | Complejidad de operación que el equipo no sostiene |
-| D) **Proxy PHP + degradación** (elegida) | Cumple hosting, JWT y HU-ML-005 |
+| D) **Proxy PHP + degradación** (elegida) | Cumple JWT, HU-ML-005 y producción sin Python |
 
 ## Consecuencias
 
-- El caso de estudio **no** demuestra ML en producción compartida (limitación ya en `metodologia.md`).
+- El caso de estudio **no** exige FastAPI para declarar el producto usable (limitación ya en `metodologia.md`).
 - Hay que probar el sistema **con y sin** uvicorn (T-001 módulo ML = N/A si está caído).
-- `local.php` en Hostinger deja `ml_service_url` vacío a propósito.
-- Un VPS puede activar ML sin cambiar el contrato del front (solo config PHP).
+- `local.php` en producción puede dejar `ml_service_url` vacío a propósito.
+- Activar ML no cambia el contrato del front (solo config PHP y el proceso FastAPI).
 
 ## Riesgos
 
-- El usuario puede interpretar “sin alertas” como fallo de inventario. Mitigación: copy en UI y guía Hostinger.
+- El usuario puede interpretar “sin alertas” como fallo de inventario. Mitigación: copy en UI y guía de producción.
 - Predicciones viejas en `v2_predicciones_ml` pueden verse desactualizadas. Aceptable frente a tumbar el módulo.
 
 ## Relación

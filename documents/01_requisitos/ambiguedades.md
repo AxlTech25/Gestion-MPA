@@ -13,7 +13,7 @@
 |------|----------|------------------------|----------------------|-----------|--------|
 | Implícito | El código patrimonial es de **12 dígitos numéricos** | Altas inválidas; carga Excel desalineada | ¿Formato municipal obligatorio? **Resuelto:** validación en UI/API (INV) | Alta | Cerrado |
 | Implícito | Categoría de falla es **catálogo**, no texto libre | Dataset ML inservible | ¿Se permite “otros” libre? **Resuelto:** `v2_categorias_falla` | Alta | Cerrado |
-| Implícito | ML **no** es obligatorio en producción | El operador espera alertas en Hostinger y reporta “sistema caído” | ¿El núcleo funciona sin FastAPI? **Resuelto:** sí (R-001, ADR-002) | Alta | Cerrado |
+| Implícito | ML **no** es obligatorio en producción | El operador espera alertas en el servidor y reporta “sistema caído” | ¿El núcleo funciona sin FastAPI? **Resuelto:** sí (R-001, ADR-002) | Alta | Cerrado |
 | Ambigüedad | Tres **roles de sistema** vs personas P1–P5 | P3 (jefe de área) no tiene login propio | ¿Hace falta rol “Consulta”? **Supuesto:** no en 0.9.1; P3 usa dashboard con cuenta existente | Media | Abierto (producto futuro) |
 | Ambigüedad | Quién puede crear/editar **usuarios** | Escalada de privilegios (ocurrida hasta 0.9.1) | ¿Solo Administrador en API? **Resuelto:** I-009 `requireRole` | Alta | Cerrado |
 | Contradicción | UI “solo admin ve Configuración” ≠ API abierta con JWT | Técnico muta `/usuarios` sin UI | ¿La UI es la autorización? **Resuelto:** no; la API autoriza | Alta | Cerrado |
@@ -23,7 +23,7 @@
 | Ambigüedad | Telemetría **manual** vs agente WMI/SMART | Expectativa de captura automática | ¿Hay agente? **Resuelto:** no en 0.9.1 (I-008 fuera de alcance) | Media | Cerrado |
 | Implícito | Seed `admin` / `admin123` | Credencial por defecto en internet | ¿Se cambia al desplegar? **Resuelto:** checklist M-001 / M-004 | Alta | Cerrado (operación) |
 | Ambigüedad | DELETE de equipos | Borrado patrimonial sin auditoría | ¿Se permite? **Parcial:** ruta existe; no es historia priorizada | Baja | Abrir si el cliente lo pide |
-| Implícito | PDF de ficha requiere **memoria PHP** alta | 500 en Hostinger | ¿Límite del plan? **Supuesto:** 256M (hostinger.md) | Media | Cerrado (operación) |
+| Implícito | PDF de ficha requiere **memoria PHP** alta | 500 en producción | ¿Límite del servidor? **Supuesto:** 256M (produccion.md) | Media | Cerrado (operación) |
 | Ambigüedad | “Incremento 6” = JWT 0.6.0 o ML 0.7.0 | Trazabilidad rota | ¿Qué documento es la fuente? **Resuelto:** I-006 vs I-007 (oleada 2) | Media | Cerrado (docs) |
 
 ---

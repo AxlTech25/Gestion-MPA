@@ -46,8 +46,8 @@ configuración, dashboard, ML, reportes), no un sistema genérico.
 Entradas disponibles:
 - Necesidad operativa: inventario patrimonial de equipos de cómputo,
   historial de mantenimiento y priorización de intervenciones.
-- Restricción de despliegue: Hostinger compartido (PHP + MySQL; Python no
-  disponible en el plan).
+- Restricción de despliegue: servidor de producción Apache + PHP + MySQL;
+  FastAPI es opcional (el núcleo no depende de Python).
 - Personas de usuario (borrador): administrador TI, técnico de soporte,
   responsable de área, perfil de consulta / ML.
 - Decisión preliminar de no integrar SIGA/SIAF ni portal ciudadano.
@@ -66,8 +66,8 @@ Restricciones técnicas:
 
 Criterios de aceptación:
 - Un revisor puede decir sí/no al alcance sin leer el código.
-- Fuera de alcance explícito (portal, SIGA/SIAF, ML obligatorio en hosting).
-- Stack coherente con XAMPP y Hostinger PHP.
+- Fuera de alcance explícito (portal, SIGA/SIAF, ML obligatorio).
+- Stack coherente con XAMPP y PHP de producción.
 - Enlace a personas e historias cuando existan.
 
 Proceso sugerido: 1) resumir el problema institucional, 2) listar usuarios,

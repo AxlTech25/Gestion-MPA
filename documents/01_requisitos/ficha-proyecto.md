@@ -44,7 +44,7 @@ Cronograma de preventivo **por área**, agrupable por **gerencia**. **Xn** = cu�
 - Portal ciudadano
 - Inventario de bienes no informáticos
 - Sustitución de SIGA/SIAF (el cronograma no opera esos sistemas; solo agenda el servidor que los hospeda)
-- ML obligatorio en hosting compartido (el módulo se deshabilita si no hay FastAPI)
+- ML obligatorio en producción (el módulo se deshabilita si no hay FastAPI)
 - Generación automática del Gantt (I-003 / R-006: el marcado es manual)
 
 ## Stack (confirmado en ADR-001)

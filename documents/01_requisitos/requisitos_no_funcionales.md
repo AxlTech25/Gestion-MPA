@@ -31,7 +31,7 @@ Los RNF no sustituyen historias. Complementan R-001 (alcance) y R-004 (ambigüed
 | RNF-AVA-01 | Inventario, auth, fichas y mantenimiento operan si FastAPI está caído | HU-ML-005, ADR-002 |
 | RNF-AVA-02 | UI ML (badges, alertas) en estado N/A u oculto, sin pantalla en blanco | I-007 |
 | RNF-AVA-03 | Recálculo post-mantenimiento no impide guardar la ficha si ML falla | I-008 |
-| RNF-AVA-04 | Hosting compartido puede dejar `ml_service_url` vacío | M-001 |
+| RNF-AVA-04 | Producción puede dejar `ml_service_url` vacío si FastAPI no está desplegado | M-001 |
 
 ## Datos e integridad (RNF-DAT)
 
@@ -57,10 +57,10 @@ Los RNF no sustituyen historias. Complementan R-001 (alcance) y R-004 (ambigüed
 | ID | Requisito | Evidencia |
 |----|-----------|-----------|
 | RNF-OPS-01 | Desarrollo: XAMPP (Apache + MySQL) + Vite | ficha R-001 |
-| RNF-OPS-02 | Producción mínima: Hostinger PHP 8.1+ y MySQL | M-001 |
-| RNF-OPS-03 | Build front: `npm run build:hostinger`; PHP: `composer install --no-dev` | M-001 |
+| RNF-OPS-02 | Producción mínima: Apache + PHP 8.1+ y MySQL | M-001 |
+| RNF-OPS-03 | Build front: `npm run build`; PHP: `composer install --no-dev` | M-001 |
 | RNF-OPS-04 | Rollback = dump SQL + restore de `dist/` y `backend/` | M-004 |
-| RNF-OPS-05 | PDF: `memory_limit` ≥ 256M si Dompdf falla | hostinger.md |
+| RNF-OPS-05 | PDF: `memory_limit` ≥ 256M si Dompdf falla | produccion.md |
 
 ## Calidad (RNF-QUA)
 

@@ -29,6 +29,11 @@ backend/api/v2/config/local.hostinger.php
 /gestion_equipos_mpa_v2.sql
 /gestion_equipos_mpa_v2 (1).sql
 
+# Consulta local con copyright (normas ISO, libros y artículos). No versionar.
+documents/ISO/*.pdf
+documents/desarrollo_softwareIA/*.pdf
+documents/metodologia CRISP_ML/*.pdf
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

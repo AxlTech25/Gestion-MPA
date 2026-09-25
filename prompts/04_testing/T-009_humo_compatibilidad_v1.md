@@ -20,16 +20,16 @@
 ```text
 Rol: Actúa como QA de release. Checklist corto, no el plan T-001.
 
-Contexto: 0.10.7. Local XAMPP+Vite y build Hostinger (M-001). ML
-opcional. RNF-UX-01 recarga SPA. RNF-OPS-03 npm run build:hostinger.
+Contexto: 0.10.7. Local XAMPP+Vite y build de producción (M-001). ML
+opcional. RNF-UX-01 recarga SPA. RNF-OPS-03 npm run build.
 
 Objetivo: SMOKE-001…005 (15 min) y CMP-001…003.
 
 Tarea: Login, dashboard, inventario, cronograma listado, ml/status
-sin tumbar UI. F5 en /v2/inventario. dist/ sirve V2. Hostinger sin
+sin tumbar UI. F5 en /v2/inventario. dist/ sirve V2. Producción sin
 ml_service_url = inventario usable (detalle en T-013).
 
-Entradas: T-006, M-001, hostinger.md, AUTH-001.
+Entradas: T-006, M-001, produccion.md, AUTH-001.
 
 Formato: documents/04_testing/plan_humo_compatibilidad.md.
 

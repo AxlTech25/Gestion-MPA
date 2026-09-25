@@ -55,7 +55,7 @@ Umbrales de la gu铆a (orientativos): tests cr铆ticos en verde; documentaci贸n 鈮
 | [I-015](../03_implementacion/I-015_cronograma_pdf_a4_baja_v1.md) | Implementaci贸n | v1 | 1 | PDF A4 L鈥揤 2 meses; DELETE plan | Ejecutado | Calendario = anio del documento |
 | [I-016](../03_implementacion/I-016_cronograma_pdf_encaje_v1.md) | Implementaci贸n | v1 | 2 | Encaje textos; pie HORA PROGRAMADA con borde | Ejecutado | Una tabla; colspan laborable; pie-grid 1px; equipos width 1% |
 | [I-017](../03_implementacion/I-017_gerencias_crud_areas_v1.md) | Implementaci贸n | v1 | 1 | Gerencias; CRUD 谩rea; bandas cronograma | **Aprobado** (inc. 8 cerrado) | Selector no etiqueta libre; 409 si hay equipos |
-| [M-001](../05_mantenimiento/M-001_deploy_hostinger_v1.md) | Mantenimiento | v1.1 | 1 publicaci贸n | Gu铆a + checklist; rollback sin heading | Aprobado | Si pides rollback, exige el apartado |
+| [M-001](../05_mantenimiento/M-001_deploy_produccion_v1.md) | Mantenimiento | v1.2 | 1 publicaci贸n | Gu铆a + checklist; rollback sin heading | Aprobado | Si pides rollback, exige el apartado |
 
 ### Implementaci贸n vigente (oleada 2)
 
@@ -88,7 +88,7 @@ Umbrales de la gu铆a (orientativos): tests cr铆ticos en verde; documentaci贸n 鈮
 | T-005 | Plantilla T-02 | Aprobado | Se llena por fallo |
 | M-002 | Plantilla M-01 + ejemplo I-008 | Aprobado | Antes de tocar BD/API |
 | M-003 | Checklist changelog/contrato | Aprobado | Post-cambio es fase M |
-| M-004 | Heading Rollback en hostinger.md | Aprobado | Cierra deuda D2 de M-001 |
+| M-004 | Heading Rollback en produccion.md | Aprobado | Cierra deuda D2 de M-001 |
 
 ### Oleada 4 (fase T ampliada, 2026-09-17)
 

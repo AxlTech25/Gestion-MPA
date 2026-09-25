@@ -3,7 +3,7 @@
 **Prompt:** [T-014](../../prompts/04_testing/T-014_migracion_datos_v1.md)  
 **Producto:** 0.10.7  
 **Oráculo:** RNF-DAT-01…05  
-**Entorno:** copia local de MySQL. **Prohibido** en Hostinger producción.
+**Entorno:** copia local de MySQL. **Prohibido** en producción.
 
 Antes: dump (`mysqldump` o phpMyAdmin). Anotar `COUNT(*)` de `v2_equipos` y `v2_areas`.
 

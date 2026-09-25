@@ -1,7 +1,7 @@
 # Contrato API V2
 
 **Prompt:** [D-003](../../prompts/02_diseno/D-003_contrato_api_v1.md)  
-**Base:** `/gestion_mpa/backend/api/v2/` (XAMPP) o `https://{dominio}/backend/api/v2/` (Hostinger)  
+**Base:** `/gestion_mpa/backend/api/v2/` (XAMPP) o `https://{dominio}/backend/api/v2/` (producción)  
 **Producto:** 0.10.7. Recurso `/cronogramas` ([I-010](../../prompts/03_implementacion/I-010_cronograma_v1.md) … [I-017](../../prompts/03_implementacion/I-017_gerencias_crud_areas_v1.md)).
 
 ## Sobre

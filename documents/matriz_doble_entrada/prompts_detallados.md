@@ -147,7 +147,7 @@ Repositorio: https://github.com/AxlTech25/Gestion-MPA
 |-------|-------|
 | **ID prompt** | I-007 |
 | **Función asociada** | F-007 ml |
-| **Prompt exacto** | Actúa como ingeniero de ML aplicado y backend PHP. Contexto: datos estructurados (I-002, I-003); JWT (I-006); FastAPI en `:8000`; PHP único cliente; Hostinger sin Python. Objetivo: riesgo por equipo, sugerencia de categoría, proxy JWT y UI degradable. Tarea: dataset sintético ~200; Random Forest; endpoints `/health`, `/predict/riesgo`, batch, `/predict/categoria`, `/train`; tabla `v2_predicciones_ml`; proxy `/api/v2/ml/*`; RiesgoBadge y alertas. Restricciones: batch JSON `{}` no `[]`; si FastAPI cae, inventario y login siguen (HU-ML-005). Criterios: `/health` OK; 401 sin token; UI sin crash con uvicorn down. |
+| **Prompt exacto** | Actúa como ingeniero de ML aplicado y backend PHP. Contexto: datos estructurados (I-002, I-003); JWT (I-006); FastAPI en `:8000`; PHP único cliente; FastAPI opcional. Objetivo: riesgo por equipo, sugerencia de categoría, proxy JWT y UI degradable. Tarea: dataset sintético ~200; Random Forest; endpoints `/health`, `/predict/riesgo`, batch, `/predict/categoria`, `/train`; tabla `v2_predicciones_ml`; proxy `/api/v2/ml/*`; RiesgoBadge y alertas. Restricciones: batch JSON `{}` no `[]`; si FastAPI cae, inventario y login siguen (HU-ML-005). Criterios: `/health` OK; 401 sin token; UI sin crash con uvicorn down. |
 | **Técnica** | Chain-of-Thought guiado |
 | **Versión prompt** | v1 |
 | **N.º de iteraciones** | ≥2 |

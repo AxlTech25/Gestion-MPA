@@ -67,11 +67,11 @@ Ver [README de I-*](../03_implementacion/README.md). I-001…I-017 vigentes; I-0
 
 | Código | Registro | Estado | Artefacto |
 |--------|----------|--------|-----------|
-| [M-001](../05_mantenimiento/M-001_deploy_hostinger_v1.md) | v1.1 | Reconstruido | `hostinger.md` (deploy) |
+| [M-001](../05_mantenimiento/M-001_deploy_produccion_v1.md) | v1.2 | Reconstruido | `produccion.md` (deploy) |
 | [M-002](../05_mantenimiento/M-002_analisis_impacto_v1.md) | v1 | Plantilla | `plantilla_analisis_impacto.md` |
 | [M-002 cronograma](../05_mantenimiento/M-002_cronograma_v1.md) | v1 | Ejecutado | `impacto_cronograma.md` |
 | [M-003](../05_mantenimiento/M-003_documentacion_post_cambio_v1.md) | v1 | Plantilla | changelog + plantilla M-02 |
-| [M-004](../05_mantenimiento/M-004_rollback_secretos_v1.md) | v1 | Ejecutado | `hostinger.md` § Rollback |
+| [M-004](../05_mantenimiento/M-004_rollback_secretos_v1.md) | v1 | Ejecutado | `produccion.md` § Rollback |
 
 ---
 
@@ -106,7 +106,7 @@ Matriz V3 (código): [documents/matriz_doble_entrada/README.md](../../documents/
 docs(requisitos): ambigüedades R-01 [R-004]
 docs(diseno): ADR-002 degradación ML [D-006]
 docs(testing): estrategia de pruebas [T-006]
-docs(mantenimiento): rollback Hostinger [M-004]
+docs(mantenimiento): rollback producción [M-004]
 feat(inventario): … [I-002]
 ```
 

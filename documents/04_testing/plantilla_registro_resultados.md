@@ -6,7 +6,7 @@
 **Ejecutor:** _________________________  
 **Fecha inicio:** _________________________  
 **Fecha fin:** _________________________  
-**Entorno:** ☐ Local (XAMPP) ☐ Staging / Hostinger ☐ Otro: ___________
+**Entorno:** ☐ Local (XAMPP) ☐ Staging / producción ☐ Otro: ___________
 
 Columnas **Tipo:** UT | INT | E2E | SMOKE | SEC | UAT | REG | DEG | MIG  
 **Técnica:** blanca | negra | N/A
@@ -52,7 +52,7 @@ Copie filas según el plan que esté corriendo. Capturas: `documents/04_testing/
 | SMOKE-004 cronograma | ☐ OK ☐ FALLA ☐ BLOQ ☐ N/A | | |
 | SMOKE-005 ML no tumba UI | ☐ OK ☐ FALLA ☐ BLOQ ☐ N/A | | |
 | CMP-001 F5 SPA | ☐ OK ☐ FALLA ☐ BLOQ ☐ N/A | | |
-| CMP-002 `dist/` Hostinger | ☐ OK ☐ FALLA ☐ BLOQ ☐ N/A | | |
+| CMP-002 `dist/` producción | ☐ OK ☐ FALLA ☐ BLOQ ☐ N/A | | |
 | CMP-003 sin `ml_service_url` | ☐ OK ☐ FALLA ☐ BLOQ ☐ N/A | | |
 
 ---
@@ -98,4 +98,4 @@ Copie filas según el plan que esté corriendo. Capturas: `documents/04_testing/
 
 ## Notas finales
 
-_Conclusiones, riesgos residuales (ML N/A, Hostinger), recomendación de paso a M-001._
+_Conclusiones, riesgos residuales (ML N/A, producción), recomendación de paso a M-001._

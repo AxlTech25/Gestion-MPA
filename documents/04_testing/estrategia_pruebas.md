@@ -69,7 +69,7 @@ Cubren un **riesgo**; se ejecutan encima de un nivel.
 | Tipo | Riesgo | Prefijo | Prompt | Plan | RNF / ADR |
 |------|--------|---------|--------|------|-----------|
 | Humo | El sistema no arranca | `SMOKE-*` | T-009 | [plan_humo_compatibilidad.md](./plan_humo_compatibilidad.md) | RNF-QUA-01; entrada de M-001 |
-| Compatibilidad | Vite ≠ `dist/` Hostinger; F5 404 | `CMP-*` | T-009 | mismo | RNF-UX-01, RNF-OPS |
+| Compatibilidad | Vite ≠ `dist/` de producción; F5 404 | `CMP-*` | T-009 | mismo | RNF-UX-01, RNF-OPS |
 | Seguridad funcional | Authz rota (no es pentest) | `SEC-*` | T-010 | [plan_seguridad_funcional.md](./plan_seguridad_funcional.md) | RNF-SEC-01…10 |
 | Aceptación (UAT) | El rol no termina su trabajo | `UAT-P*` | T-011 | [plan_aceptacion_uat.md](./plan_aceptacion_uat.md) | R-003 personas |
 | Regresión | Un incremento rompe el anterior | `REG-*`, `REG-INC-*` | T-012 | [plan_regresion.md](./plan_regresion.md) | changelog 0.1.0–0.10.7 |
@@ -116,7 +116,7 @@ Cubren un **riesgo**; se ejecutan encima de un nivel.
 7. UAT con usuario clave (T-011).
 8. Regresión REG-INC-* si hubo cambio desde la última corrida.
 9. Migración MIG-* sobre **copia** de BD, nunca producción.
-10. Compatibilidad CMP-* antes de M-001; humo otra vez en Hostinger.
+10. Compatibilidad CMP-* antes de M-001; humo otra vez en producción.
 
 Estados al registrar: **OK** | **FALLA** | **BLOQUEADO** | **N/A**. Plantilla: [plantilla_registro_resultados.md](./plantilla_registro_resultados.md).
 

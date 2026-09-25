@@ -25,15 +25,15 @@ DDL y análisis se publicaron con [87d5765](https://github.com/AxlTech25/Gestion
 
 ```text
 Rol: Actúa como arquitecto de datos (MySQL 8 / MariaDB compatible con XAMPP
-y Hostinger).
+y el servidor de producción).
 
 Contexto: Sigemad MPA V2. Inventario patrimonial de equipos de cómputo,
 áreas, usuarios, fichas técnicas, fichas de mantenimiento, catálogo de
 fallas, predicciones ML y telemetría. Motor: MySQL. Prefijo de tablas v2_
 para convivir con V1 (Strangler Fig). Requisitos: RAM y almacenamiento
 numéricos; categoría de falla como catálogo (no texto libre como fuente de
-verdad); datos aptos para un modelo de riesgo posterior. Hosting compartido:
-evitar tipos o features que phpMyAdmin/Hostinger no importen.
+verdad); datos aptos para un modelo de riesgo posterior. Producción:
+evitar tipos o features que phpMyAdmin no importe.
 
 Objetivo: Un esquema relacional instalable (DDL) y migraciones incrementales
 que D-002 e I-001 puedan implementar sin reinventar tablas.

@@ -32,7 +32,7 @@ Contexto: Sigemad MPA V2 0.10.7 (Incremento 8 cerrado). Stack: UI React
 único cliente de FastAPI (ADR-001/002). Prompt-Centered SDLC v1.2: la
 IA produce planes; el humano ejecuta. Ya existen T-001 (plan funcional
 UI), T-002 PHPUnit, T-003 Vitest, T-004 pytest, T-005 diagnóstico.
-R-005 excluye carga, pentest y SLA. Hostinger no corre Python.
+R-005 excluye carga, pentest y SLA. FastAPI no es obligatorio en producción.
 
 Objetivo: Un documento de estrategia que un revisor de tesis o un
 técnico pueda usar para saber qué tipo de prueba cubre cada riesgo,

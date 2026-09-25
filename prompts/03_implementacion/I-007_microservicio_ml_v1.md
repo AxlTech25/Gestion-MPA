@@ -30,8 +30,8 @@ Rol: Actúa como ingeniero de ML aplicado y backend PHP.
 
 Contexto: 0.7.0. Inventario y mantenimientos estructurados (I-002, I-003).
 JWT ya protege la API (I-006). Stack: Python 3.10+, FastAPI, Scikit-learn,
-joblib. PHP es el único cliente de http://127.0.0.1:8000. Hostinger no
-corre Python: degradación obligatoria (HU-ML-005).
+joblib. PHP es el único cliente de http://127.0.0.1:8000. FastAPI no
+es obligatorio: degradación (HU-ML-005).
 
 Objetivo: Inferencia de riesgo y sugerencia de categoría, proxy JWT y UI
 degradables (badge + alertas). Sin ampliar el esquema de telemetría.

@@ -21,7 +21,7 @@
 Rol: Actúa como analista de requisitos no funcionales (seguridad,
 disponibilidad, datos, operación).
 
-Contexto: Sigemad MPA V2 en Hostinger PHP + XAMPP. ML opcional (R-004,
+Contexto: Sigemad MPA V2 en PHP de producción + XAMPP. ML opcional (R-004,
 ADR-001). Roles Administrador / Tecnico / Practicante. Código patrimonial
 12 dígitos. Política de IA: sin secretos en prompts.
 
