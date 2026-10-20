@@ -25,7 +25,8 @@ backend/api/v2/config/local.hostinger.php
 .env.production
 .env.development
 
-# Generador local de dataset SmartPLS y su salida. No es el servicio en ejecución.
+# Generadores locales de dataset. No los llama el servicio en ejecución.
+ml/scripts/generate_synthetic.py
 ml/scripts/build_smartpls_dataset.py
 ml/data/smartpls/
 ml/.coverage
