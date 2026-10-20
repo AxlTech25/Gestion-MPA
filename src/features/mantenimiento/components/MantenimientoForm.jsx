@@ -83,7 +83,7 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
 
   useEffect(() => {
     const fetchSugerencia = async () => {
-      const id = parseInt(formData.equipo_id, 10);
+      const id = Number.parseInt(formData.equipo_id, 10);
       if (!id || !isCorrectivo) {
         setSugerencia(null);
         return;
@@ -152,8 +152,9 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
         <div className="p-6 overflow-y-auto">
           <form id="mant-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-1 md:col-span-2">
-              <label className="text-sm font-medium text-slate-700">Código patrimonial *</label>
+              <label htmlFor="mant-codigo" className="text-sm font-medium text-slate-700">Código patrimonial *</label>
               <input
+                id="mant-codigo"
                 required
                 type="text"
                 value={codigoPatrimonial}
@@ -191,14 +192,14 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Fecha y Hora *</label>
-              <input required type="datetime-local" name="fecha_intervencion" value={formData.fecha_intervencion} onChange={handleChange}
+              <label htmlFor="mant-fecha" className="text-sm font-medium text-slate-700">Fecha y Hora *</label>
+              <input id="mant-fecha" required type="datetime-local" name="fecha_intervencion" value={formData.fecha_intervencion} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Tipo *</label>
-              <select name="tipo_mantenimiento" value={formData.tipo_mantenimiento} onChange={handleChange}
+              <label htmlFor="mant-tipo" className="text-sm font-medium text-slate-700">Tipo *</label>
+              <select id="mant-tipo" name="tipo_mantenimiento" value={formData.tipo_mantenimiento} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg bg-white">
                 <option value="Preventivo">Preventivo</option>
                 <option value="Correctivo">Correctivo</option>
@@ -208,7 +209,7 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-blue-700 flex items-center gap-1">
+              <label htmlFor="mant-categoria" className="text-sm font-medium text-blue-700 flex items-center gap-1">
                 <Sparkles size={14} /> Categoría Falla *
               </label>
               {sugerencia && isCorrectivo && (
@@ -216,7 +217,7 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
                   Sugerencia IA: {sugerencia.nombre} ({Math.round(sugerencia.probabilidad * 100)}%)
                 </p>
               )}
-              <select name="categoria_falla_id" value={formData.categoria_falla_id} onChange={handleChange}
+              <select id="mant-categoria" name="categoria_falla_id" value={formData.categoria_falla_id} onChange={handleChange}
                 className="w-full px-3 py-2 border border-blue-300 bg-blue-50 rounded-lg">
                 <option value="1">Limpieza / Rutina</option>
                 <option value="2">Actualización Software</option>
@@ -230,14 +231,14 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
             {isCorrectivo && (
               <>
                 <div className="space-y-1 md:col-span-2">
-                  <label className="text-sm font-medium text-slate-700">Síntoma reportado</label>
-                  <input name="sintoma_usuario" value={formData.sintoma_usuario} onChange={handleChange}
+                  <label htmlFor="mant-sintoma" className="text-sm font-medium text-slate-700">Síntoma reportado</label>
+                  <input id="mant-sintoma" name="sintoma_usuario" value={formData.sintoma_usuario} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Ej: No enciende, pantalla azul..." />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Componente principal *</label>
-                  <select required name="componente_principal" value={formData.componente_principal} onChange={handleChange}
+                  <label htmlFor="mant-componente" className="text-sm font-medium text-slate-700">Componente principal *</label>
+                  <select id="mant-componente" required name="componente_principal" value={formData.componente_principal} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg bg-white">
                     <option value="">Seleccionar...</option>
                     {COMPONENTES.map((c) => (
@@ -246,8 +247,8 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Causa raíz</label>
-                  <input name="causa_raiz" value={formData.causa_raiz} onChange={handleChange}
+                  <label htmlFor="mant-causa" className="text-sm font-medium text-slate-700">Causa raíz</label>
+                  <input id="mant-causa" name="causa_raiz" value={formData.causa_raiz} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Ej: Sobrecalentamiento por polvo" />
                 </div>
@@ -258,20 +259,20 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-1 md:col-span-2">
-                      <label className="text-sm font-medium text-slate-700">Diagnóstico técnico</label>
-                      <textarea name="diagnostico_texto" value={formData.diagnostico_texto} onChange={handleChange} rows="2"
+                      <label htmlFor="mant-diagnostico" className="text-sm font-medium text-slate-700">Diagnóstico técnico</label>
+                      <textarea id="mant-diagnostico" name="diagnostico_texto" value={formData.diagnostico_texto} onChange={handleChange} rows="2"
                         className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none bg-orange-50/30"
                         placeholder="Ej: Disco con sectores defectuosos, SMART en estado de alerta..." />
                     </div>
                     <div className="space-y-1 md:col-span-2">
-                      <label className="text-sm font-medium text-slate-700">Piezas reemplazadas</label>
-                      <textarea name="piezas_reemplazadas" value={formData.piezas_reemplazadas} onChange={handleChange} rows="2"
+                      <label htmlFor="mant-piezas" className="text-sm font-medium text-slate-700">Piezas reemplazadas</label>
+                      <textarea id="mant-piezas" name="piezas_reemplazadas" value={formData.piezas_reemplazadas} onChange={handleChange} rows="2"
                         className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none bg-orange-50/30"
                         placeholder="Ej: SSD 512GB Kingston, pasta térmica, ventilador CPU..." />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-slate-700">Costo de reparación (S/)</label>
-                      <input type="number" min="0" step="0.01" name="costo_reparacion" value={formData.costo_reparacion} onChange={handleChange}
+                      <label htmlFor="mant-costo" className="text-sm font-medium text-slate-700">Costo de reparación (S/)</label>
+                      <input id="mant-costo" type="number" min="0" step="0.01" name="costo_reparacion" value={formData.costo_reparacion} onChange={handleChange}
                         className="w-full px-3 py-2 border border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none bg-orange-50/30"
                         placeholder="0.00" />
                     </div>
@@ -283,8 +284,8 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
             {isPreventivo && isComputadora && (
               <>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Nivel de polvo</label>
-                  <select name="nivel_polvo" value={formData.nivel_polvo} onChange={handleChange}
+                  <label htmlFor="mant-polvo" className="text-sm font-medium text-slate-700">Nivel de polvo</label>
+                  <select id="mant-polvo" name="nivel_polvo" value={formData.nivel_polvo} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg bg-white">
                     <option value="">—</option>
                     <option value="Bajo">Bajo</option>
@@ -294,13 +295,13 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Temp. CPU (°C)</label>
-                  <input type="number" step="0.1" name="temperatura_cpu" value={formData.temperatura_cpu} onChange={handleChange}
+                  <label htmlFor="mant-temp-cpu" className="text-sm font-medium text-slate-700">Temp. CPU (°C)</label>
+                  <input id="mant-temp-cpu" type="number" step="0.1" name="temperatura_cpu" value={formData.temperatura_cpu} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Temp. disco (°C)</label>
-                  <input type="number" step="0.1" name="temperatura_disco" value={formData.temperatura_disco} onChange={handleChange}
+                  <label htmlFor="mant-temp-disco" className="text-sm font-medium text-slate-700">Temp. disco (°C)</label>
+                  <input id="mant-temp-disco" type="number" step="0.1" name="temperatura_disco" value={formData.temperatura_disco} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
               </>
@@ -309,18 +310,18 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
             {isComputadora && (
               <>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Horas de uso (lectura)</label>
-                  <input type="number" min="0" name="horas_uso_acumuladas" value={formData.horas_uso_acumuladas} onChange={handleChange}
+                  <label htmlFor="mant-horas" className="text-sm font-medium text-slate-700">Horas de uso (lectura)</label>
+                  <input id="mant-horas" type="number" min="0" name="horas_uso_acumuladas" value={formData.horas_uso_acumuladas} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Salud batería (%)</label>
-                  <input type="number" min="0" max="100" step="0.1" name="salud_bateria_pct" value={formData.salud_bateria_pct} onChange={handleChange}
+                  <label htmlFor="mant-bateria" className="text-sm font-medium text-slate-700">Salud batería (%)</label>
+                  <input id="mant-bateria" type="number" min="0" max="100" step="0.1" name="salud_bateria_pct" value={formData.salud_bateria_pct} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Inactividad (minutos)</label>
-                  <input type="number" min="0" name="tiempo_inactividad_min" value={formData.tiempo_inactividad_min} onChange={handleChange}
+                  <label htmlFor="mant-inactividad" className="text-sm font-medium text-slate-700">Inactividad (minutos)</label>
+                  <input id="mant-inactividad" type="number" min="0" name="tiempo_inactividad_min" value={formData.tiempo_inactividad_min} onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
               </>
@@ -328,21 +329,21 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
 
             {isImpresora && (
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Contador páginas (impresora)</label>
-                <input type="number" min="0" name="contador_paginas_lectura" value={formData.contador_paginas_lectura} onChange={handleChange}
+                <label htmlFor="mant-paginas" className="text-sm font-medium text-slate-700">Contador páginas (impresora)</label>
+                <input id="mant-paginas" type="number" min="0" name="contador_paginas_lectura" value={formData.contador_paginas_lectura} onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             )}
 
             <div className="space-y-1 md:col-span-2">
-              <label className="text-sm font-medium text-slate-700">Actividades realizadas</label>
-              <textarea name="actividades_realizadas" value={formData.actividades_realizadas} onChange={handleChange} rows="3"
+              <label htmlFor="mant-actividades" className="text-sm font-medium text-slate-700">Actividades realizadas</label>
+              <textarea id="mant-actividades" name="actividades_realizadas" value={formData.actividades_realizadas} onChange={handleChange} rows="3"
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Describe lo realizado..." />
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Estado posterior *</label>
-              <select name="estado_post_mantenimiento" value={formData.estado_post_mantenimiento} onChange={handleChange}
+              <label htmlFor="mant-estado" className="text-sm font-medium text-slate-700">Estado posterior *</label>
+              <select id="mant-estado" name="estado_post_mantenimiento" value={formData.estado_post_mantenimiento} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg bg-white">
                 <option value="Operativo">Operativo (resuelto)</option>
                 <option value="Dañado">Aún dañado</option>

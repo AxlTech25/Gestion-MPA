@@ -183,12 +183,13 @@ export const MantenimientoPage = () => {
           </div>
           <form onSubmit={handleBuscar} className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
             <div className="flex-1 space-y-1">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              <label htmlFor="historial-codigo" className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 Código patrimonial
               </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
+                  id="historial-codigo"
                   type="text"
                   value={codigo}
                   onChange={(e) => { setCodigo(e.target.value); setErrorBusqueda(''); }}

@@ -3,7 +3,7 @@ import { downloadPdf } from '../../../lib/api';
 import { equiposService } from '../services/equiposService';
 import { mlService } from '../../ml/services/mlService';
 import { RiesgoBadge } from '../../ml/components/RiesgoBadge';
-import { PlusCircle, Search, FileText, Settings, FileSpreadsheet, Pencil } from 'lucide-react';
+import { PlusCircle, Search, FileText, Settings, FileSpreadsheet, Pencil, Trash2 } from 'lucide-react';
 import { EquipoForm } from './EquipoForm';
 import { FichaTecnicaModal } from './FichaTecnicaModal';
 import { CargaMasivaModal } from './CargaMasivaModal';
@@ -51,6 +51,21 @@ export const InventarioPage = () => {
       }
     } catch {
       // ML opcional: sin servicio activo se omiten los badges de riesgo
+    }
+  };
+
+  const handleEliminar = async (eq) => {
+    const codigo = eq.codigo_patrimonial || `ID ${eq.id}`;
+    const ok = window.confirm(
+      `¿Eliminar el equipo ${codigo}? Se borran también su ficha y sus mantenimientos. Esta acción no se puede deshacer.`
+    );
+    if (!ok) return;
+    try {
+      const res = await equiposService.deleteEquipo(eq.id);
+      alert(res.message || 'Equipo eliminado.');
+      cargarEquipos();
+    } catch (err) {
+      alert(err.response?.data?.message || 'No se pudo eliminar el equipo.');
     }
   };
 
@@ -133,7 +148,6 @@ export const InventarioPage = () => {
               <th className="px-6 py-4 font-medium">Cód. Patrimonial / Ident.</th>
               <th className="px-6 py-4 font-medium">Tipo</th>
               <th className="px-6 py-4 font-medium">Marca/Modelo</th>
-              <th className="px-6 py-4 font-medium">RAM/Alm (Numérico)</th>
               <th className="px-6 py-4 font-medium">Área</th>
               <th className="px-6 py-4 font-medium">Responsable</th>
               <th className="px-6 py-4 font-medium">Ubicación</th>
@@ -144,9 +158,9 @@ export const InventarioPage = () => {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {loading ? (
-              <tr><td colSpan="10" className="text-center py-10 text-slate-400">Cargando inventario...</td></tr>
+              <tr><td colSpan="9" className="text-center py-10 text-slate-400">Cargando inventario...</td></tr>
             ) : filteredEquipos.length === 0 ? (
-              <tr><td colSpan="10" className="text-center py-10 text-slate-400">No se encontraron equipos.</td></tr>
+              <tr><td colSpan="9" className="text-center py-10 text-slate-400">No se encontraron equipos.</td></tr>
             ) : (
               filteredEquipos.map((eq) => (
                 <tr key={eq.id} className="hover:bg-slate-50 transition-colors group">
@@ -158,9 +172,6 @@ export const InventarioPage = () => {
                   <td className="px-6 py-4 text-slate-600">
                     <span className="block">{eq.marca || '-'}</span>
                     <span className="text-xs text-slate-400">{eq.modelo || '-'}</span>
-                  </td>
-                  <td className="px-6 py-4 text-slate-600">
-                    {eq.ram_gb ? `${eq.ram_gb} GB` : 'N/A'} / {eq.almacenamiento_gb ? `${eq.almacenamiento_gb} GB` : 'N/A'}
                   </td>
                   <td className="px-6 py-4 text-slate-600">{eq.area_nombre || `ID: ${eq.area_id}`}</td>
                   <td className="px-6 py-4 text-slate-600">
@@ -203,6 +214,12 @@ export const InventarioPage = () => {
                          className="text-slate-400 hover:text-blue-600 p-1.5 rounded-md hover:bg-blue-50 transition-colors">
                          <Settings size={18} />
                        </button>
+                       <button
+                         onClick={() => handleEliminar(eq)}
+                         title="Eliminar equipo"
+                         className="text-slate-400 hover:text-rose-600 p-1.5 rounded-md hover:bg-rose-50 transition-colors">
+                         <Trash2 size={18} />
+                       </button>
                      </div>
                    </td>
                 </tr>
@@ -213,9 +230,14 @@ export const InventarioPage = () => {
       </div>
 
       {isModalOpen && (
-        <EquipoForm 
-          onClose={() => setIsModalOpen(false)} 
-          onSuccess={cargarEquipos} 
+        <EquipoForm
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            setSearchTerm('');
+            setFilterTipo('');
+            setFilterEstado('');
+            cargarEquipos();
+          }}
         />
       )}
 

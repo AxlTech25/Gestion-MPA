@@ -26,6 +26,12 @@ class EquipoController {
         'procesador',
         'sistema_operativo',
         'fecha_adquisicion',
+        'horas_uso',
+        'errores_smart',
+        'contador_paginas',
+        'salud_bateria',
+        'ultima_temp_cpu',
+        'ultima_temp_disco',
     ];
 
     private const PLANTILLA_EJEMPLO = [
@@ -43,6 +49,35 @@ class EquipoController {
         'Intel Core i5',
         'Windows 11',
         '2024-01-15',
+        '0',
+        '0',
+        '',
+        '',
+        '',
+        '',
+    ];
+
+    private const PLANTILLA_EJEMPLO_IMPRESORA = [
+        '740000009201',
+        '900201',
+        'Impresora',
+        'HP',
+        'LaserJet',
+        'Blanco',
+        'SN654321',
+        'Tecnología de la Información',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '2024-03-01',
+        '',
+        '',
+        '1500',
+        '',
+        '',
+        '',
     ];
 
     public static function plantillaColumnas(): array {
@@ -88,9 +123,24 @@ class EquipoController {
             http_response_code(409);
             echo json_encode([
                 "success" => false,
-                "message" => "No se pudo actualizar. Verifique que el equipo exista y que el código patrimonial no esté duplicado.",
+                "message" => $this->equipo->getLastError()
+                    ?: "No se pudo actualizar. Verifique que el equipo exista y que los códigos no estén duplicados.",
             ]);
         }
+    }
+
+    public function destroy(int $id) {
+        $result = $this->equipo->delete($id);
+        if (!empty($result['ok'])) {
+            echo json_encode(["success" => true, "message" => "Equipo eliminado."]);
+            return;
+        }
+        $status = $result['status'] ?? 503;
+        http_response_code($status);
+        echo json_encode([
+            "success" => false,
+            "message" => $result['message'] ?? "No se pudo eliminar el equipo.",
+        ]);
     }
 
     public function store() {
@@ -100,8 +150,12 @@ class EquipoController {
                 http_response_code(201);
                 echo json_encode(["success" => true, "message" => "Equipo registrado exitosamente."]);
             } else {
-                http_response_code(503);
-                echo json_encode(["success" => false, "message" => "No se pudo registrar el equipo. Revise duplicados o errores."]);
+                http_response_code(409);
+                echo json_encode([
+                    "success" => false,
+                    "message" => $this->equipo->getLastError()
+                        ?: "No se pudo registrar el equipo. Revise duplicados o errores.",
+                ]);
             }
         } else {
             http_response_code(400);
@@ -117,6 +171,7 @@ class EquipoController {
 
         $writer->addRow(Row::fromValues(self::PLANTILLA_HEADERS));
         $writer->addRow(Row::fromValues(self::PLANTILLA_EJEMPLO));
+        $writer->addRow(Row::fromValues(self::PLANTILLA_EJEMPLO_IMPRESORA));
 
         $writer->close();
         exit;

@@ -72,7 +72,7 @@ export const CargaMasivaModal = ({ onClose, onSuccess }) => {
               <li>Suba el archivo .xlsx</li>
             </ol>
             <p className="text-xs text-blue-600 pt-1">
-              Obligatorios: código patrimonial (12 dígitos), tipo de equipo y área (nombre exacto).
+              Obligatorios: código patrimonial (12 dígitos), tipo de equipo y área (nombre exacto). El código identificativo, si se llena, no puede repetirse. RAM, disco y sistema operativo solo aplican a Laptop y CPU. El contador de páginas aplica a Impresora. La segunda fila de la plantilla es el ejemplo de impresora.
             </p>
           </div>
 
@@ -85,23 +85,25 @@ export const CargaMasivaModal = ({ onClose, onSuccess }) => {
             Descargar plantilla Excel
           </button>
 
-          <div
+          <button
+            type="button"
             onClick={() => inputRef.current?.click()}
-            className="border-2 border-dashed border-slate-200 rounded-xl p-8 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors"
+            className="w-full border-2 border-dashed border-slate-200 rounded-xl p-8 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors"
           >
             <Upload className="mx-auto text-slate-400 mb-2" size={32} />
-            <p className="text-sm font-medium text-slate-700">
+            <span className="block text-sm font-medium text-slate-700">
               {archivo ? archivo.name : 'Seleccionar archivo .xlsx'}
-            </p>
-            <p className="text-xs text-slate-400 mt-1">Clic para elegir archivo</p>
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={handleArchivo}
-              className="hidden"
-            />
-          </div>
+            </span>
+            <span className="block text-xs text-slate-400 mt-1">Clic para elegir archivo</span>
+          </button>
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={handleArchivo}
+            className="hidden"
+            aria-label="Archivo Excel de equipos"
+          />
 
           {error && (
             <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">

@@ -21,6 +21,11 @@ export const equiposService = {
     return response.data;
   },
 
+  deleteEquipo: async (id) => {
+    const response = await api.delete(`/equipos/${id}`);
+    return response.data;
+  },
+
   descargarPlantilla: async () => {
     await downloadFile(
       '/equipos/plantilla',

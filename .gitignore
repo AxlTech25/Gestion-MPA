@@ -25,6 +25,12 @@ backend/api/v2/config/local.hostinger.php
 .env.production
 .env.development
 
+# Generadores locales de dataset y su salida. No son el servicio en ejecución.
+ml/scripts/build_smartpls_dataset.py
+ml/data/smartpls/
+ml/.coverage
+ml/coverage.xml
+
 # Dumps locales (el esquema versionado está en backend/sql/)
 /gestion_equipos_mpa_v2.sql
 /gestion_equipos_mpa_v2 (1).sql

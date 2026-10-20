@@ -23,14 +23,14 @@ export const CronogramaCantidadPopover = ({
   const pct = computadoras > 0 ? Math.min(100, Math.round((programados / computadoras) * 100)) : 0;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-2xl shadow-2xl w-[min(460px,92vw)] overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <button
+        type="button"
+        aria-label="Cerrar"
+        className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative z-10 bg-white rounded-2xl shadow-2xl w-[min(460px,92vw)] overflow-hidden">
         <div className="bg-[#1a1d23] text-white px-5 py-4">
           <p className="text-[10px] font-black uppercase tracking-widest text-[#00a8cc]">Cantidad del día</p>
           <h3 className="text-lg font-black mt-1 leading-tight">{areaNombre}</h3>

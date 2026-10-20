@@ -112,10 +112,11 @@ export const CronogramaListPage = () => {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100 flex flex-wrap items-end gap-4">
           <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Filtrar por año</label>
+            <label htmlFor="cronograma-filtro-anio" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Filtrar por año</label>
             <div className="relative">
               <CalendarRange className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
+                id="cronograma-filtro-anio"
                 type="number"
                 min="2000"
                 max="2100"
@@ -227,8 +228,9 @@ export const CronogramaListPage = () => {
             </div>
             <form onSubmit={handleCrear} className="p-6 space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Año *</label>
+                <label htmlFor="cronograma-anio" className="text-xs font-bold uppercase tracking-wide text-slate-500">Año *</label>
                 <input
+                  id="cronograma-anio"
                   required
                   type="number"
                   min="2000"
@@ -239,8 +241,9 @@ export const CronogramaListPage = () => {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Nombre *</label>
+                <label htmlFor="cronograma-nombre" className="text-xs font-bold uppercase tracking-wide text-slate-500">Nombre *</label>
                 <input
+                  id="cronograma-nombre"
                   required
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
@@ -249,8 +252,9 @@ export const CronogramaListPage = () => {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Notas</label>
+                <label htmlFor="cronograma-notas" className="text-xs font-bold uppercase tracking-wide text-slate-500">Notas</label>
                 <textarea
+                  id="cronograma-notas"
                   rows="3"
                   value={form.notas}
                   onChange={(e) => setForm({ ...form, notas: e.target.value })}

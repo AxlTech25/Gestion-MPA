@@ -29,9 +29,38 @@ export const mapEquipoToForm = (eq) => {
   };
 };
 
-export const buildEquipoPayload = (formData) => ({
-  ...formData,
-  tipo_equipo: formData.tipo_equipo === 'Otro'
+const blankToNull = (v) => {
+  const s = v === null || v === undefined ? '' : String(v).trim();
+  return s === '' ? null : s;
+};
+
+export const buildEquipoPayload = (formData) => {
+  const tipo = formData.tipo_equipo === 'Otro'
     ? (formData.tipo_equipo_otro.trim() || 'Otro')
-    : formData.tipo_equipo,
-});
+    : formData.tipo_equipo;
+  const esPc = tipo === 'CPU' || tipo === 'Laptop';
+  const esImpresora = tipo === 'Impresora';
+
+  return {
+    codigo_patrimonial: formData.codigo_patrimonial,
+    codigo_identificativo: blankToNull(formData.codigo_identificativo),
+    tipo_equipo: tipo,
+    marca: blankToNull(formData.marca),
+    modelo: blankToNull(formData.modelo),
+    color: blankToNull(formData.color),
+    numero_serie: blankToNull(formData.numero_serie),
+    fecha_adquisicion: blankToNull(formData.fecha_adquisicion),
+    area_id: formData.area_id,
+    ram_gb: esPc ? blankToNull(formData.ram_gb) : null,
+    almacenamiento_gb: esPc ? blankToNull(formData.almacenamiento_gb) : null,
+    tipo_disco: esPc ? (formData.tipo_disco || 'SSD') : null,
+    procesador: esPc ? blankToNull(formData.procesador) : null,
+    sistema_operativo: esPc ? (formData.sistema_operativo || null) : null,
+    horas_uso: esPc ? (formData.horas_uso === '' ? 0 : formData.horas_uso) : 0,
+    errores_smart: esPc ? (formData.errores_smart === '' ? 0 : formData.errores_smart) : 0,
+    contador_paginas: esImpresora ? blankToNull(formData.contador_paginas) : null,
+    salud_bateria: tipo === 'Laptop' ? blankToNull(formData.salud_bateria) : null,
+    ultima_temp_cpu: esPc ? blankToNull(formData.ultima_temp_cpu) : null,
+    ultima_temp_disco: esPc ? blankToNull(formData.ultima_temp_disco) : null,
+  };
+};

@@ -57,26 +57,26 @@ export const UsuarioForm = ({ onClose, onSuccess, areas, user }) => {
         <div className="p-6">
           <form id="usuario-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1 md:col-span-2">
-              <label className="text-sm font-medium text-slate-700">Nombre Completo *</label>
-              <input required name="nombre_completo" value={formData.nombre_completo} onChange={handleChange}
+              <label htmlFor="usuario-nombre" className="text-sm font-medium text-slate-700">Nombre Completo *</label>
+              <input id="usuario-nombre" required name="nombre_completo" value={formData.nombre_completo} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
             
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Usuario de Acceso *</label>
-              <input required name="usuario" value={formData.usuario} onChange={handleChange}
+              <label htmlFor="usuario-acceso" className="text-sm font-medium text-slate-700">Usuario de Acceso *</label>
+              <input id="usuario-acceso" required name="usuario" value={formData.usuario} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: jperez" />
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Contraseña {user ? '(dejar vacío para no cambiar)' : '*'}</label>
-              <input type="password" name="password" value={formData.password} onChange={handleChange}
+              <label htmlFor="usuario-password" className="text-sm font-medium text-slate-700">Contraseña {user ? '(dejar vacío para no cambiar)' : '*'}</label>
+              <input id="usuario-password" type="password" name="password" value={formData.password} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Rol en el Sistema *</label>
-              <select name="rol" value={formData.rol} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg bg-white">
+              <label htmlFor="usuario-rol" className="text-sm font-medium text-slate-700">Rol en el Sistema *</label>
+              <select id="usuario-rol" name="rol" value={formData.rol} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg bg-white">
                 <option value="Practicante">Practicante</option>
                 <option value="Tecnico">Técnico</option>
                 <option value="Administrador">Administrador</option>

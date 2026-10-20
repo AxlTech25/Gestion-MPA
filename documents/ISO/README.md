@@ -8,6 +8,7 @@ Los PDF de **ISO 9000:2015** e **ISO 9001:2015** son material de consulta del te
 | [inventario_procesos.md](./plantillas/inventario_procesos.md) | Catálogo MP / PR / ACT alineado a la matriz V4 y a F-001…F-051 |
 | [06_calidad/](../06_calidad/) | Fase 06: pruebas estáticas (SonarQube) y evidencia de calidad |
 | [Anexo 07 A7-6](../Intervencion%20metodologica%20y%20plan%20de%20tesis/Anexo07_Plantillas_Figuras_Tablas.md) | Tabla y figura de procesos para el Word de tesis |
+| [mapas/](./mapas/) | Salida de P-ISO-001…003: nivel 0, as-is y to-be. Aún sin PNG de Bizagi |
 
 Jerarquía que usa la matriz V4:
 

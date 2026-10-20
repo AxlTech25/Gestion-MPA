@@ -67,10 +67,11 @@ const Login = () => {
           {/* Formulario */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <label htmlFor="login-usuario" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Usuario
               </label>
               <input
+                id="login-usuario"
                 name="usuario"
                 value={form.usuario}
                 onChange={handleChange}
@@ -82,11 +83,12 @@ const Login = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <label htmlFor="login-password" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Contraseña
               </label>
               <div className="relative">
                 <input
+                  id="login-password"
                   name="password"
                   type={showPass ? 'text' : 'password'}
                   value={form.password}

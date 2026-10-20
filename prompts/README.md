@@ -3,7 +3,8 @@
 Estructura según **Prompt-Centered SDLC v1.2**. Cada registro es una instrucción de ingeniería (D1) con evaluación (D2), no el volcado de un chat.
 
 **Oleada 1:** plantilla y anatomía. **Oleada 2:** I-001…I-009. **Oleada 3 (2026-09-11):** R-003–R-005, D-003–D-006, T-002–T-005, M-002–M-004.  
-**Oleada 4 (2026-09-17):** T-006 estrategia; T-007…T-014; T-001 v1.7.
+**Oleada 4 (2026-09-17):** T-006 estrategia; T-007…T-014; T-001 v1.7.  
+**Oleada 5 (2026-09-30):** P-ISO-001…P-ISO-003 (mapas de procesos; no son prompts de código).
 
 ```
 prompts/
@@ -12,6 +13,7 @@ prompts/
 ├── 03_implementacion/      I-001 … I-017 (+ 2 macros Superados)
 ├── 04_testing/             T-001 … T-014
 ├── 05_mantenimiento/       M-001 … M-004
+├── iso/                    P-ISO-001 … P-ISO-003
 └── gobernanza/
 ```
 

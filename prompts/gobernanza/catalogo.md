@@ -5,7 +5,8 @@
 **Oleada 1 (2026-09-11):** plantilla + anatomía D1/D2 de los registros iniciales.  
 **Oleada 2 (2026-09-11):** I-001…I-009 por incremento; macros Superados.  
 **Oleada 3 (2026-09-11):** huecos de la guía (R-01, RNF, contrato, as-built front, D-005, ADR-002, T-01 por runner, T-02, M-01, M-02, rollback).  
-**Oleada 4 (2026-09-17):** estrategia T-006 y planes T-007…T-014 (niveles, técnicas, complementarios). T-001 v1.7 = E2E caja negra.
+**Oleada 4 (2026-09-17):** estrategia T-006 y planes T-007…T-014 (niveles, técnicas, complementarios). T-001 v1.7 = E2E caja negra.  
+**Oleada 5 (2026-09-30):** P-ISO-001…P-ISO-003, mapas de procesos. La columna de la matriz sigue en N/A hasta aprobar el diagrama.
 
 Plantilla: [`_plantilla_prompt.md`](./_plantilla_prompt.md).  
 Métricas: [`registro_metricas.md`](./registro_metricas.md).  
@@ -62,6 +63,16 @@ Ver [README de I-*](../03_implementacion/README.md). I-001…I-017 vigentes; I-0
 | [T-012](../04_testing/T-012_regresion_v1.md) | v1 | Ejecutado | `plan_regresion.md` |
 | [T-013](../04_testing/T-013_degradacion_ml_v1.md) | v1 | Ejecutado | `plan_degradacion_ml.md` |
 | [T-014](../04_testing/T-014_migracion_datos_v1.md) | v1 | Ejecutado | `plan_migracion_datos.md` |
+
+### Procesos (P-ISO)
+
+Asisten el diagrama. No sustituyen los I-* de cada función.
+
+| Código | Registro | Estado | Artefacto |
+|--------|----------|--------|-----------|
+| [P-ISO-001](../iso/P-ISO-001_mapa_macroprocesos_v1.md) | v1 | Ejecutado, pendiente de revisión | `documents/ISO/mapas/nivel_0_unidad_ti.md` |
+| [P-ISO-002](../iso/P-ISO-002_mp02_mantenimiento_v1.md) | v1 | Ejecutado, pendiente de revisión | `documents/ISO/mapas/MP-02_mantenimiento_as_is_to_be.md` |
+| [P-ISO-003](../iso/P-ISO-003_mp01_activos_v1.md) | v1 | Ejecutado, pendiente de revisión | `documents/ISO/mapas/MP-01_activos_as_is_to_be.md` |
 
 ### Mantenimiento
 

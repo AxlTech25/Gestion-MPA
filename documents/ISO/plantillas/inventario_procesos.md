@@ -3,7 +3,7 @@
 **Norma de ancla:** ISO 9001:2015 cl. 4.4 (procesos) y 7.5 (información documentada).  
 **Producto:** 0.10.7.  
 **Uso:** columnas 1–7 de [MATRIZ-DOBLE-ENTRADA-V4](../../matriz_doble_entrada/MATRIZ-DOBLE-ENTRADA-V4-SIGEMAD-MPA.xlsx).  
-**Prompt del procedimiento:** el BPMN Bizagi aún no tiene prompt versionado → `N/A` hasta que exista un `P-ISO-*` en `prompts/`.
+**Prompt del procedimiento:** [P-ISO-001](../../../prompts/iso/P-ISO-001_mapa_macroprocesos_v1.md), [P-ISO-002](../../../prompts/iso/P-ISO-002_mp02_mantenimiento_v1.md) y [P-ISO-003](../../../prompts/iso/P-ISO-003_mp01_activos_v1.md) ya especifican los mapas. La columna de la matriz sigue en `N/A` hasta que el revisor apruebe la spec y exista el PNG de Bizagi. Esos códigos no reemplazan los prompts I-* de cada función.
 
 Jerarquía: **MP → PR → ACT → F-NNN**. Una función atómica no es un procedimiento.
 
@@ -92,7 +92,7 @@ Por cada fila F-NNN:
 
 1. **ID Proceso / Proceso** = MP-* de la tabla.
 2. **ID Procedimiento / Procedimiento** = PR-*.
-3. **ID Prompt (Procedimiento)** = `N/A` hasta existir el prompt Bizagi.
+3. **ID Prompt (Procedimiento)** = `N/A` mientras la spec P-ISO no esté aprobada y no haya PNG. Después: PR-02-* cita P-ISO-002; PR-01-* cita P-ISO-003. MP-03 no tiene P-ISO.
 4. **ID Actividad / Actividad** = ACT-*.
 5. El resto (prompt I-*, commit, archivo) sigue viniendo de [`_funciones_atomicas.py`](../../matriz_doble_entrada/_funciones_atomicas.py).
 6. **SonarQube** = No / No aplica hasta guardar evidencia en [`documents/06_calidad/sonarqube/evidencias/`](../../06_calidad/sonarqube/evidencias/).

@@ -88,13 +88,18 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
         ? await equiposService.updateEquipo(equipoId, payload)
         : await equiposService.createEquipo(payload);
       if (res.success) {
+        alert(res.message || (isEdit
+          ? 'Equipo actualizado correctamente.'
+          : 'Equipo registrado exitosamente.'));
         onSuccess();
         onClose();
       } else {
-        alert(res.message);
+        alert(res.message || 'No se pudo guardar el equipo.');
       }
-    } catch {
-      alert(isEdit ? 'Error al actualizar equipo.' : 'Error al registrar equipo.');
+    } catch (err) {
+      alert(err.response?.data?.message || (isEdit
+        ? 'Error al actualizar equipo.'
+        : 'Error al registrar equipo.'));
     } finally {
       setLoading(false);
     }
@@ -140,8 +145,9 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
           <form id="equipo-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Cód. Patrimonial *</label>
+              <label htmlFor="equipo-codigo-patrimonial" className="text-sm font-medium text-slate-700">Cód. Patrimonial *</label>
               <input
+                id="equipo-codigo-patrimonial"
                 required
                 name="codigo_patrimonial"
                 value={formData.codigo_patrimonial}
@@ -160,8 +166,9 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Cód. Identificativo</label>
+              <label htmlFor="equipo-codigo-identificativo" className="text-sm font-medium text-slate-700">Cód. Identificativo</label>
               <input
+                id="equipo-codigo-identificativo"
                 name="codigo_identificativo"
                 value={formData.codigo_identificativo}
                 onChange={handleChange}
@@ -177,8 +184,9 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Área Asignada *</label>
+              <label htmlFor="equipo-area" className="text-sm font-medium text-slate-700">Área Asignada *</label>
               <select
+                id="equipo-area"
                 required
                 name="area_id"
                 value={formData.area_id}
@@ -195,7 +203,7 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
 
             {areaSeleccionada && (
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Responsable del Equipo</label>
+                <p className="text-sm font-medium text-slate-700">Responsable del Equipo</p>
                 <div className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-sm text-slate-700">
                   {areaSeleccionada.jefe_encargado || 'Sin jefe asignado'}
                 </div>
@@ -204,7 +212,7 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
 
             {areaSeleccionada && (
               <div className="space-y-1 md:col-span-2">
-                <label className="text-sm font-medium text-slate-700">Ubicación (Área)</label>
+                <p className="text-sm font-medium text-slate-700">Ubicación (Área)</p>
                 <div className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-sm text-slate-700">
                   {areaSeleccionada.nombre}
                   {areaSeleccionada.descripcion && (
@@ -215,8 +223,8 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
             )}
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Tipo de Equipo *</label>
-              <select name="tipo_equipo" value={formData.tipo_equipo} onChange={handleChange}
+              <label htmlFor="equipo-tipo" className="text-sm font-medium text-slate-700">Tipo de Equipo *</label>
+              <select id="equipo-tipo" name="tipo_equipo" value={formData.tipo_equipo} onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                 <option value="CPU">CPU (Escritorio)</option>
                 <option value="Laptop">Laptop</option>
@@ -227,7 +235,9 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
               </select>
               {formData.tipo_equipo === 'Otro' && (
                 <input
+                  id="equipo-tipo-otro"
                   required
+                  aria-label="Especifique el tipo de equipo"
                   name="tipo_equipo_otro"
                   value={formData.tipo_equipo_otro}
                   onChange={handleChange}
@@ -246,32 +256,32 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
             )}
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Marca</label>
-              <input name="marca" value={formData.marca} onChange={handleChange}
+              <label htmlFor="equipo-marca" className="text-sm font-medium text-slate-700">Marca</label>
+              <input id="equipo-marca" name="marca" value={formData.marca} onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Modelo</label>
-              <input name="modelo" value={formData.modelo} onChange={handleChange}
+              <label htmlFor="equipo-modelo" className="text-sm font-medium text-slate-700">Modelo</label>
+              <input id="equipo-modelo" name="modelo" value={formData.modelo} onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Color</label>
-              <input name="color" value={formData.color} onChange={handleChange}
+              <label htmlFor="equipo-color" className="text-sm font-medium text-slate-700">Color</label>
+              <input id="equipo-color" name="color" value={formData.color} onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">N° de Serie</label>
-              <input name="numero_serie" value={formData.numero_serie} onChange={handleChange}
+              <label htmlFor="equipo-serie" className="text-sm font-medium text-slate-700">N° de Serie</label>
+              <input id="equipo-serie" name="numero_serie" value={formData.numero_serie} onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Fecha Adquisición</label>
-              <input type="date" name="fecha_adquisicion" value={formData.fecha_adquisicion} onChange={handleChange}
+              <label htmlFor="equipo-fecha" className="text-sm font-medium text-slate-700">Fecha Adquisición</label>
+              <input id="equipo-fecha" type="date" name="fecha_adquisicion" value={formData.fecha_adquisicion} onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
 
@@ -283,23 +293,23 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
                 </h4>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Procesador</label>
-                  <input name="procesador" value={formData.procesador} onChange={handleChange}
+                  <label htmlFor="equipo-procesador" className="text-sm font-medium text-slate-700">Procesador</label>
+                  <input id="equipo-procesador" name="procesador" value={formData.procesador} onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: Core i7 12th Gen" />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Memoria RAM (GB)</label>
-                  <input type="number" name="ram_gb" value={formData.ram_gb} onChange={handleChange}
+                  <label htmlFor="equipo-ram" className="text-sm font-medium text-slate-700">Memoria RAM (GB)</label>
+                  <input id="equipo-ram" type="number" name="ram_gb" value={formData.ram_gb} onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ej: 16" />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Almacenamiento (GB)</label>
+                  <label htmlFor="equipo-almacenamiento" className="text-sm font-medium text-slate-700">Almacenamiento (GB)</label>
                   <div className="flex gap-2">
-                    <input type="number" name="almacenamiento_gb" value={formData.almacenamiento_gb} onChange={handleChange}
+                    <input id="equipo-almacenamiento" type="number" name="almacenamiento_gb" value={formData.almacenamiento_gb} onChange={handleChange}
                       className="w-20 px-2 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="GB" />
-                    <select name="tipo_disco" value={formData.tipo_disco} onChange={handleChange}
+                    <select name="tipo_disco" aria-label="Tipo de disco" value={formData.tipo_disco} onChange={handleChange}
                       className="flex-1 px-2 py-2 border border-slate-300 rounded-lg bg-white outline-none focus:ring-2 focus:ring-blue-500">
                       <option value="SSD">SSD</option>
                       <option value="NVMe">NVMe</option>
@@ -309,8 +319,8 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Sistema Operativo</label>
-                  <select name="sistema_operativo" value={formData.sistema_operativo} onChange={handleChange}
+                  <label htmlFor="equipo-so" className="text-sm font-medium text-slate-700">Sistema Operativo</label>
+                  <select id="equipo-so" name="sistema_operativo" value={formData.sistema_operativo} onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                     <option value="Windows 7">Windows 7</option>
                     <option value="Windows 8">Windows 8</option>
@@ -332,23 +342,23 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
                 {(isTechnical || isLaptop) && (
                   <>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-slate-700">Horas de uso</label>
-                      <input type="number" min="0" name="horas_uso" value={formData.horas_uso} onChange={handleChange}
+                      <label htmlFor="equipo-horas" className="text-sm font-medium text-slate-700">Horas de uso</label>
+                      <input id="equipo-horas" type="number" min="0" name="horas_uso" value={formData.horas_uso} onChange={handleChange}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-slate-700">Errores SMART</label>
-                      <input type="number" min="0" name="errores_smart" value={formData.errores_smart} onChange={handleChange}
+                      <label htmlFor="equipo-smart" className="text-sm font-medium text-slate-700">Errores SMART</label>
+                      <input id="equipo-smart" type="number" min="0" name="errores_smart" value={formData.errores_smart} onChange={handleChange}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-slate-700">Temp. CPU (°C)</label>
-                      <input type="number" step="0.1" name="ultima_temp_cpu" value={formData.ultima_temp_cpu} onChange={handleChange}
+                      <label htmlFor="equipo-temp-cpu" className="text-sm font-medium text-slate-700">Temp. CPU (°C)</label>
+                      <input id="equipo-temp-cpu" type="number" step="0.1" name="ultima_temp_cpu" value={formData.ultima_temp_cpu} onChange={handleChange}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" placeholder="Opcional" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-slate-700">Temp. disco (°C)</label>
-                      <input type="number" step="0.1" name="ultima_temp_disco" value={formData.ultima_temp_disco} onChange={handleChange}
+                      <label htmlFor="equipo-temp-disco" className="text-sm font-medium text-slate-700">Temp. disco (°C)</label>
+                      <input id="equipo-temp-disco" type="number" step="0.1" name="ultima_temp_disco" value={formData.ultima_temp_disco} onChange={handleChange}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" placeholder="Opcional" />
                     </div>
                   </>
@@ -356,16 +366,16 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
 
                 {isLaptop && (
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700">Salud batería (%)</label>
-                    <input type="number" min="0" max="100" step="0.1" name="salud_bateria" value={formData.salud_bateria} onChange={handleChange}
+                    <label htmlFor="equipo-bateria" className="text-sm font-medium text-slate-700">Salud batería (%)</label>
+                    <input id="equipo-bateria" type="number" min="0" max="100" step="0.1" name="salud_bateria" value={formData.salud_bateria} onChange={handleChange}
                       className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" placeholder="0–100" />
                   </div>
                 )}
 
                 {isImpresora && (
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700">Contador de páginas</label>
-                    <input type="number" min="0" name="contador_paginas" value={formData.contador_paginas} onChange={handleChange}
+                    <label htmlFor="equipo-paginas" className="text-sm font-medium text-slate-700">Contador de páginas</label>
+                    <input id="equipo-paginas" type="number" min="0" name="contador_paginas" value={formData.contador_paginas} onChange={handleChange}
                       className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none" />
                   </div>
                 )}

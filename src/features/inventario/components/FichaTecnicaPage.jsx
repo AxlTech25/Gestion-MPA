@@ -55,12 +55,13 @@ export const FichaTecnicaPage = () => {
         className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row gap-4 items-stretch sm:items-end"
       >
         <div className="flex-1 space-y-1">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <label htmlFor="ficha-codigo" className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Código patrimonial
           </label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input
+              id="ficha-codigo"
               type="text"
               value={codigo}
               onChange={(e) => { setCodigo(e.target.value); setError(''); }}

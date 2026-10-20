@@ -16,5 +16,8 @@ final class EquipoPlantillaTest extends TestCase
         $this->assertNotSame('SN123456', $ejemplo[5]);
         $this->assertSame('SN123456', $ejemplo[6]);
         $this->assertSame('Tecnología de la Información', $ejemplo[7]);
+        $this->assertContains('contador_paginas', $headers);
+        $this->assertContains('horas_uso', $headers);
+        $this->assertSame('', $ejemplo[array_search('contador_paginas', $headers, true)]);
     }
 }

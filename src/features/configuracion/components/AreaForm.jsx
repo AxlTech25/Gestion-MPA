@@ -80,14 +80,14 @@ export const AreaForm = ({ onClose, onSuccess, area, gerencias = [] }) => {
         <div className="p-6">
           <form id="area-form" onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Nombre del área *</label>
-              <input required name="nombre" value={formData.nombre} onChange={handleChange}
+              <label htmlFor="area-nombre" className="text-sm font-medium text-slate-700">Nombre del área *</label>
+              <input id="area-nombre" required name="nombre" value={formData.nombre} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder="Ej: Recursos Humanos" />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Gerencia</label>
-              <select name="gerencia_id" value={formData.gerencia_id} onChange={handleChange}
+              <label htmlFor="area-gerencia" className="text-sm font-medium text-slate-700">Gerencia</label>
+              <select id="area-gerencia" name="gerencia_id" value={formData.gerencia_id} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg bg-white outline-none">
                 <option value="">Sin gerencia (Alcaldía, servidores…)</option>
                 {listaGerencias.map((g) => (
@@ -96,6 +96,7 @@ export const AreaForm = ({ onClose, onSuccess, area, gerencias = [] }) => {
               </select>
               <div className="flex gap-2 mt-2">
                 <input
+                  aria-label="Nueva gerencia"
                   value={nuevaGerencia}
                   onChange={(e) => setNuevaGerencia(e.target.value)}
                   className="flex-1 px-3 py-1.5 border rounded-lg text-sm outline-none"
@@ -108,14 +109,14 @@ export const AreaForm = ({ onClose, onSuccess, area, gerencias = [] }) => {
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Jefe a cargo (responsable) *</label>
-              <input required name="jefe_encargado" value={formData.jefe_encargado} onChange={handleChange}
+              <label htmlFor="area-jefe" className="text-sm font-medium text-slate-700">Jefe a cargo (responsable) *</label>
+              <input id="area-jefe" required name="jefe_encargado" value={formData.jefe_encargado} onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder="Ej: Ing. María Gómez" />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Descripción</label>
-              <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows="3"
+              <label htmlFor="area-descripcion" className="text-sm font-medium text-slate-700">Descripción</label>
+              <textarea id="area-descripcion" name="descripcion" value={formData.descripcion} onChange={handleChange} rows="3"
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder="Funciones principales del área..." />
             </div>

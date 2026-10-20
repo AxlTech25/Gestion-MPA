@@ -2,6 +2,7 @@
 class Equipo {
     private $conn;
     private $table_name = "v2_equipos";
+    private ?string $lastError = null;
 
     private const TIPOS_VALIDOS = ['Laptop', 'CPU', 'Impresora', 'Monitor', 'Otro'];
 
@@ -39,23 +40,69 @@ class Equipo {
         return $row ?: null;
     }
 
+    public function getLastError(): ?string {
+        return $this->lastError;
+    }
+
     public function create($data) {
+        $this->lastError = null;
         $fields = $this->fieldsFromObject($data);
         if (isset($fields['error'])) {
+            $this->lastError = $fields['error'];
+            return false;
+        }
+        $unico = $this->mensajeUnicidad($fields, 0);
+        if ($unico !== null) {
+            $this->lastError = $unico;
             return false;
         }
         return $this->insertEquipo($fields) !== false;
     }
 
-    public function update(int $id, $data): bool {
+    public function delete(int $id): array {
         if (!$this->getById($id)) {
+            return ['ok' => false, 'status' => 404, 'message' => 'Equipo no encontrado.'];
+        }
+        try {
+            $this->conn->beginTransaction();
+            $tablas = $this->conn->query("SHOW TABLES LIKE 'v2_hojas_baja'");
+            if ($tablas && $tablas->fetch()) {
+                $baja = $this->conn->prepare('DELETE FROM v2_hojas_baja WHERE equipo_id = :id');
+                $baja->bindValue(':id', $id, PDO::PARAM_INT);
+                $baja->execute();
+            }
+            $stmt = $this->conn->prepare('DELETE FROM ' . $this->table_name . ' WHERE id = :id');
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            $this->conn->commit();
+            return ['ok' => true];
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            error_log('Error eliminando equipo: ' . $e->getMessage());
+            return [
+                'ok' => false,
+                'status' => 409,
+                'message' => 'No se pudo eliminar el equipo. Tiene registros asociados que lo impiden.',
+            ];
+        }
+    }
+
+    public function update(int $id, $data): bool {
+        $this->lastError = null;
+        if (!$this->getById($id)) {
+            $this->lastError = 'Equipo no encontrado.';
             return false;
         }
         $fields = $this->fieldsFromObject($data);
         if (isset($fields['error'])) {
+            $this->lastError = $fields['error'];
             return false;
         }
-        if ($this->codigoPatrimonialEnUso($fields['codigo_patrimonial'], $id)) {
+        $unico = $this->mensajeUnicidad($fields, $id);
+        if ($unico !== null) {
+            $this->lastError = $unico;
             return false;
         }
         return $this->updateEquipo($id, $fields);
@@ -66,9 +113,13 @@ class Equipo {
         if (isset($fields['error'])) {
             return ['ok' => false, 'error' => $fields['error']];
         }
+        $unico = $this->mensajeUnicidad($fields, 0);
+        if ($unico !== null) {
+            return ['ok' => false, 'error' => $unico];
+        }
         $id = $this->insertEquipo($fields);
         if ($id === false) {
-            return ['ok' => false, 'error' => 'No se pudo registrar (código patrimonial duplicado u otro error).'];
+            return ['ok' => false, 'error' => $this->lastError ?: 'No se pudo registrar (código patrimonial o identificativo duplicado).'];
         }
         return ['ok' => true, 'id' => $id];
     }
@@ -79,19 +130,19 @@ class Equipo {
         }
         $fields = $this->buildFields(
             (string) $data->codigo_patrimonial,
-            $data->codigo_identificativo ?? null,
+            $this->nullableStr($data->codigo_identificativo ?? null),
             (string) $data->tipo_equipo,
-            $data->marca ?? null,
-            $data->modelo ?? null,
-            $data->color ?? null,
-            $data->numero_serie ?? null,
-            $data->ram_gb ?? null,
-            $data->almacenamiento_gb ?? null,
-            $data->tipo_disco ?? null,
-            $data->fecha_adquisicion ?? null,
+            $this->nullableStr($data->marca ?? null),
+            $this->nullableStr($data->modelo ?? null),
+            $this->nullableStr($data->color ?? null),
+            $this->nullableStr($data->numero_serie ?? null),
+            $this->nullableInt($data->ram_gb ?? null),
+            $this->nullableInt($data->almacenamiento_gb ?? null),
+            $this->nullableStr($data->tipo_disco ?? null),
+            $this->parseFecha($data->fecha_adquisicion ?? null),
             (int) $data->area_id,
-            $data->procesador ?? null,
-            $data->sistema_operativo ?? null
+            $this->nullableStr($data->procesador ?? null),
+            $this->nullableStr($data->sistema_operativo ?? null)
         );
         $fields['horas_uso'] = isset($data->horas_uso) ? (int) $data->horas_uso : 0;
         $fields['errores_smart'] = isset($data->errores_smart) ? (int) $data->errores_smart : 0;
@@ -135,7 +186,7 @@ class Equipo {
             return ['error' => 'Código identificativo debe ser numérico (máx. 6 dígitos).'];
         }
 
-        return $this->buildFields(
+        $fields = $this->buildFields(
             $patrimonial,
             $ident !== '' ? $ident : null,
             $tipoNorm,
@@ -145,12 +196,32 @@ class Equipo {
             $this->nullableStr($row['numero_serie'] ?? null),
             $this->nullableInt($row['ram_gb'] ?? null),
             $this->nullableInt($row['almacenamiento_gb'] ?? null),
-            $this->nullableStr($row['tipo_disco'] ?? null) ?: 'SSD',
+            $this->discoParaTipo($tipoNorm, $row['tipo_disco'] ?? null),
             $this->parseFecha($row['fecha_adquisicion'] ?? null),
             $areaId,
             $this->nullableStr($row['procesador'] ?? null),
             $this->nullableStr($row['sistema_operativo'] ?? null)
         );
+        $esPc = in_array($tipoNorm, ['Laptop', 'CPU'], true);
+        $fields['horas_uso'] = $esPc ? (int) ($this->nullableInt($row['horas_uso'] ?? null) ?? 0) : 0;
+        $fields['errores_smart'] = $esPc ? (int) ($this->nullableInt($row['errores_smart'] ?? null) ?? 0) : 0;
+        $fields['contador_paginas'] = $tipoNorm === 'Impresora'
+            ? $this->nullableInt($row['contador_paginas'] ?? null)
+            : null;
+        $fields['salud_bateria'] = $tipoNorm === 'Laptop'
+            ? $this->nullableDecimal($row['salud_bateria'] ?? null)
+            : null;
+        $fields['ultima_temp_cpu'] = $esPc ? $this->nullableDecimal($row['ultima_temp_cpu'] ?? null) : null;
+        $fields['ultima_temp_disco'] = $esPc ? $this->nullableDecimal($row['ultima_temp_disco'] ?? null) : null;
+        return $fields;
+    }
+
+    private function discoParaTipo(string $tipo, $valor): ?string {
+        $disco = $this->nullableStr($valor);
+        if (!in_array($tipo, ['Laptop', 'CPU'], true)) {
+            return null;
+        }
+        return $disco ?: 'SSD';
     }
 
     private function buildFields(
@@ -330,6 +401,28 @@ class Equipo {
         $stmt->execute();
     }
 
+    private function mensajeUnicidad(array $fields, int $excludeId): ?string {
+        if ($this->codigoPatrimonialEnUso($fields['codigo_patrimonial'], $excludeId)) {
+            return 'El código patrimonial ya está registrado.';
+        }
+        $ident = trim((string) ($fields['codigo_identificativo'] ?? ''));
+        if ($ident !== '' && $this->codigoIdentificativoEnUso($ident, $excludeId)) {
+            return 'El código identificativo ya está registrado.';
+        }
+        return null;
+    }
+
+    private function codigoIdentificativoEnUso(string $codigo, int $excludeId): bool {
+        $stmt = $this->conn->prepare(
+            "SELECT id FROM " . $this->table_name . "
+             WHERE codigo_identificativo = :codigo AND id != :id LIMIT 1"
+        );
+        $stmt->bindValue(':codigo', $codigo);
+        $stmt->bindValue(':id', $excludeId, PDO::PARAM_INT);
+        $stmt->execute();
+        return (bool) $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     private function codigoPatrimonialEnUso(string $codigo, int $excludeId): bool {
         $stmt = $this->conn->prepare(
             "SELECT id FROM " . $this->table_name . " WHERE codigo_patrimonial = :codigo AND id != :id LIMIT 1"
@@ -337,7 +430,7 @@ class Equipo {
         $stmt->bindValue(':codigo', $codigo);
         $stmt->bindValue(':id', $excludeId, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->rowCount() > 0;
+        return (bool) $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     private function datosDesdeArea($area_id): array {

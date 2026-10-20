@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Children, cloneElement, isValidElement, useEffect, useId, useState } from 'react';
 import {
   Save, FileText, Cpu, HardDrive, Monitor, Wifi, Key, Package, ClipboardCheck, Brain
 } from 'lucide-react';
@@ -7,14 +7,34 @@ import { fichaTecnicaService } from '../services/fichaTecnicaService';
 import { mlService } from '../../ml/services/mlService';
 import { RiesgoBadge } from '../../ml/components/RiesgoBadge';
 
-const Field = ({ label, icon: Icon, children }) => (
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-      {Icon && <Icon size={12} />} {label}
-    </label>
-    {children}
-  </div>
-);
+function withFieldId(node, id) {
+  if (!isValidElement(node)) return node;
+  if (node.type === 'input' || node.type === 'select' || node.type === 'textarea') {
+    return node.props.id ? node : cloneElement(node, { id });
+  }
+  const child = node.props?.children;
+  if (child == null) return node;
+  let tagged = false;
+  const next = Children.map(child, (item) => {
+    if (tagged) return item;
+    const updated = withFieldId(item, id);
+    if (updated !== item) tagged = true;
+    return updated;
+  });
+  return tagged ? cloneElement(node, {}, next) : node;
+}
+
+const Field = ({ label, icon: Icon, children }) => {
+  const fieldId = useId();
+  return (
+    <div className="space-y-1">
+      <label htmlFor={fieldId} className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+        {Icon && <Icon size={12} />} {label}
+      </label>
+      {Children.map(children, (child) => withFieldId(child, fieldId))}
+    </div>
+  );
+};
 
 const inputCls = 'w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white';
 const selectCls = `${inputCls} bg-white`;

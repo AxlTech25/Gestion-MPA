@@ -26,6 +26,9 @@ if ($action !== null && is_numeric($action)) {
         case 'PUT':
             $controller->update($id);
             break;
+        case 'DELETE':
+            $controller->destroy($id);
+            break;
         default:
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Método no permitido."]);
