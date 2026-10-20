@@ -1,6 +1,0 @@
-# ==========================================================
-# Pipeline de Evaluación Continua de Calidad (SonarQube)
-# ==========================================================
-include:
-  - project: "root/laboratorio-quality"
-    file: "/gitlab/quality-pipeline.yml"
