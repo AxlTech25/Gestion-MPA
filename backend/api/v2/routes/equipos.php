@@ -9,12 +9,12 @@ $action  = $request[1] ?? null;
 
 if ($action === 'plantilla' && $method === 'GET') {
     $controller->descargarPlantilla();
-    exit;
+    v2Detener();
 }
 
 if ($action === 'carga-masiva' && $method === 'POST') {
     $controller->cargaMasiva();
-    exit;
+    v2Detener();
 }
 
 if ($action !== null && is_numeric($action)) {
@@ -33,7 +33,7 @@ if ($action !== null && is_numeric($action)) {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Método no permitido."]);
     }
-    exit;
+    v2Detener();
 }
 
 switch ($method) {

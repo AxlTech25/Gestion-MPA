@@ -1,0 +1,22 @@
+project:
+  name: "SIGEMAD" # ← cámbialo si lo requieres
+  version: 2.0.0
+  description: "Proyecto de software para evaluación de calidad"
+
+stack:
+  detect: true                          # detecta tu lenguaje solo
+
+academic:
+  course: "Taller de Investigación II"
+  evaluation_name: "Evaluación del Parcial"
+  partial_weight_percentage: 80         # vale el 80 % del Examen Parcial
+
+evaluator:                              # docente que recibe el informe
+  name: "Maglioni Arana Caparachin"
+  email: "marana@continental.edu.pe"
+  role: "Docente"
+
+members:                                # ← cada integrante recibe su nota
+  - name: "Axel Estrada Flores"
+    code: "70443740"
+    email: "70443740@continental.edu.pe"

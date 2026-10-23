@@ -8,6 +8,9 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class ReporteController {
+    private const FORMATO_FECHA_HORA = 'd/m/Y H:i';
+    private const MIME_PNG = 'image/png';
+
     private $db;
     private $mantenimiento;
 
@@ -29,7 +32,7 @@ class ReporteController {
             return '—';
         }
         $ts = strtotime($fecha);
-        return $ts ? date('d/m/Y H:i', $ts) : $this->h($fecha);
+        return $ts ? date(self::FORMATO_FECHA_HORA, $ts) : $this->h($fecha);
     }
 
     private function fmtFechaCorta(?string $fecha): string {
@@ -115,7 +118,7 @@ class ReporteController {
 
         $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
         $mimeTypes = [
-            'png' => 'image/png',
+            'png' => self::MIME_PNG,
             'jpg' => 'image/jpeg',
             'jpeg' => 'image/jpeg',
             'webp' => 'image/webp',
@@ -159,7 +162,7 @@ class ReporteController {
             }
 
             $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-            $mime = ['png' => 'image/png', 'svg' => 'image/svg+xml'][$ext] ?? 'image/png';
+            $mime = ['png' => self::MIME_PNG, 'svg' => 'image/svg+xml'][$ext] ?? self::MIME_PNG;
             return 'data:' . $mime . ';base64,' . base64_encode($content);
         }
 
@@ -187,7 +190,7 @@ class ReporteController {
         header('Cache-Control: private, max-age=0, must-revalidate');
         header('Pragma: public');
         echo $output;
-        exit;
+        v2Detener();
     }
 
     private function firmanteInfo(): array {
@@ -200,7 +203,9 @@ class ReporteController {
     private function isTechnical($tipo) {
         $tipo_lower = strtolower(trim($tipo ?? ''));
         foreach ($this->technical_types as $t) {
-            if (strpos($tipo_lower, $t) !== false) return true;
+            if (strpos($tipo_lower, $t) !== false) {
+                return true;
+            }
         }
         return false;
     }
@@ -225,13 +230,12 @@ class ReporteController {
         $stmt->bindParam(":id", $equipo_id);
         $stmt->execute();
 
-        if ($stmt->rowCount() == 0) {
+        $e = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$e) {
             http_response_code(404);
             echo json_encode(["success" => false, "message" => "Equipo no encontrado"]);
             return;
         }
-
-        $e = $stmt->fetch(PDO::FETCH_ASSOC);
         $esTecnico = $this->isTechnical($e['tipo_equipo']);
         $tipoEquipo = strtoupper(trim((string) ($e['tipo_equipo'] ?? 'EQUIPO')));
         $numeroFicha = trim((string) ($e['numero_ficha'] ?? ''));
@@ -368,11 +372,13 @@ class ReporteController {
                 <tr><th>Estado Operativo</th><td>'          . $this->h($e['estado_operativo'] ?? '—') . '</td></tr>
             </table>
 
-            ' . $seccionTecnica . '
-            ' . $seccionDiagnostico . '
-            ' . $seccionConclusion . '
-            ' . $seccionImagenes . '
-            ' . $firmaHtml . '
+            ' . implode("\n            ", [
+                $seccionTecnica,
+                $seccionDiagnostico,
+                $seccionConclusion,
+                $seccionImagenes,
+                $firmaHtml,
+            ]) . '
 
         </body>
         </html>';
@@ -455,7 +461,7 @@ class ReporteController {
             </table>
 
             <div class="footer">
-                Documento generado automáticamente &bull; Fecha de emisión: ' . date('d/m/Y H:i') . '
+                Documento generado automáticamente &bull; Fecha de emisión: ' . date(self::FORMATO_FECHA_HORA) . '
             </div>
         </body>
         </html>';
@@ -536,7 +542,7 @@ class ReporteController {
             </table>
 
             <div class="footer">
-                Documento generado automáticamente &bull; Fecha de emisión: ' . date('d/m/Y H:i') . '
+                Documento generado automáticamente &bull; Fecha de emisión: ' . date(self::FORMATO_FECHA_HORA) . '
             </div>
         </body>
         </html>';
@@ -657,28 +663,7 @@ class ReporteController {
             . '<p class="sub">' . $nombre . ' &nbsp;·&nbsp; Hoja ' . $hoja . ' / ' . $total . '</p>';
     }
 
-    private function htmlMatrizCronograma(array $data, int $anio, array $meses, int $hoja, int $total, bool $conPie = false): string {
-        $doc = $data['cronograma'];
-        $filas = $data['filas'] ?? [];
-        $tot = $data['totales'] ?? ['pc' => 0, 'laptop' => 0, 'impresora' => 0, 'total' => 0];
-        $nombres = $this->nombresMesPdf();
-        $fechas = $this->fechasDeMeses($anio, $meses);
-        $nDias = max(1, count($fechas));
-
-        $mesTh = '';
-        foreach ($meses as $mes) {
-            $span = Cronograma::cantidadLaborablesDelMes($anio, (int) $mes);
-            if ($span < 1) {
-                continue;
-            }
-            $mesTh .= '<th class="mes" colspan="' . $span . '">' . $nombres[$mes] . '-' . $anio . '</th>';
-        }
-
-        $diaTh = '';
-        foreach ($fechas as $fecha) {
-            $diaTh .= '<th class="dia">' . (int) substr($fecha, 8, 2) . '</th>';
-        }
-
+    private function cuerpoMatrizHtml(array $filas, array $fechas, array $tot, int $nDias): string {
         $body = '';
         $nro = 1;
         $colSpanGer = 5 + $nDias;
@@ -714,6 +699,32 @@ class ReporteController {
             . '<td class="nro">&nbsp;</td><td class="left">TOTAL EQUIPOS</td>'
             . '<td colspan="3">' . (int) ($tot['total'] ?? 0) . '</td>'
             . '<td colspan="' . $nDias . '">&nbsp;</td></tr>';
+        return $body;
+    }
+
+    private function htmlMatrizCronograma(array $data, int $anio, array $meses, int $hoja, int $total, bool $conPie = false): string {
+        $doc = $data['cronograma'];
+        $filas = $data['filas'] ?? [];
+        $tot = $data['totales'] ?? ['pc' => 0, 'laptop' => 0, 'impresora' => 0, 'total' => 0];
+        $nombres = $this->nombresMesPdf();
+        $fechas = $this->fechasDeMeses($anio, $meses);
+        $nDias = max(1, count($fechas));
+
+        $mesTh = '';
+        foreach ($meses as $mes) {
+            $span = Cronograma::cantidadLaborablesDelMes($anio, (int) $mes);
+            if ($span < 1) {
+                continue;
+            }
+            $mesTh .= '<th class="mes" colspan="' . $span . '">' . $nombres[$mes] . '-' . $anio . '</th>';
+        }
+
+        $diaTh = '';
+        foreach ($fechas as $fecha) {
+            $diaTh .= '<th class="dia">' . (int) substr($fecha, 8, 2) . '</th>';
+        }
+
+        $body = $this->cuerpoMatrizHtml($filas, $fechas, $tot, $nDias);
 
         return '<div class="bloque' . ($conPie ? ' final' : '') . '">'
             . $this->encabezadoCronograma($doc, $hoja, $total)

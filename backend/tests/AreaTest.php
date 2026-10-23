@@ -53,4 +53,22 @@ final class AreaTest extends TestCase
         $this->assertSame('Tesorería Municipal', $row['nombre']);
         $this->assertSame(1, (int) $row['gerencia_id']);
     }
+
+    public function test_crea_lista_y_rechaza_casos_invalidos(): void
+    {
+        $this->assertTrue($this->area->create((object) [
+            'nombre' => 'Caja',
+            'jefe_encargado' => 'Luis',
+            'descripcion' => 'Pagos',
+            'gerencia_id' => 1,
+        ]));
+        $this->assertTrue($this->area->create((object) ['nombre' => 'Archivo', 'gerencia_id' => 0]));
+        $nombres = array_column($this->area->getAll()->fetchAll(PDO::FETCH_ASSOC), 'nombre');
+        $this->assertContains('Caja', $nombres);
+
+        $this->assertSame(404, $this->area->update(99, (object) ['nombre' => 'X'])['status']);
+        $this->assertSame(400, $this->area->update(1, (object) ['nombre' => ' '])['status']);
+        $this->assertSame(404, $this->area->delete(99)['status']);
+        $this->assertNull($this->area->getById(99));
+    }
 }

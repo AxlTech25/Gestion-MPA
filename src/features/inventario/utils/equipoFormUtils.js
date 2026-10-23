@@ -34,10 +34,14 @@ const blankToNull = (v) => {
   return s === '' ? null : s;
 };
 
-export const buildEquipoPayload = (formData) => {
-  const tipo = formData.tipo_equipo === 'Otro'
+const tipoDesdeFormulario = (formData) => (
+  formData.tipo_equipo === 'Otro'
     ? (formData.tipo_equipo_otro.trim() || 'Otro')
-    : formData.tipo_equipo;
+    : formData.tipo_equipo
+);
+
+export const buildEquipoPayload = (formData) => {
+  const tipo = tipoDesdeFormulario(formData);
   const esPc = tipo === 'CPU' || tipo === 'Laptop';
   const esImpresora = tipo === 'Impresora';
 

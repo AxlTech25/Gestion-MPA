@@ -10,7 +10,8 @@ class LocalConfig {
     private static function fileValues(): array {
         if (self::$values === null) {
             $file = __DIR__ . '/local.php';
-            self::$values = file_exists($file) ? (require $file) : [];
+            $cargado = file_exists($file) ? (require_once $file) : [];
+            self::$values = is_array($cargado) ? $cargado : [];
         }
         return self::$values;
     }

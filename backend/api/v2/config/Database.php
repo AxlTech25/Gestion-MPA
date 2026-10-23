@@ -1,7 +1,10 @@
 <?php
 require_once __DIR__ . '/LocalConfig.php';
+require_once __DIR__ . '/Runtime.php';
 
 class Database {
+    public static ?PDO $conexionDePrueba = null;
+
     private $host;
     private $db_name;
     private $username;
@@ -16,6 +19,11 @@ class Database {
     }
 
     public function getConnection() {
+        if (self::$conexionDePrueba instanceof PDO) {
+            $this->conn = self::$conexionDePrueba;
+            return $this->conn;
+        }
+
         $this->conn = null;
         try {
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
@@ -24,7 +32,7 @@ class Database {
         } catch(PDOException $exception) {
             http_response_code(500);
             echo json_encode(["success" => false, "message" => "Error de conexión BD: " . $exception->getMessage()]);
-            exit;
+            v2Detener();
         }
         return $this->conn;
     }

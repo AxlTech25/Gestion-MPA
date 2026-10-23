@@ -111,7 +111,7 @@ class EquipoController {
     }
 
     public function update(int $id) {
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
         if (empty($data->codigo_patrimonial) || empty($data->tipo_equipo) || empty($data->area_id)) {
             http_response_code(400);
             echo json_encode(["success" => false, "message" => "Faltan datos obligatorios (Código patrimonial, Tipo y Área)."]);
@@ -144,7 +144,7 @@ class EquipoController {
     }
 
     public function store() {
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
         if (!empty($data->codigo_patrimonial) && !empty($data->tipo_equipo) && !empty($data->area_id)) {
             if ($this->equipo->create($data)) {
                 http_response_code(201);
@@ -174,7 +174,7 @@ class EquipoController {
         $writer->addRow(Row::fromValues(self::PLANTILLA_EJEMPLO_IMPRESORA));
 
         $writer->close();
-        exit;
+        v2Detener();
     }
 
     public function cargaMasiva() {
@@ -207,40 +207,12 @@ class EquipoController {
 
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
-                    $filaExcel++;
-                    $cells = $row->getCells();
-                    $values = array_map(fn($c) => $c->getValue(), iterator_to_array($cells));
-
-                    if ($headerMap === null) {
-                        $headerMap = $this->mapHeaders($values);
-                        if (!isset($headerMap['codigo_patrimonial'])) {
-                            http_response_code(400);
-                            echo json_encode([
-                                "success" => false,
-                                "message" => "La plantilla debe incluir la columna 'codigo_patrimonial'.",
-                            ]);
-                            $reader->close();
-                            return;
-                        }
-                        continue;
-                    }
-
-                    if ($this->filaVacia($values)) {
-                        continue;
-                    }
-
-                    $totalFilas++;
-                    $filaDatos = $this->rowToAssoc($headerMap, $values);
-                    $resultado = $this->equipo->importRow($filaDatos);
-
-                    if ($resultado['ok']) {
-                        $importados++;
-                    } else {
-                        $errores[] = [
-                            'fila'     => $filaExcel,
-                            'mensaje'  => $resultado['error'],
-                            'codigo'   => $filaDatos['codigo_patrimonial'] ?? '',
-                        ];
+                    $corte = $this->procesarFilaCarga($row, $filaExcel, $headerMap, $importados, $errores, $totalFilas);
+                    if ($corte !== null) {
+                        http_response_code(400);
+                        echo json_encode(["success" => false, "message" => $corte]);
+                        $reader->close();
+                        return;
                     }
                 }
                 break;
@@ -267,6 +239,34 @@ class EquipoController {
                 "total_filas" => $totalFilas,
             ],
         ]);
+    }
+
+    private function procesarFilaCarga($row, int &$filaExcel, ?array &$headerMap, int &$importados, array &$errores, int &$totalFilas): ?string {
+        $filaExcel++;
+        $values = array_map(fn($c) => $c->getValue(), iterator_to_array($row->getCells()));
+        $corte = null;
+
+        if ($headerMap === null) {
+            $headerMap = $this->mapHeaders($values);
+            if (!isset($headerMap['codigo_patrimonial'])) {
+                $corte = "La plantilla debe incluir la columna 'codigo_patrimonial'.";
+            }
+        } elseif (!$this->filaVacia($values)) {
+            $totalFilas++;
+            $filaDatos = $this->rowToAssoc($headerMap, $values);
+            $resultado = $this->equipo->importRow($filaDatos);
+            if ($resultado['ok']) {
+                $importados++;
+            } else {
+                $errores[] = [
+                    'fila' => $filaExcel,
+                    'mensaje' => $resultado['error'],
+                    'codigo' => $filaDatos['codigo_patrimonial'] ?? '',
+                ];
+            }
+        }
+
+        return $corte;
     }
 
     private function mapHeaders(array $headers): array {

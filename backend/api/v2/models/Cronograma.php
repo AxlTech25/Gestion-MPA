@@ -2,6 +2,15 @@
 class Cronograma {
     public const CANTIDAD_MAX = 30;
 
+    private const P_CRONOGRAMA = ':cronograma_id';
+    private const P_AREA = ':area_id';
+    private const P_FECHA = ':fecha';
+    private const P_INICIO = ':hora_inicio';
+    private const P_FIN = ':hora_fin';
+    private const P_CELDA = ':celda_id';
+    private const P_NOMBRE = ':nombre';
+    private const NO_ENCONTRADO = 'Cronograma no encontrado.';
+
     public const TURNOS = [
         'Manana' => [
             'codigo' => 'X1',
@@ -236,7 +245,7 @@ class Cronograma {
              VALUES (:anio, :nombre, :notas, :creado_por)"
         );
         $stmt->bindValue(':anio', $anio, PDO::PARAM_INT);
-        $stmt->bindValue(':nombre', $nombre);
+        $stmt->bindValue(self::P_NOMBRE, $nombre);
         $stmt->bindValue(':notas', $notas);
         $stmt->bindValue(':creado_por', $creadoPor, $creadoPor === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
         if (!$stmt->execute()) {
@@ -250,7 +259,7 @@ class Cronograma {
     public function eliminar(int $id): mixed {
         $doc = $this->getById($id);
         if (!$doc) {
-            return ['error' => 'Cronograma no encontrado.', 'status' => 404];
+            return ['error' => self::NO_ENCONTRADO, 'status' => 404];
         }
         $stmt = $this->conn->prepare('DELETE FROM v2_cronogramas WHERE id = :id');
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -326,40 +335,44 @@ class Cronograma {
         return $matriz['cobertura'];
     }
 
+    private function rechazoDeCelda(int $cronogramaId, array $doc, int $areaId, string $fecha, int $cantidad): ?array {
+        $rechazo = null;
+        if ($areaId <= 0 || $fecha === '') {
+            $rechazo = ['error' => 'Faltan área o fecha.', 'status' => 400];
+        } elseif (!self::fechaPerteneceAlAnio($fecha, (int) $doc['anio'])) {
+            $rechazo = ['error' => 'La fecha debe pertenecer al año del cronograma.', 'status' => 400];
+        } elseif ($cantidad < 1) {
+            $this->eliminarCeldaPorFecha($cronogramaId, $areaId, $fecha);
+            $rechazo = ['liberada' => true];
+        } elseif (self::esFinDeSemana($fecha)) {
+            $rechazo = ['error' => 'Solo se programan días laborables (lunes a viernes).', 'status' => 400];
+        } elseif (!$this->areaExiste($areaId)) {
+            $rechazo = ['error' => 'El área no existe.', 'status' => 404];
+        } else {
+            $computadoras = $this->computadorasDeArea($areaId);
+            if ($computadoras <= 0) {
+                $rechazo = ['error' => 'El área no tiene PCs ni laptops en inventario.', 'status' => 400];
+            } elseif (!self::cantidadValida($cantidad) || $cantidad > $computadoras) {
+                $rechazo = [
+                    'error' => "En esta área hay {$computadoras} PC/laptop. Use X1 a X{$computadoras}.",
+                    'status' => 400,
+                ];
+            }
+        }
+        return $rechazo;
+    }
+
     public function crearCelda(int $cronogramaId, object $data, ?int $creadoPor): mixed {
         $doc = $this->getById($cronogramaId);
         if (!$doc) {
-            return ['error' => 'Cronograma no encontrado.', 'status' => 404];
+            return ['error' => self::NO_ENCONTRADO, 'status' => 404];
         }
         $areaId = (int) ($data->area_id ?? 0);
         $fecha = (string) ($data->fecha ?? '');
         $cantidad = (int) ($data->cantidad ?? 0);
-        if ($areaId <= 0 || $fecha === '') {
-            return ['error' => 'Faltan área o fecha.', 'status' => 400];
-        }
-        if (!self::fechaPerteneceAlAnio($fecha, (int) $doc['anio'])) {
-            return ['error' => 'La fecha debe pertenecer al año del cronograma.', 'status' => 400];
-        }
-        if ($cantidad < 1) {
-            $this->eliminarCeldaPorFecha($cronogramaId, $areaId, $fecha);
-            return ['liberada' => true];
-        }
-        if (self::esFinDeSemana($fecha)) {
-            return ['error' => 'Solo se programan días laborables (lunes a viernes).', 'status' => 400];
-        }
-        if (!$this->areaExiste($areaId)) {
-            return ['error' => 'El área no existe.', 'status' => 404];
-        }
-
-        $computadoras = $this->computadorasDeArea($areaId);
-        if ($computadoras <= 0) {
-            return ['error' => 'El área no tiene PCs ni laptops en inventario.', 'status' => 400];
-        }
-        if (!self::cantidadValida($cantidad) || $cantidad > $computadoras) {
-            return [
-                'error' => "En esta área hay {$computadoras} PC/laptop. Use X1 a X{$computadoras}.",
-                'status' => 400,
-            ];
+        $rechazo = $this->rechazoDeCelda($cronogramaId, $doc, $areaId, $fecha, $cantidad);
+        if ($rechazo !== null) {
+            return $rechazo;
         }
 
         $existente = $this->celdaPorFecha($cronogramaId, $areaId, $fecha);
@@ -369,7 +382,7 @@ class Cronograma {
             );
             $upd->bindValue(':cantidad', $cantidad, PDO::PARAM_INT);
             $upd->bindValue(':id', (int) $existente['id'], PDO::PARAM_INT);
-            $upd->bindValue(':cronograma_id', $cronogramaId, PDO::PARAM_INT);
+            $upd->bindValue(self::P_CRONOGRAMA, $cronogramaId, PDO::PARAM_INT);
             if (!$upd->execute()) {
                 return false;
             }
@@ -383,12 +396,12 @@ class Cronograma {
              VALUES
                 (:cronograma_id, :area_id, :fecha, 'Manana', :cantidad, :hora_inicio, :hora_fin, :creado_por)"
         );
-        $stmt->bindValue(':cronograma_id', $cronogramaId, PDO::PARAM_INT);
-        $stmt->bindValue(':area_id', $areaId, PDO::PARAM_INT);
-        $stmt->bindValue(':fecha', $fecha);
+        $stmt->bindValue(self::P_CRONOGRAMA, $cronogramaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_AREA, $areaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_FECHA, $fecha);
         $stmt->bindValue(':cantidad', $cantidad, PDO::PARAM_INT);
-        $stmt->bindValue(':hora_inicio', $meta['hora_inicio']);
-        $stmt->bindValue(':hora_fin', $meta['hora_fin']);
+        $stmt->bindValue(self::P_INICIO, $meta['hora_inicio']);
+        $stmt->bindValue(self::P_FIN, $meta['hora_fin']);
         $stmt->bindValue(':creado_por', $creadoPor, $creadoPor === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
 
         try {
@@ -423,7 +436,7 @@ class Cronograma {
         $this->conn->beginTransaction();
         try {
             $del = $this->conn->prepare('DELETE FROM v2_cronograma_horarios WHERE celda_id = :celda_id');
-            $del->bindValue(':celda_id', $celdaId, PDO::PARAM_INT);
+            $del->bindValue(self::P_CELDA, $celdaId, PDO::PARAM_INT);
             $del->execute();
 
             $ins = $this->conn->prepare(
@@ -441,10 +454,10 @@ class Cronograma {
                     $this->conn->rollBack();
                     return ['error' => 'Cada equipo necesita hora de inicio anterior a la de fin.', 'status' => 400];
                 }
-                $ins->bindValue(':celda_id', $celdaId, PDO::PARAM_INT);
+                $ins->bindValue(self::P_CELDA, $celdaId, PDO::PARAM_INT);
                 $ins->bindValue(':equipo_id', $equipoId, PDO::PARAM_INT);
-                $ins->bindValue(':hora_inicio', self::normalizarHora((string) $row->hora_inicio));
-                $ins->bindValue(':hora_fin', self::normalizarHora((string) $row->hora_fin));
+                $ins->bindValue(self::P_INICIO, self::normalizarHora((string) $row->hora_inicio));
+                $ins->bindValue(self::P_FIN, self::normalizarHora((string) $row->hora_fin));
                 $ins->execute();
             }
             $this->conn->commit();
@@ -459,7 +472,7 @@ class Cronograma {
 
     public function guardarPersonal(int $cronogramaId, $items): mixed {
         if (!$this->getById($cronogramaId)) {
-            return ['error' => 'Cronograma no encontrado.', 'status' => 404];
+            return ['error' => self::NO_ENCONTRADO, 'status' => 404];
         }
         if (!is_array($items) || $items === []) {
             return ['error' => 'Indique al menos una persona del equipo de trabajo.', 'status' => 400];
@@ -487,11 +500,11 @@ class Cronograma {
                     $this->conn->rollBack();
                     return ['error' => 'Cada persona necesita hora de inicio anterior a la de fin.', 'status' => 400];
                 }
-                $ins->bindValue(':cronograma_id', $cronogramaId, PDO::PARAM_INT);
+                $ins->bindValue(self::P_CRONOGRAMA, $cronogramaId, PDO::PARAM_INT);
                 $ins->bindValue(':nro', $nro, PDO::PARAM_INT);
-                $ins->bindValue(':nombre', $nombre);
-                $ins->bindValue(':hora_inicio', self::normalizarHora((string) $row->hora_inicio));
-                $ins->bindValue(':hora_fin', self::normalizarHora((string) $row->hora_fin));
+                $ins->bindValue(self::P_NOMBRE, $nombre);
+                $ins->bindValue(self::P_INICIO, self::normalizarHora((string) $row->hora_inicio));
+                $ins->bindValue(self::P_FIN, self::normalizarHora((string) $row->hora_fin));
                 $ins->execute();
                 $nro++;
             }
@@ -507,13 +520,13 @@ class Cronograma {
 
     public function eliminarCelda(int $cronogramaId, int $celdaId): mixed {
         if (!$this->getById($cronogramaId)) {
-            return ['error' => 'Cronograma no encontrado.', 'status' => 404];
+            return ['error' => self::NO_ENCONTRADO, 'status' => 404];
         }
         $stmt = $this->conn->prepare(
             "DELETE FROM v2_cronograma_celdas WHERE id = :id AND cronograma_id = :cronograma_id"
         );
         $stmt->bindValue(':id', $celdaId, PDO::PARAM_INT);
-        $stmt->bindValue(':cronograma_id', $cronogramaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_CRONOGRAMA, $cronogramaId, PDO::PARAM_INT);
         $stmt->execute();
         if ($stmt->rowCount() === 0) {
             return ['error' => 'Celda no encontrada.', 'status' => 404];
@@ -551,11 +564,11 @@ class Cronograma {
             [2, 'PC 02', '14:00:00', '17:00:00'],
         ];
         foreach ($semilla as $fila) {
-            $ins->bindValue(':cronograma_id', $cronogramaId, PDO::PARAM_INT);
+            $ins->bindValue(self::P_CRONOGRAMA, $cronogramaId, PDO::PARAM_INT);
             $ins->bindValue(':nro', $fila[0], PDO::PARAM_INT);
-            $ins->bindValue(':nombre', $fila[1]);
-            $ins->bindValue(':hora_inicio', $fila[2]);
-            $ins->bindValue(':hora_fin', $fila[3]);
+            $ins->bindValue(self::P_NOMBRE, $fila[1]);
+            $ins->bindValue(self::P_INICIO, $fila[2]);
+            $ins->bindValue(self::P_FIN, $fila[3]);
             $ins->execute();
         }
     }
@@ -612,9 +625,9 @@ class Cronograma {
              WHERE cronograma_id = :cronograma_id AND area_id = :area_id AND fecha = :fecha
              LIMIT 1"
         );
-        $stmt->bindValue(':cronograma_id', $cronogramaId, PDO::PARAM_INT);
-        $stmt->bindValue(':area_id', $areaId, PDO::PARAM_INT);
-        $stmt->bindValue(':fecha', $fecha);
+        $stmt->bindValue(self::P_CRONOGRAMA, $cronogramaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_AREA, $areaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_FECHA, $fecha);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
@@ -625,9 +638,9 @@ class Cronograma {
             "DELETE FROM v2_cronograma_celdas
              WHERE cronograma_id = :cronograma_id AND area_id = :area_id AND fecha = :fecha"
         );
-        $stmt->bindValue(':cronograma_id', $cronogramaId, PDO::PARAM_INT);
-        $stmt->bindValue(':area_id', $areaId, PDO::PARAM_INT);
-        $stmt->bindValue(':fecha', $fecha);
+        $stmt->bindValue(self::P_CRONOGRAMA, $cronogramaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_AREA, $areaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_FECHA, $fecha);
         $stmt->execute();
     }
 
@@ -638,7 +651,7 @@ class Cronograma {
                AND tipo_equipo IN ('CPU', 'Laptop')
                AND estado_operativo <> 'Baja'"
         );
-        $stmt->bindValue(':area_id', $areaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_AREA, $areaId, PDO::PARAM_INT);
         $stmt->execute();
         return (int) $stmt->fetchColumn();
     }
@@ -650,7 +663,7 @@ class Cronograma {
              WHERE id = :id AND cronograma_id = :cronograma_id LIMIT 1"
         );
         $stmt->bindValue(':id', $celdaId, PDO::PARAM_INT);
-        $stmt->bindValue(':cronograma_id', $cronogramaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_CRONOGRAMA, $cronogramaId, PDO::PARAM_INT);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
@@ -667,10 +680,10 @@ class Cronograma {
              VALUES (:celda_id, :equipo_id, :hora_inicio, :hora_fin)"
         );
         foreach ($equipos as $eq) {
-            $stmt->bindValue(':celda_id', $celdaId, PDO::PARAM_INT);
+            $stmt->bindValue(self::P_CELDA, $celdaId, PDO::PARAM_INT);
             $stmt->bindValue(':equipo_id', (int) $eq['id'], PDO::PARAM_INT);
-            $stmt->bindValue(':hora_inicio', $meta['hora_inicio']);
-            $stmt->bindValue(':hora_fin', $meta['hora_fin']);
+            $stmt->bindValue(self::P_INICIO, $meta['hora_inicio']);
+            $stmt->bindValue(self::P_FIN, $meta['hora_fin']);
             $stmt->execute();
         }
     }
@@ -684,7 +697,7 @@ class Cronograma {
                AND estado_operativo <> 'Baja'
              ORDER BY tipo_equipo ASC, codigo_patrimonial ASC"
         );
-        $stmt->bindValue(':area_id', $areaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_AREA, $areaId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -714,7 +727,7 @@ class Cronograma {
              WHERE h.celda_id = :celda_id
              ORDER BY e.tipo_equipo ASC, e.codigo_patrimonial ASC"
         );
-        $stmt->bindValue(':celda_id', $celdaId, PDO::PARAM_INT);
+        $stmt->bindValue(self::P_CELDA, $celdaId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

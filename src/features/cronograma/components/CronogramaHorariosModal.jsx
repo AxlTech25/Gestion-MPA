@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { X } from 'lucide-react';
 import { TURNOS, horaInput, rangoHorasValido, etiquetaTipo } from '../utils/cronogramaUtils';
 
@@ -150,4 +151,18 @@ export const CronogramaHorariosModal = ({
       </div>
     </div>
   );
+};
+
+CronogramaHorariosModal.propTypes = {
+  celda: PropTypes.shape({
+    fecha: PropTypes.string,
+    turno: PropTypes.string,
+  }),
+  areaNombre: PropTypes.string,
+  equiposArea: PropTypes.array,
+  puedeEscribir: PropTypes.bool,
+  guardando: PropTypes.bool,
+  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  onLiberar: PropTypes.func,
 };

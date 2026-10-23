@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { X } from 'lucide-react';
 import { equiposService } from '../services/equiposService';
 import { organizacionService } from '../../configuracion/services/organizacionService';
@@ -288,8 +289,7 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
             {isTechnical && (
               <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-slate-100">
                 <h4 className="md:col-span-2 font-bold text-slate-800 text-sm flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                  Especificaciones Técnicas (ML-Ready)
+                  <span className="w-2 h-2 bg-blue-500 rounded-full" />{'Especificaciones Técnicas (ML-Ready)'}
                 </h4>
 
                 <div className="space-y-1">
@@ -335,8 +335,7 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
             {showTelemetria && (
               <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-slate-100">
                 <h4 className="md:col-span-2 font-bold text-slate-800 text-sm flex items-center gap-2">
-                  <span className="w-2 h-2 bg-violet-500 rounded-full" />
-                  Telemetría inicial (ML Fase 7)
+                  <span className="w-2 h-2 bg-violet-500 rounded-full" />{'Telemetría inicial (ML Fase 7)'}
                 </h4>
 
                 {(isTechnical || isLaptop) && (
@@ -397,4 +396,10 @@ export const EquipoForm = ({ equipoId = null, onClose, onSuccess }) => {
       </div>
     </div>
   );
+};
+
+EquipoForm.propTypes = {
+  equipoId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  onClose: PropTypes.func,
+  onSuccess: PropTypes.func,
 };

@@ -30,7 +30,7 @@ class AreaController {
 
     public function store() {
         $this->requireAdmin();
-        $data = json_decode(file_get_contents('php://input'));
+        $data = json_decode(v2CuerpoRaw());
 
         if (!empty($data->nombre)) {
             if ($this->area->create($data)) {
@@ -46,7 +46,7 @@ class AreaController {
 
     public function update(int $id): void {
         $this->requireAdmin();
-        $data = json_decode(file_get_contents('php://input'));
+        $data = json_decode(v2CuerpoRaw());
         if (!$data) {
             $this->jsonError('Payload inválido.', 400);
             return;

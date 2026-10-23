@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Monitor, Wrench, Building2, AlertTriangle,
   BarChart3, Activity, Clock, Brain
@@ -19,6 +20,13 @@ const StatCard = ({ label, value, icon: Icon, accent }) => (
     </div>
   </div>
 );
+
+StatCard.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  icon: PropTypes.elementType,
+  accent: PropTypes.string,
+};
 
 const BarList = ({ title, items, color = 'bg-blue-500' }) => {
   const max = Math.max(...(items?.map((i) => Number(i.total)) || [1]), 1);
@@ -50,6 +58,15 @@ const BarList = ({ title, items, color = 'bg-blue-500' }) => {
       )}
     </div>
   );
+};
+
+BarList.propTypes = {
+  title: PropTypes.string,
+  items: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    total: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  })),
+  color: PropTypes.string,
 };
 
 const severidadColor = {

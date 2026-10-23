@@ -92,7 +92,7 @@ class MlController {
     }
 
     public function predictCategoria() {
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input = json_decode(v2CuerpoRaw(), true);
         $equipoId = (int) ($input['equipo_id'] ?? 0);
 
         if ($equipoId <= 0) {

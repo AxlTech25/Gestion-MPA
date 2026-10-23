@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Plus, Trash2, Users } from 'lucide-react';
 import { horaInput, rangoHorasValido } from '../utils/cronogramaUtils';
 
@@ -156,4 +157,15 @@ export const CronogramaPersonalPanel = ({ personal, puedeEscribir, guardando, on
       )}
     </div>
   );
+};
+
+CronogramaPersonalPanel.propTypes = {
+  personal: PropTypes.arrayOf(PropTypes.shape({
+    nombre: PropTypes.string,
+    hora_inicio: PropTypes.string,
+    hora_fin: PropTypes.string,
+  })),
+  puedeEscribir: PropTypes.bool,
+  guardando: PropTypes.bool,
+  onSave: PropTypes.func,
 };

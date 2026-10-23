@@ -61,7 +61,7 @@ class MantenimientoController {
     }
 
     public function store() {
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
         
         // Validación básica
         if (!empty($data->equipo_id) && !empty($data->fecha_intervencion) && !empty($data->tipo_mantenimiento)) {

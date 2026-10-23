@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { X, Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
 import { mantenimientoService } from '../services/mantenimientoService';
 import { mlService } from '../../ml/services/mlService';
@@ -363,4 +364,9 @@ export const MantenimientoForm = ({ onClose, onSuccess }) => {
       </div>
     </div>
   );
+};
+
+MantenimientoForm.propTypes = {
+  onClose: PropTypes.func,
+  onSuccess: PropTypes.func,
 };

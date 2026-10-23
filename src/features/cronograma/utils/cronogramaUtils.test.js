@@ -5,15 +5,24 @@ import {
   diasDelMes,
   esFinDeSemana,
   diasLaborablesDelMes,
+  fechaDeHoy,
+  esHoy,
   codigoCantidad,
+  computadorasFila,
+  programadosFila,
   mapaCeldas,
   maxCantidadDia,
+  subtotalFila,
   totalesDeFilas,
+  horaInput,
   rangoHorasValido,
+  claveGerencia,
+  hayGerenciasAsignadas,
   fechaLarga,
   letraDiaSemana,
   debeMostrarBandaGerencia,
   etiquetaGerencia,
+  etiquetaTipo,
 } from './cronogramaUtils';
 
 describe('puedeEscribirCronograma', () => {
@@ -29,6 +38,11 @@ describe('fechaPerteneceAlAnio', () => {
     expect(fechaPerteneceAlAnio('2026-09-16', 2026)).toBe(true);
     expect(fechaPerteneceAlAnio('2025-12-31', 2026)).toBe(false);
   });
+
+  it('rechaza fecha o año vacíos', () => {
+    expect(fechaPerteneceAlAnio('', 2026)).toBe(false);
+    expect(fechaPerteneceAlAnio('2026-01-01', 0)).toBe(false);
+  });
 });
 
 describe('diasDelMes', () => {
@@ -37,6 +51,20 @@ describe('diasDelMes', () => {
     expect(dias).toHaveLength(29);
     expect(dias[0]).toBe('2024-02-01');
     expect(dias[28]).toBe('2024-02-29');
+  });
+
+  it('devuelve vacío si el mes no existe', () => {
+    expect(diasDelMes(0, 1)).toEqual([]);
+    expect(diasDelMes(2026, 13)).toEqual([]);
+  });
+});
+
+describe('fechaDeHoy y esHoy', () => {
+  it('arma la fecha local y la compara', () => {
+    const hoy = fechaDeHoy();
+    expect(hoy).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(esHoy(hoy)).toBe(true);
+    expect(esHoy('1999-01-01')).toBe(false);
   });
 });
 
@@ -63,12 +91,21 @@ describe('fechaLarga', () => {
     expect(fechaLarga('2026-09-16')).toMatch(/16/);
     expect(fechaLarga('2026-09-16')).toMatch(/^[A-ZÁÉÍÓÚÑ]/);
   });
+
+  it('devuelve vacío o el texto original si la fecha no vale', () => {
+    expect(fechaLarga('')).toBe('');
+    expect(fechaLarga('no-es-fecha')).toBe('no-es-fecha');
+  });
 });
 
 describe('letraDiaSemana', () => {
   it('usa iniciales D L M X J V S', () => {
     expect(letraDiaSemana('2026-09-16')).toBe('X');
     expect(letraDiaSemana('2026-09-20')).toBe('D');
+  });
+
+  it('devuelve vacío si la fecha no se puede leer', () => {
+    expect(letraDiaSemana('fecha')).toBe('');
   });
 });
 
@@ -78,6 +115,32 @@ describe('codigoCantidad', () => {
     expect(codigoCantidad(3)).toBe('X3');
     expect(codigoCantidad(10)).toBe('X10');
     expect(codigoCantidad(0)).toBe('');
+    expect(codigoCantidad('no')).toBe('');
+  });
+});
+
+describe('computadorasFila', () => {
+  it('usa el total guardado o suma PC y laptop', () => {
+    expect(computadorasFila({ computadoras: '4' })).toBe(4);
+    expect(computadorasFila({ pc: 2, laptop: 3 })).toBe(5);
+    expect(computadorasFila({ laptop: 1 })).toBe(1);
+    expect(computadorasFila(null)).toBe(0);
+  });
+});
+
+describe('programadosFila', () => {
+  it('lee el total o suma las celdas', () => {
+    expect(programadosFila({ programados: '3' })).toBe(3);
+    expect(programadosFila({ programados: 0 })).toBe(0);
+    expect(programadosFila({ programados: null, celdas: [{ cantidad: 2 }, { cantidad: '1' }, {}] })).toBe(3);
+    expect(programadosFila({})).toBe(0);
+  });
+});
+
+describe('subtotalFila', () => {
+  it('suma PC, laptop e impresora de la fila', () => {
+    expect(subtotalFila({ pc: 1, laptop: 2, impresora: 3 })).toBe(6);
+    expect(subtotalFila(null)).toBe(0);
   });
 });
 
@@ -87,6 +150,10 @@ describe('mapaCeldas', () => {
       { id: 1, fecha: '2026-09-16', cantidad: 2 },
     ]);
     expect(map['2026-09-16'].cantidad).toBe(2);
+  });
+
+  it('acepta una lista vacía', () => {
+    expect(mapaCeldas(null)).toEqual({});
   });
 });
 
@@ -107,6 +174,7 @@ describe('totalesDeFilas', () => {
     const t = totalesDeFilas([
       { pc: 1, laptop: 0, impresora: 0 },
       { pc: 6, laptop: 8, impresora: 9 },
+      {},
     ]);
     expect(t.pc).toBe(7);
     expect(t.laptop).toBe(8);
@@ -114,12 +182,19 @@ describe('totalesDeFilas', () => {
     expect(t.subtotal).toBe(24);
     expect(t.total).toBe(24);
   });
+
+  it('devuelve ceros sin filas', () => {
+    expect(totalesDeFilas(null)).toEqual({ pc: 0, laptop: 0, impresora: 0, subtotal: 0, total: 0 });
+  });
 });
 
-describe('rangoHorasValido', () => {
-  it('exige inicio anterior al fin', () => {
+describe('horaInput y rangoHorasValido', () => {
+  it('recorta segundos y exige inicio anterior al fin', () => {
+    expect(horaInput('10:00:00')).toBe('10:00');
+    expect(horaInput(null)).toBe('');
     expect(rangoHorasValido('10:00', '10:30')).toBe(true);
     expect(rangoHorasValido('13:00', '10:00')).toBe(false);
+    expect(rangoHorasValido('10', '11:00')).toBe(false);
   });
 });
 
@@ -140,5 +215,20 @@ describe('debeMostrarBandaGerencia', () => {
     expect(debeMostrarBandaGerencia(filas, 2)).toBe(true);
     expect(etiquetaGerencia(filas[0])).toBe('GERENCIA DE ADMINISTRACIÓN');
     expect(etiquetaGerencia(filas[2])).toBe('OTRAS ÁREAS');
+  });
+
+  it('no muestra banda fuera de la lista', () => {
+    const filas = [{ gerencia_id: 2, gerencia: 'Obras' }];
+    expect(debeMostrarBandaGerencia(filas, -1)).toBe(false);
+    expect(debeMostrarBandaGerencia(filas, 3)).toBe(false);
+    expect(debeMostrarBandaGerencia(null, 0)).toBe(false);
+    expect(claveGerencia({ gerencia_id: 0 })).toBe('ninguna');
+    expect(claveGerencia({ gerencia_id: '' })).toBe('ninguna');
+    expect(claveGerencia({ gerencia_id: 4 })).toBe('4');
+    expect(hayGerenciasAsignadas(null)).toBe(false);
+    expect(hayGerenciasAsignadas([{ gerencia_id: 1 }])).toBe(true);
+    expect(etiquetaTipo('CPU')).toBe('PC');
+    expect(etiquetaTipo('Laptop')).toBe('Laptop');
+    expect(etiquetaTipo('')).toBe('Equipo');
   });
 });

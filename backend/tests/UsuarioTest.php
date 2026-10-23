@@ -44,4 +44,32 @@ final class UsuarioTest extends TestCase
             Usuario::ROLES_VALIDOS
         );
     }
+
+    public function test_alta_consulta_actualizacion_y_baja(): void
+    {
+        $this->assertTrue($this->usuario->create((object) [
+            'nombre_completo' => 'Nueva',
+            'usuario' => 'nueva',
+            'password' => 'secreto',
+            'rol' => 'Tecnico',
+        ]));
+        $lista = $this->usuario->getAll()->fetchAll(PDO::FETCH_ASSOC);
+        $this->assertCount(4, $lista);
+
+        $row = $this->usuario->getById(2);
+        $this->assertSame('tec', $row['usuario']);
+        $this->assertFalse($this->usuario->getById(99));
+
+        $this->assertFalse($this->usuario->update(2, (object) []));
+        $this->assertTrue($this->usuario->update(2, (object) [
+            'nombre_completo' => 'Tecnico Dos',
+            'usuario' => 'tec2',
+            'rol' => 'Practicante',
+            'area_id' => 1,
+            'password' => 'otra',
+        ]));
+        $this->assertSame('tec2', $this->usuario->getById(2)['usuario']);
+        $this->assertTrue($this->usuario->delete(2));
+        $this->assertFalse($this->usuario->getById(2));
+    }
 }

@@ -1,4 +1,5 @@
 import React, { Children, cloneElement, isValidElement, useEffect, useId, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Save, FileText, Cpu, HardDrive, Monitor, Wifi, Key, Package, ClipboardCheck, Brain
 } from 'lucide-react';
@@ -34,6 +35,12 @@ const Field = ({ label, icon: Icon, children }) => {
       {Children.map(children, (child) => withFieldId(child, fieldId))}
     </div>
   );
+};
+
+Field.propTypes = {
+  label: PropTypes.string,
+  icon: PropTypes.elementType,
+  children: PropTypes.node,
 };
 
 const inputCls = 'w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white';
@@ -481,4 +488,10 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
       </div>
     </div>
   );
+};
+
+FichaTecnicaPanel.propTypes = {
+  equipoId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  onClose: PropTypes.func,
+  showHeader: PropTypes.bool,
 };

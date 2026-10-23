@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const NIVEL_STYLES = {
   Bajo: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -40,4 +41,10 @@ export const RiesgoBadge = ({ nivel, score, compact = false }) => {
       {score != null && <span className="text-[10px] font-normal opacity-80">{Number(score).toFixed(0)} pts</span>}
     </span>
   );
+};
+
+RiesgoBadge.propTypes = {
+  nivel: PropTypes.string,
+  score: PropTypes.number,
+  compact: PropTypes.bool,
 };

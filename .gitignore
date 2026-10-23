@@ -30,7 +30,10 @@ ml/scripts/generate_synthetic.py
 ml/scripts/build_smartpls_dataset.py
 ml/data/smartpls/
 ml/.coverage
-ml/coverage.xml
+coverage/*
+!coverage/lcov.info
+coverage-php/*
+!coverage-php/coverage.xml
 
 # Dumps locales (el esquema versionado está en backend/sql/)
 /gestion_equipos_mpa_v2.sql

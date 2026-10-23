@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, Monitor } from 'lucide-react';
@@ -61,5 +62,11 @@ const MenuLink = ({ to, label, active }) => (
     {label}
   </Link>
 );
+
+MenuLink.propTypes = {
+  to: PropTypes.string,
+  label: PropTypes.string,
+  active: PropTypes.bool,
+};
 
 export default Navbar;

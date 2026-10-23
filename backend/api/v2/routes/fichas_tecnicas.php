@@ -14,7 +14,7 @@ if ($segment === 'buscar') {
     if (!$codigo) {
         http_response_code(400);
         echo json_encode(["success" => false, "message" => "Código patrimonial requerido."]);
-        exit;
+        v2Detener();
     }
     if ($method === 'GET') {
         $controller->searchByCodigo($codigo);
@@ -22,12 +22,12 @@ if ($segment === 'buscar') {
         http_response_code(405);
         echo json_encode(["success" => false, "message" => "Método no permitido."]);
     }
-    exit;
+    v2Detener();
 }
 
 if ($method === 'GET' && $segment !== null && !isset($request[2]) && preg_match('/^\d{12}$/', (string) $segment)) {
     $controller->searchByCodigo((string) $segment);
-    exit;
+    v2Detener();
 }
 
 $equipo_id = $segment;
@@ -35,7 +35,7 @@ $equipo_id = $segment;
 if (!$equipo_id || !is_numeric($equipo_id)) {
     http_response_code(400);
     echo json_encode(["success" => false, "message" => "ID de equipo inválido."]);
-    exit;
+    v2Detener();
 }
 
 switch ($method) {

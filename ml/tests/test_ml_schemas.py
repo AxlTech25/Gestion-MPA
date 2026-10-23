@@ -6,9 +6,15 @@ from pydantic import ValidationError
 
 from app.schemas.ml_schemas import (
     CategoriaRequest,
+    CategoriaResponse,
+    CategoriaSugerida,
+    FactorItem,
     HealthResponse,
+    MetricsResponse,
     RiesgoBatchRequest,
     RiesgoRequest,
+    RiesgoResponse,
+    TrainResponse,
 )
 
 
@@ -51,3 +57,26 @@ class TestHealthResponse:
         res = HealthResponse(status="ok", modelo_disponible=False)
         assert res.modelo_version is None
         assert res.status == "ok"
+
+
+class TestRespuestas:
+    def test_riesgo_categoria_entrenamiento_y_metricas(self):
+        factor = FactorItem(feature="ram_gb", importancia=0.2)
+        riesgo = RiesgoResponse(
+            equipo_id=1,
+            nivel_riesgo="Bajo",
+            score_riesgo=15,
+            factores=[factor.model_dump()],
+        )
+        assert riesgo.modo == "ml"
+        cat = CategoriaResponse(
+            equipo_id=1,
+            sugerencias=[CategoriaSugerida(
+                categoria_falla_id=1, nombre="Polvo", severidad="Baja", probabilidad=0.5,
+            )],
+        )
+        assert cat.modo == "heuristic"
+        train = TrainResponse(success=True, message="ok")
+        assert train.metadata is None
+        metrics = MetricsResponse(available=False)
+        assert metrics.metadata is None

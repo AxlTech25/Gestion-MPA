@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { X, FileText, AlertTriangle, CheckCircle, Clock, Wrench } from 'lucide-react';
 import { mantenimientoService } from '../services/mantenimientoService';
 
@@ -22,6 +23,12 @@ const DetailRow = ({ label, value, full = false }) => {
       <p className="text-sm text-slate-700 font-medium whitespace-pre-wrap">{value}</p>
     </div>
   );
+};
+
+DetailRow.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  full: PropTypes.bool,
 };
 
 const tipoBadge = (tipo) => {
@@ -181,4 +188,9 @@ export const MantenimientoDetalleModal = ({ mantenimientoId, onClose }) => {
       </div>
     </div>
   );
+};
+
+MantenimientoDetalleModal.propTypes = {
+  mantenimientoId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  onClose: PropTypes.func,
 };

@@ -8,15 +8,15 @@ use Firebase\JWT\JWT;
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(["success" => false, "message" => "Método no permitido."]);
-    exit;
+    v2Detener();
 }
 
-$data = json_decode(file_get_contents("php://input"));
+$data = json_decode(v2CuerpoRaw());
 
 if (empty($data->usuario) || empty($data->password)) {
     http_response_code(400);
     echo json_encode(["success" => false, "message" => "Usuario y contraseña son obligatorios."]);
-    exit;
+    v2Detener();
 }
 
 try {
@@ -27,18 +27,17 @@ try {
     $stmt->bindParam(":usuario", $data->usuario);
     $stmt->execute();
 
-    if ($stmt->rowCount() === 0) {
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$user) {
         http_response_code(401);
         echo json_encode(["success" => false, "message" => "Credenciales incorrectas."]);
-        exit;
+        v2Detener();
     }
-
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!password_verify($data->password, $user['password_hash'])) {
         http_response_code(401);
         echo json_encode(["success" => false, "message" => "Credenciales incorrectas."]);
-        exit;
+        v2Detener();
     }
 
     unset($user['password_hash']);

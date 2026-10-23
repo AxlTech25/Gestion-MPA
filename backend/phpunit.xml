@@ -11,7 +11,12 @@
     </testsuites>
     <source>
         <include>
-            <directory suffix=".php">api/v2/models</directory>
+            <directory suffix=".php">api/v2</directory>
         </include>
+        <exclude>
+            <file>api/v2/config/local.example.php</file>
+            <file>api/v2/config/local.php</file>
+            <file>api/v2/config/local.hostinger.php</file>
+        </exclude>
     </source>
 </phpunit>

@@ -1,10 +1,11 @@
 <?php
 require_once __DIR__ . '/config/Cors.php';
+require_once __DIR__ . '/config/Runtime.php';
 
 CorsConfig::applyHeaders();
 
 if (CorsConfig::handlePreflight()) {
-    exit();
+    v2Detener();
 }
 
 $request = isset($_GET['request']) ? explode('/', trim($_GET['request'], '/')) : [];

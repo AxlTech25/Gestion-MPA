@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Search, X, Filter, Monitor } from 'lucide-react';
 import { countMapFromItems } from '../../../lib/equipoTipo';
 import { dashboardService } from '../services/dashboardService';
 
 const countMap = (items) => countMapFromItems(items);
+
+const CLASE_TITULO = 'text-xs font-bold uppercase tracking-wider text-slate-400 mb-3';
+const CLASE_CELDA = 'px-4 py-3';
+const CLASE_CELDA_TEXTO = 'px-4 py-3 text-slate-600';
 
 const FilterTag = ({ label, count, active, onClick, activeClass }) => (
   <button
@@ -23,6 +28,14 @@ const FilterTag = ({ label, count, active, onClick, activeClass }) => (
     </span>
   </button>
 );
+
+FilterTag.propTypes = {
+  label: PropTypes.string,
+  count: PropTypes.number,
+  active: PropTypes.bool,
+  onClick: PropTypes.func,
+  activeClass: PropTypes.string,
+};
 
 const estadoOpStyle = {
   Operativo: 'bg-emerald-600 text-white border-emerald-600',
@@ -60,6 +73,250 @@ const badgeConservacion = (estado) => {
     Malo: 'bg-red-100 text-red-700',
   };
   return map[estado] || 'bg-slate-100 text-slate-600';
+};
+
+const FiltrosConsulta = ({
+  tipoCounts,
+  opCounts,
+  consCounts,
+  filtros,
+  toggleFiltro,
+  otroSeleccionado,
+  tipoOtroText,
+  setTipoOtroText,
+  hayFiltros,
+  limpiarFiltros,
+}) => {
+  const textoOtro = tipoOtroText || '';
+  const filtrosActivos = [
+    filtros.tipo_equipo && {
+      label: otroSeleccionado && textoOtro.trim()
+        ? `Otro: ${textoOtro.trim()}`
+        : filtros.tipo_equipo,
+      campo: 'tipo_equipo',
+    },
+    filtros.estado_operativo && { label: filtros.estado_operativo, campo: 'estado_operativo' },
+    filtros.estado_conservacion && { label: filtros.estado_conservacion, campo: 'estado_conservacion' },
+  ].filter(Boolean);
+
+  return (
+    <>
+      <div>
+        <p className={CLASE_TITULO}>Tipo de equipo</p>
+        <div className="flex flex-wrap items-center gap-2">
+          {['Laptop', 'CPU', 'Impresora', 'Monitor', 'Otro'].map((tipo) => (
+            <FilterTag
+              key={tipo}
+              label={tipo}
+              count={tipoCounts[tipo] ?? 0}
+              active={filtros.tipo_equipo === tipo}
+              onClick={() => toggleFiltro('tipo_equipo', tipo)}
+              activeClass={tipoStyle}
+            />
+          ))}
+          {otroSeleccionado && (
+            <input
+              type="text"
+              value={textoOtro}
+              onChange={(e) => setTipoOtroText(e.target.value)}
+              placeholder="Ej: Plotter, detector de billetes..."
+              className="min-w-[220px] flex-1 max-w-sm px-3 py-1.5 border border-amber-300 rounded-full text-sm focus:ring-2 focus:ring-amber-400 outline-none bg-amber-50 placeholder:text-slate-400"
+            />
+          )}
+        </div>
+        {otroSeleccionado && (
+          <p className="text-xs text-amber-600 mt-2">
+            Escriba el tipo específico para refinar la búsqueda, o deje vacío para ver todos los equipos «Otro».
+          </p>
+        )}
+      </div>
+
+      <div>
+        <p className={CLASE_TITULO}>Estado operativo</p>
+        <div className="flex flex-wrap gap-2">
+          {['Operativo', 'Dañado', 'En Reparacion', 'Excedencia', 'Baja'].map((estado) => (
+            <FilterTag
+              key={estado}
+              label={estado === 'En Reparacion' ? 'En reparación' : estado}
+              count={opCounts[estado] ?? 0}
+              active={filtros.estado_operativo === estado}
+              onClick={() => toggleFiltro('estado_operativo', estado)}
+              activeClass={estadoOpStyle[estado] || tipoStyle}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className={CLASE_TITULO}>Estado de conservación</p>
+        <div className="flex flex-wrap gap-2">
+          {['Nuevo', 'Bueno', 'Regular', 'Malo'].map((estado) => (
+            <FilterTag
+              key={estado}
+              label={estado}
+              count={consCounts[estado] ?? 0}
+              active={filtros.estado_conservacion === estado}
+              onClick={() => toggleFiltro('estado_conservacion', estado)}
+              activeClass={estadoConsStyle[estado] || tipoStyle}
+            />
+          ))}
+        </div>
+      </div>
+
+      {hayFiltros && (
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+          <span className="text-xs text-slate-500">Filtros activos:</span>
+          {filtrosActivos.map((f) => (
+            <span
+              key={f.campo}
+              className="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-full"
+            >
+              {f.label}
+              <button
+                type="button"
+                onClick={() => {
+                  if (f.campo === 'tipo_equipo') {
+                    setTipoOtroText('');
+                  }
+                  toggleFiltro(f.campo, filtros[f.campo]);
+                }}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={12} />
+              </button>
+            </span>
+          ))}
+          <button
+            type="button"
+            onClick={limpiarFiltros}
+            className="text-xs text-red-600 hover:text-red-800 font-medium ml-auto"
+          >
+            Limpiar todo
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
+
+FiltrosConsulta.propTypes = {
+  tipoCounts: PropTypes.object,
+  opCounts: PropTypes.object,
+  consCounts: PropTypes.object,
+  filtros: PropTypes.shape({
+    tipo_equipo: PropTypes.string,
+    estado_operativo: PropTypes.string,
+    estado_conservacion: PropTypes.string,
+  }),
+  toggleFiltro: PropTypes.func,
+  otroSeleccionado: PropTypes.bool,
+  tipoOtroText: PropTypes.string,
+  setTipoOtroText: PropTypes.func,
+  hayFiltros: PropTypes.bool,
+  limpiarFiltros: PropTypes.func,
+};
+
+const textoEncontrados = (total) => `equipo${total === 1 ? '' : 's'} encontrado${total === 1 ? '' : 's'}`;
+
+const TablaConsulta = ({ equipos }) => (
+  <div className="overflow-x-auto border border-slate-100 rounded-xl">
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="text-left text-xs uppercase tracking-wider text-slate-400 bg-slate-50 border-b">
+          <th className={CLASE_CELDA}>Cód. patrimonial</th>
+          <th className={CLASE_CELDA}>Tipo</th>
+          <th className={CLASE_CELDA}>Marca / Modelo</th>
+          <th className={CLASE_CELDA}>Área</th>
+          <th className={CLASE_CELDA}>Operativo</th>
+          <th className={CLASE_CELDA}>Conservación</th>
+        </tr>
+      </thead>
+      <tbody>
+        {equipos.map((eq) => (
+          <tr key={eq.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
+            <td className="px-4 py-3 font-mono font-semibold text-slate-800">
+              {eq.codigo_patrimonial}
+            </td>
+            <td className={CLASE_CELDA_TEXTO}>{eq.tipo_equipo}</td>
+            <td className={CLASE_CELDA_TEXTO}>
+              {[eq.marca, eq.modelo].filter(Boolean).join(' ') || '—'}
+            </td>
+            <td className={CLASE_CELDA_TEXTO}>{eq.area_nombre || '—'}</td>
+            <td className={CLASE_CELDA}>
+              <span className={`text-xs font-bold px-2 py-1 rounded-full ${badgeOperativo(eq.estado_operativo)}`}>
+                {eq.estado_operativo}
+              </span>
+            </td>
+            <td className={CLASE_CELDA}>
+              <span className={`text-xs font-bold px-2 py-1 rounded-full ${badgeConservacion(eq.estado_conservacion)}`}>
+                {eq.estado_conservacion || '—'}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+TablaConsulta.propTypes = {
+  equipos: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    codigo_patrimonial: PropTypes.string,
+    tipo_equipo: PropTypes.string,
+    marca: PropTypes.string,
+    modelo: PropTypes.string,
+    area_nombre: PropTypes.string,
+    estado_operativo: PropTypes.string,
+    estado_conservacion: PropTypes.string,
+  })),
+};
+
+const ResultadoConsulta = ({ hayFiltros, loading, error, resultado }) => {
+  let cuerpo = null;
+  if (!hayFiltros) {
+    cuerpo = (
+      <div className="bg-slate-50 border border-dashed border-slate-200 rounded-xl py-10 text-center text-sm text-slate-400">
+        <Monitor size={28} className="mx-auto mb-2 text-slate-300" />
+        Seleccione una o más etiquetas para ver la lista de equipos
+      </div>
+    );
+  } else if (loading) {
+    cuerpo = <p className="text-center text-slate-400 py-8 animate-pulse">Consultando equipos...</p>;
+  } else if (error) {
+    cuerpo = (
+      <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
+        {error}
+      </div>
+    );
+  } else if (resultado) {
+    cuerpo = (
+      <div>
+        <p className="text-sm text-slate-600 mb-3">
+          <span className="font-bold text-slate-800">{resultado.total}</span>
+          {' '}{textoEncontrados(resultado.total)}
+        </p>
+        {resultado.equipos.length === 0 ? (
+          <p className="text-sm text-slate-400 text-center py-6">
+            No hay equipos que coincidan con los filtros seleccionados.
+          </p>
+        ) : (
+          <TablaConsulta equipos={resultado.equipos} />
+        )}
+      </div>
+    );
+  }
+  return cuerpo;
+};
+
+ResultadoConsulta.propTypes = {
+  hayFiltros: PropTypes.bool,
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  resultado: PropTypes.shape({
+    total: PropTypes.number,
+    equipos: PropTypes.array,
+  }),
 };
 
 export const ConsultaEquiposPanel = ({
@@ -140,17 +397,6 @@ export const ConsultaEquiposPanel = ({
     return () => clearTimeout(timer);
   }, [filtros, hayFiltros, otroSeleccionado, tipoOtroText]);
 
-  const filtrosActivos = [
-    filtros.tipo_equipo && {
-      label: otroSeleccionado && tipoOtroText.trim()
-        ? `Otro: ${tipoOtroText.trim()}`
-        : filtros.tipo_equipo,
-      campo: 'tipo_equipo',
-    },
-    filtros.estado_operativo && { label: filtros.estado_operativo, campo: 'estado_operativo' },
-    filtros.estado_conservacion && { label: filtros.estado_conservacion, campo: 'estado_conservacion' },
-  ].filter(Boolean);
-
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-3">
@@ -174,172 +420,32 @@ export const ConsultaEquiposPanel = ({
 
       {expanded && (
         <div className="p-6 space-y-6">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Tipo de equipo</p>
-            <div className="flex flex-wrap items-center gap-2">
-              {['Laptop', 'CPU', 'Impresora', 'Monitor', 'Otro'].map((tipo) => (
-                <FilterTag
-                  key={tipo}
-                  label={tipo}
-                  count={tipoCounts[tipo] ?? 0}
-                  active={filtros.tipo_equipo === tipo}
-                  onClick={() => toggleFiltro('tipo_equipo', tipo)}
-                  activeClass={tipoStyle}
-                />
-              ))}
-              {otroSeleccionado && (
-                <input
-                  type="text"
-                  value={tipoOtroText}
-                  onChange={(e) => setTipoOtroText(e.target.value)}
-                  placeholder="Ej: Plotter, detector de billetes..."
-                  className="min-w-[220px] flex-1 max-w-sm px-3 py-1.5 border border-amber-300 rounded-full text-sm focus:ring-2 focus:ring-amber-400 outline-none bg-amber-50 placeholder:text-slate-400"
-                />
-              )}
-            </div>
-            {otroSeleccionado && (
-              <p className="text-xs text-amber-600 mt-2">
-                Escriba el tipo específico para refinar la búsqueda, o deje vacío para ver todos los equipos «Otro».
-              </p>
-            )}
-          </div>
-
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Estado operativo</p>
-            <div className="flex flex-wrap gap-2">
-              {['Operativo', 'Dañado', 'En Reparacion', 'Excedencia', 'Baja'].map((estado) => (
-                <FilterTag
-                  key={estado}
-                  label={estado === 'En Reparacion' ? 'En reparación' : estado}
-                  count={opCounts[estado] ?? 0}
-                  active={filtros.estado_operativo === estado}
-                  onClick={() => toggleFiltro('estado_operativo', estado)}
-                  activeClass={estadoOpStyle[estado] || tipoStyle}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Estado de conservación</p>
-            <div className="flex flex-wrap gap-2">
-              {['Nuevo', 'Bueno', 'Regular', 'Malo'].map((estado) => (
-                <FilterTag
-                  key={estado}
-                  label={estado}
-                  count={consCounts[estado] ?? 0}
-                  active={filtros.estado_conservacion === estado}
-                  onClick={() => toggleFiltro('estado_conservacion', estado)}
-                  activeClass={estadoConsStyle[estado] || tipoStyle}
-                />
-              ))}
-            </div>
-          </div>
-
-          {hayFiltros && (
-            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
-              <span className="text-xs text-slate-500">Filtros activos:</span>
-              {filtrosActivos.map((f) => (
-                <span
-                  key={f.campo}
-                  className="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-full"
-                >
-                  {f.label}
-                  <button
-                    type="button"
-                    onClick={() => {
-                    if (f.campo === 'tipo_equipo') {
-                      setTipoOtroText('');
-                    }
-                    toggleFiltro(f.campo, filtros[f.campo]);
-                  }}
-                    className="text-slate-400 hover:text-slate-600"
-                  >
-                    <X size={12} />
-                  </button>
-                </span>
-              ))}
-              <button
-                type="button"
-                onClick={limpiarFiltros}
-                className="text-xs text-red-600 hover:text-red-800 font-medium ml-auto"
-              >
-                Limpiar todo
-              </button>
-            </div>
-          )}
-
-          {!hayFiltros && (
-            <div className="bg-slate-50 border border-dashed border-slate-200 rounded-xl py-10 text-center text-sm text-slate-400">
-              <Monitor size={28} className="mx-auto mb-2 text-slate-300" />
-              Seleccione una o más etiquetas para ver la lista de equipos
-            </div>
-          )}
-
-          {hayFiltros && (
-            <div>
-              {loading ? (
-                <p className="text-center text-slate-400 py-8 animate-pulse">Consultando equipos...</p>
-              ) : error ? (
-                <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
-                  {error}
-                </div>
-              ) : resultado ? (
-                <>
-                  <p className="text-sm text-slate-600 mb-3">
-                    <span className="font-bold text-slate-800">{resultado.total}</span>
-                    {' '}equipo{resultado.total !== 1 ? 's' : ''} encontrado{resultado.total !== 1 ? 's' : ''}
-                  </p>
-                  {resultado.equipos.length === 0 ? (
-                    <p className="text-sm text-slate-400 text-center py-6">
-                      No hay equipos que coincidan con los filtros seleccionados.
-                    </p>
-                  ) : (
-                    <div className="overflow-x-auto border border-slate-100 rounded-xl">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="text-left text-xs uppercase tracking-wider text-slate-400 bg-slate-50 border-b">
-                            <th className="px-4 py-3">Cód. patrimonial</th>
-                            <th className="px-4 py-3">Tipo</th>
-                            <th className="px-4 py-3">Marca / Modelo</th>
-                            <th className="px-4 py-3">Área</th>
-                            <th className="px-4 py-3">Operativo</th>
-                            <th className="px-4 py-3">Conservación</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {resultado.equipos.map((eq) => (
-                            <tr key={eq.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
-                              <td className="px-4 py-3 font-mono font-semibold text-slate-800">
-                                {eq.codigo_patrimonial}
-                              </td>
-                              <td className="px-4 py-3 text-slate-600">{eq.tipo_equipo}</td>
-                              <td className="px-4 py-3 text-slate-600">
-                                {[eq.marca, eq.modelo].filter(Boolean).join(' ') || '—'}
-                              </td>
-                              <td className="px-4 py-3 text-slate-600">{eq.area_nombre || '—'}</td>
-                              <td className="px-4 py-3">
-                                <span className={`text-xs font-bold px-2 py-1 rounded-full ${badgeOperativo(eq.estado_operativo)}`}>
-                                  {eq.estado_operativo}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3">
-                                <span className={`text-xs font-bold px-2 py-1 rounded-full ${badgeConservacion(eq.estado_conservacion)}`}>
-                                  {eq.estado_conservacion || '—'}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </>
-              ) : null}
-            </div>
-          )}
+          <FiltrosConsulta
+            tipoCounts={tipoCounts}
+            opCounts={opCounts}
+            consCounts={consCounts}
+            filtros={filtros}
+            toggleFiltro={toggleFiltro}
+            otroSeleccionado={otroSeleccionado}
+            tipoOtroText={tipoOtroText}
+            setTipoOtroText={setTipoOtroText}
+            hayFiltros={hayFiltros}
+            limpiarFiltros={limpiarFiltros}
+          />
+          <ResultadoConsulta
+            hayFiltros={hayFiltros}
+            loading={loading}
+            error={error}
+            resultado={resultado}
+          />
         </div>
       )}
     </div>
   );
+};
+
+ConsultaEquiposPanel.propTypes = {
+  porTipo: PropTypes.array,
+  porEstadoOperativo: PropTypes.array,
+  porEstadoConservacion: PropTypes.array,
 };

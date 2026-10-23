@@ -11,32 +11,32 @@ $sub     = $request[3] ?? null;
 
 if ($action === 'status' && $method === 'GET') {
     $controller->status();
-    exit;
+    v2Detener();
 }
 
 if ($action === 'alertas' && $method === 'GET') {
     $controller->alertas();
-    exit;
+    v2Detener();
 }
 
 if ($action === 'equipos' && $param === 'riesgo' && $method === 'GET') {
     $controller->riesgoInventario();
-    exit;
+    v2Detener();
 }
 
 if ($action === 'equipos' && is_numeric($param) && $sub === 'riesgo' && $method === 'GET') {
     $controller->riesgoEquipo((int) $param);
-    exit;
+    v2Detener();
 }
 
 if ($action === 'predict' && $param === 'categoria' && $method === 'POST') {
     $controller->predictCategoria();
-    exit;
+    v2Detener();
 }
 
 if ($action === 'train' && $method === 'POST') {
     $controller->train();
-    exit;
+    v2Detener();
 }
 
 http_response_code(404);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Wrench, Clock, AlertTriangle, CheckCircle, Search, FileText, Eye, History,
 } from 'lucide-react';
@@ -58,6 +59,23 @@ const TimelineCard = ({ item, onVerDetalle }) => {
   );
 };
 
+const registroShape = PropTypes.shape({
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  tipo_mantenimiento: PropTypes.string,
+  codigo_patrimonial: PropTypes.string,
+  nro_orden: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  fecha_intervencion: PropTypes.string,
+  categoria_falla: PropTypes.string,
+  estado_post_mantenimiento: PropTypes.string,
+  actividades_realizadas: PropTypes.string,
+  sintoma_usuario: PropTypes.string,
+});
+
+TimelineCard.propTypes = {
+  item: registroShape,
+  onVerDetalle: PropTypes.func,
+};
+
 const Timeline = ({ registros, onVerDetalle }) => (
   <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
     {registros.map((item) => (
@@ -75,6 +93,11 @@ const Timeline = ({ registros, onVerDetalle }) => (
     ))}
   </div>
 );
+
+Timeline.propTypes = {
+  registros: PropTypes.arrayOf(registroShape),
+  onVerDetalle: PropTypes.func,
+};
 
 export const MantenimientoPage = () => {
   const [registros, setRegistros] = useState([]);

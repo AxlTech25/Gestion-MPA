@@ -40,7 +40,9 @@ class Usuario {
         $stmt->bindParam(":rol", $data->rol);
 
         try {
-            if($stmt->execute()) return true;
+            if ($stmt->execute()) {
+                return true;
+            }
         } catch(PDOException $e) {
             error_log("Error creando usuario: " . $e->getMessage());
             return false;
@@ -73,13 +75,17 @@ class Usuario {
             $params[':password_hash'] = password_hash($data->password, PASSWORD_DEFAULT);
         }
 
-        if (empty($fields)) return false;
+        if (empty($fields)) {
+            return false;
+        }
 
         $query = "UPDATE " . $this->table_name . " SET " . implode(', ', $fields) . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
 
         try {
-            if ($stmt->execute($params)) return true;
+            if ($stmt->execute($params)) {
+                return true;
+            }
         } catch (PDOException $e) {
             error_log("Error actualizando usuario: " . $e->getMessage());
             return false;
@@ -99,7 +105,9 @@ class Usuario {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         try {
-            if ($stmt->execute([':id' => $id])) return true;
+            if ($stmt->execute([':id' => $id])) {
+                return true;
+            }
         } catch (PDOException $e) {
             error_log("Error eliminando usuario: " . $e->getMessage());
             return false;

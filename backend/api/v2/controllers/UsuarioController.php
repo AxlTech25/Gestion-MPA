@@ -52,7 +52,7 @@ class UsuarioController {
 
     public function store() {
         $this->requireAdmin();
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
 
         if (!empty($data->nombre_completo) && !empty($data->usuario) && !empty($data->password) && !empty($data->rol)) {
             if (!$this->rolValido($data->rol)) {
@@ -72,7 +72,7 @@ class UsuarioController {
 
     public function update($id) {
         $this->requireAdmin();
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
         if (!$data) {
             $this->jsonError('Payload inválido.', 400);
             return;

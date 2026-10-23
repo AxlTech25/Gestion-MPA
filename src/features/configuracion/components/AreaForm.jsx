@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { X } from 'lucide-react';
 import { organizacionService } from '../services/organizacionService';
 
@@ -131,4 +132,20 @@ export const AreaForm = ({ onClose, onSuccess, area, gerencias = [] }) => {
       </div>
     </div>
   );
+};
+
+AreaForm.propTypes = {
+  onClose: PropTypes.func,
+  onSuccess: PropTypes.func,
+  area: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    nombre: PropTypes.string,
+    jefe_encargado: PropTypes.string,
+    descripcion: PropTypes.string,
+    gerencia_id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  }),
+  gerencias: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    nombre: PropTypes.string,
+  })),
 };

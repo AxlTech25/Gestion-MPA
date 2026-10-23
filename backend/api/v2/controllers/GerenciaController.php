@@ -26,7 +26,7 @@ class GerenciaController {
 
     public function store(): void {
         $this->requireAdmin();
-        $data = json_decode(file_get_contents('php://input'));
+        $data = json_decode(v2CuerpoRaw());
         $result = $this->gerencia->create($data ?: (object) []);
         if (isset($result['error'])) {
             $this->jsonError($result['error'], (int) ($result['status'] ?? 400));
@@ -38,7 +38,7 @@ class GerenciaController {
 
     public function update(int $id): void {
         $this->requireAdmin();
-        $data = json_decode(file_get_contents('php://input'));
+        $data = json_decode(v2CuerpoRaw());
         $result = $this->gerencia->update($id, $data ?: (object) []);
         if (isset($result['error'])) {
             $this->jsonError($result['error'], (int) ($result['status'] ?? 400));

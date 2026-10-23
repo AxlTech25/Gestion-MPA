@@ -16,7 +16,11 @@ from app.services import dataset, inference_service
 router = APIRouter(prefix="/predict", tags=["predict"])
 
 
-@router.post("/riesgo", response_model=RiesgoResponse)
+@router.post(
+    "/riesgo",
+    response_model=RiesgoResponse,
+    responses={404: {"description": "Equipo no encontrado."}},
+)
 def predict_riesgo(body: RiesgoRequest):
     result = inference_service.predict_equipo(body.equipo_id)
     if not result:
@@ -30,7 +34,11 @@ def predict_riesgo_batch(body: RiesgoBatchRequest):
     return [RiesgoResponse(**r) for r in results]
 
 
-@router.post("/categoria", response_model=CategoriaResponse)
+@router.post(
+    "/categoria",
+    response_model=CategoriaResponse,
+    responses={404: {"description": "Equipo no encontrado."}},
+)
 def predict_categoria(body: CategoriaRequest):
     raw = dataset.fetch_equipo_row(body.equipo_id)
     if not raw:

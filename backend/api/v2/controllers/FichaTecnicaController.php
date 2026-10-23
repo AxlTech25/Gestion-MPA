@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../config/Database.php';
 
 class FichaTecnicaController {
+    private const P_EQUIPO = ':equipo_id';
+
     private $db;
 
     private const SELECT_QUERY = "
@@ -46,13 +48,13 @@ class FichaTecnicaController {
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);
 
-        if ($stmt->rowCount() === 0) {
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$data) {
             http_response_code(404);
             echo json_encode(["success" => false, "message" => "No se encontró equipo con ese código patrimonial."]);
             return;
         }
 
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
         if (isset($data['equipo_id']) && !isset($data['id'])) {
             $data['id'] = $data['equipo_id'];
         }
@@ -75,13 +77,13 @@ class FichaTecnicaController {
         $stmt->bindValue(':codigo', $codigo);
         $stmt->execute();
 
-        if ($stmt->rowCount() === 0) {
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$data) {
             http_response_code(404);
             echo json_encode(["success" => false, "message" => "No se encontró equipo con ese código patrimonial."]);
             return;
         }
 
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
         if (isset($data['equipo_id']) && !isset($data['id'])) {
             $data['id'] = $data['equipo_id'];
         }
@@ -99,13 +101,17 @@ class FichaTecnicaController {
     }
 
     private function resolveNumeroFicha(int $equipo_id, ?int $fichaId = null): ?string {
-        $columnCheck = $this->db->query("SHOW COLUMNS FROM v2_fichas_tecnicas LIKE 'numero_ficha'");
-        if ($columnCheck->rowCount() === 0) {
+        try {
+            $columnCheck = $this->db->query("SHOW COLUMNS FROM v2_fichas_tecnicas LIKE 'numero_ficha'");
+        } catch (PDOException $e) {
+            $columnCheck = null;
+        }
+        if (!$columnCheck || $columnCheck->rowCount() === 0) {
             return null;
         }
 
         $existing = $this->db->prepare("SELECT id, numero_ficha FROM v2_fichas_tecnicas WHERE equipo_id = :equipo_id LIMIT 1");
-        $existing->bindParam(':equipo_id', $equipo_id, PDO::PARAM_INT);
+        $existing->bindParam(self::P_EQUIPO, $equipo_id, PDO::PARAM_INT);
         $existing->execute();
         $row = $existing->fetch(PDO::FETCH_ASSOC);
 
@@ -122,7 +128,7 @@ class FichaTecnicaController {
         $numero = 'N° ' . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
         $update = $this->db->prepare("UPDATE v2_fichas_tecnicas SET numero_ficha = :numero WHERE equipo_id = :equipo_id");
         $update->bindParam(':numero', $numero);
-        $update->bindParam(':equipo_id', $equipo_id, PDO::PARAM_INT);
+        $update->bindParam(self::P_EQUIPO, $equipo_id, PDO::PARAM_INT);
         $update->execute();
 
         return $numero;
@@ -165,18 +171,27 @@ class FichaTecnicaController {
         return $fileName;
     }
 
-    public function upsert($equipo_id) {
-        $requestData = null;
+    private function datosUpsert(bool &$invalido) {
+        $invalido = false;
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         if (stripos($contentType, 'multipart/form-data') !== false || !empty($_POST)) {
-            $requestData = $_POST;
-        } else {
-            $requestData = json_decode(file_get_contents("php://input"), true);
-            if ($requestData === null && json_last_error() !== JSON_ERROR_NONE) {
-                http_response_code(400);
-                echo json_encode(["success" => false, "message" => "JSON inválido en la solicitud."]);
-                return;
-            }
+            return $_POST;
+        }
+        $requestData = json_decode(v2CuerpoRaw(), true);
+        if ($requestData === null && json_last_error() !== JSON_ERROR_NONE) {
+            $invalido = true;
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "JSON inválido en la solicitud."]);
+            return null;
+        }
+        return $requestData;
+    }
+
+    public function upsert($equipo_id) {
+        $invalido = false;
+        $requestData = $this->datosUpsert($invalido);
+        if ($invalido) {
+            return;
         }
 
         $procesador              = $this->sanitizeString($requestData['procesador']              ?? null);
@@ -205,9 +220,11 @@ class FichaTecnicaController {
         $check = $this->db->prepare("SELECT id FROM v2_fichas_tecnicas WHERE equipo_id = :eid");
         $check->bindParam(":eid", $equipo_id);
         $check->execute();
+        $fichaExistente = $check->fetch(PDO::FETCH_ASSOC);
+        $ahora = date('Y-m-d H:i:s');
 
         try {
-            if ($check->rowCount() > 0) {
+            if ($fichaExistente) {
                 $query = "UPDATE v2_fichas_tecnicas SET
                             procesador               = :procesador,
                             sistema_operativo        = :sistema_operativo,
@@ -220,7 +237,7 @@ class FichaTecnicaController {
                             conclusion_motivo        = :conclusion_motivo,
                             imagen_1                 = COALESCE(:imagen_1, imagen_1),
                             imagen_2                 = COALESCE(:imagen_2, imagen_2),
-                            fecha_evaluacion         = NOW()
+                            fecha_evaluacion         = :ahora
                           WHERE equipo_id = :equipo_id";
             } else {
                 $query = "INSERT INTO v2_fichas_tecnicas
@@ -232,11 +249,11 @@ class FichaTecnicaController {
                             (:equipo_id, :procesador, :sistema_operativo, :licencia_so,
                              :mac_address, :ip_asignada, :software_base,
                              :diagnostico, :diagnostico, :conclusion_motivo,
-                             :imagen_1, :imagen_2, NOW())";
+                             :imagen_1, :imagen_2, :ahora)";
             }
 
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(":equipo_id", $equipo_id);
+            $stmt->bindParam(self::P_EQUIPO, $equipo_id);
             $stmt->bindParam(":procesador", $procesador);
             $stmt->bindParam(":sistema_operativo", $sistema_operativo);
             $stmt->bindParam(":licencia_so", $licencia_so);
@@ -247,11 +264,12 @@ class FichaTecnicaController {
             $stmt->bindParam(":conclusion_motivo", $conclusion_motivo);
             $stmt->bindParam(":imagen_1", $imagen_1);
             $stmt->bindParam(":imagen_2", $imagen_2);
+            $stmt->bindParam(":ahora", $ahora);
             $stmt->execute();
 
             $fichaId = (int) $this->db->lastInsertId();
-            if ($check->rowCount() > 0) {
-                $fichaId = $this->db->query("SELECT id FROM v2_fichas_tecnicas WHERE equipo_id = {$equipo_id} LIMIT 1")->fetchColumn();
+            if ($fichaExistente) {
+                $fichaId = (int) $fichaExistente['id'];
             }
             $this->resolveNumeroFicha((int) $equipo_id, $fichaId ? (int) $fichaId : null);
 

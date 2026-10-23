@@ -15,30 +15,27 @@ if ($id === null) {
     } elseif ($method === 'POST') {
         $controller->store();
     } else {
-        http_response_code(405);
-        echo json_encode(["success" => false, "message" => "Método no permitido."]);
+        $controller->metodoNoPermitido();
     }
-    exit;
+    v2Detener();
 }
 
 if ($action === 'cobertura') {
     if ($method === 'GET') {
         $controller->cobertura($id);
     } else {
-        http_response_code(405);
-        echo json_encode(["success" => false, "message" => "Método no permitido."]);
+        $controller->metodoNoPermitido();
     }
-    exit;
+    v2Detener();
 }
 
 if ($action === 'personal') {
     if ($method === 'PUT') {
         $controller->storePersonal($id);
     } else {
-        http_response_code(405);
-        echo json_encode(["success" => false, "message" => "Método no permitido."]);
+        $controller->metodoNoPermitido();
     }
-    exit;
+    v2Detener();
 }
 
 if ($action === 'celdas') {
@@ -48,26 +45,23 @@ if ($action === 'celdas') {
             if ($method === 'PUT') {
                 $controller->storeHorarios($id, $celdaId);
             } else {
-                http_response_code(405);
-                echo json_encode(["success" => false, "message" => "Método no permitido."]);
+                $controller->metodoNoPermitido();
             }
-            exit;
+            v2Detener();
         }
         if ($method === 'DELETE') {
             $controller->destroyCelda($id, $celdaId);
         } else {
-            http_response_code(405);
-            echo json_encode(["success" => false, "message" => "Método no permitido."]);
+            $controller->metodoNoPermitido();
         }
-        exit;
+        v2Detener();
     }
     if ($method === 'POST') {
         $controller->storeCelda($id);
     } else {
-        http_response_code(405);
-        echo json_encode(["success" => false, "message" => "Método no permitido."]);
+        $controller->metodoNoPermitido();
     }
-    exit;
+    v2Detener();
 }
 
 if ($action === null) {
@@ -76,10 +70,9 @@ if ($action === null) {
     } elseif ($method === 'DELETE') {
         $controller->destroy($id);
     } else {
-        http_response_code(405);
-        echo json_encode(["success" => false, "message" => "Método no permitido."]);
+        $controller->metodoNoPermitido();
     }
-    exit;
+    v2Detener();
 }
 
 http_response_code(404);

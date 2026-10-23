@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../config/Jwt.php';
+require_once __DIR__ . '/../config/Runtime.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -45,7 +46,7 @@ class AuthMiddleware {
         if (!$token) {
             http_response_code(401);
             echo json_encode(["success" => false, "message" => "Acceso denegado. Token no proporcionado."]);
-            exit;
+            v2Detener();
         }
 
         try {
@@ -53,11 +54,11 @@ class AuthMiddleware {
         } catch (ExpiredException $e) {
             http_response_code(401);
             echo json_encode(["success" => false, "message" => "Sesión expirada. Inicie sesión nuevamente."]);
-            exit;
+            v2Detener();
         } catch (Exception $e) {
             http_response_code(401);
             echo json_encode(["success" => false, "message" => "Token inválido."]);
-            exit;
+            v2Detener();
         }
     }
 
@@ -73,7 +74,7 @@ class AuthMiddleware {
                 "success" => false,
                 "message" => "No autorizado. Se requiere rol: " . implode(' o ', $roles) . ".",
             ]);
-            exit;
+            v2Detener();
         }
         return $payload;
     }

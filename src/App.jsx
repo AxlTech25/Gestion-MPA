@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -36,12 +37,23 @@ const PrivateRoute = ({ children }) => {
     return children;
 };
 
+PrivateRoute.propTypes = {
+    children: PropTypes.node,
+};
+
+const tieneRol = (roles, rol) => Array.isArray(roles) && roles.includes(rol);
+
 const RoleRoute = ({ children, roles }) => {
     const { user } = useAuth();
-    if (!roles.includes(user?.rol)) {
+    if (!tieneRol(roles, user?.rol)) {
         return <Navigate to="/v2/dashboard" replace />;
     }
     return children;
+};
+
+RoleRoute.propTypes = {
+    children: PropTypes.node,
+    roles: PropTypes.arrayOf(PropTypes.string),
 };
 
 /**
@@ -58,6 +70,10 @@ const MainLayout = ({ children }) => {
         </div>
     </div>
     );
+};
+
+MainLayout.propTypes = {
+    children: PropTypes.node,
 };
 
 function App() {

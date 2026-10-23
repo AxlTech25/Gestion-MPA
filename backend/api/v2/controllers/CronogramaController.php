@@ -4,6 +4,8 @@ require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class CronogramaController {
+    private const PAYLOAD_INVALIDO = 'Payload inválido.';
+
     private $cronograma;
 
     public function __construct() {
@@ -23,6 +25,10 @@ class CronogramaController {
 
     private function requireEscritura(): object {
         return AuthMiddleware::requireRole('Administrador', 'Tecnico');
+    }
+
+    public function metodoNoPermitido(): void {
+        $this->jsonError('Método no permitido.', 405);
     }
 
     public function index() {
@@ -45,9 +51,9 @@ class CronogramaController {
 
     public function store() {
         $this->requireEscritura();
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
         if (!$data) {
-            $this->jsonError('Payload inválido.', 400);
+            $this->jsonError(self::PAYLOAD_INVALIDO, 400);
             return;
         }
         $result = $this->cronograma->crear($data, $this->usuarioId());
@@ -92,9 +98,9 @@ class CronogramaController {
 
     public function storeCelda(int $id) {
         $this->requireEscritura();
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
         if (!$data) {
-            $this->jsonError('Payload inválido.', 400);
+            $this->jsonError(self::PAYLOAD_INVALIDO, 400);
             return;
         }
         $result = $this->cronograma->crearCelda($id, $data, $this->usuarioId());
@@ -130,9 +136,9 @@ class CronogramaController {
 
     public function storeHorarios(int $id, int $celdaId) {
         $this->requireEscritura();
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
         if (!$data) {
-            $this->jsonError('Payload inválido.', 400);
+            $this->jsonError(self::PAYLOAD_INVALIDO, 400);
             return;
         }
         $items = $data->horarios ?? null;
@@ -154,9 +160,9 @@ class CronogramaController {
 
     public function storePersonal(int $id) {
         $this->requireEscritura();
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(v2CuerpoRaw());
         if (!$data) {
-            $this->jsonError('Payload inválido.', 400);
+            $this->jsonError(self::PAYLOAD_INVALIDO, 400);
             return;
         }
         $items = $data->personal ?? null;

@@ -9,7 +9,7 @@ $segment = $request[1] ?? null;
 
 if ($segment === 'consulta' && $method === 'GET') {
     $controller->consulta();
-    exit;
+    v2Detener();
 }
 
 if ($method === 'GET') {

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FichaTecnicaPanel } from './FichaTecnicaPanel';
 
 export const FichaTecnicaModal = ({ equipoId, onClose }) => (
@@ -10,3 +11,8 @@ export const FichaTecnicaModal = ({ equipoId, onClose }) => (
     </div>
   </div>
 );
+
+FichaTecnicaModal.propTypes = {
+  equipoId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  onClose: PropTypes.func,
+};

@@ -9,7 +9,11 @@ from app.services import inference_service, trainer_service
 router = APIRouter(tags=["train"])
 
 
-@router.post("/train", response_model=TrainResponse)
+@router.post(
+    "/train",
+    response_model=TrainResponse,
+    responses={400: {"description": "No se pudo entrenar el modelo."}},
+)
 def train_model():
     result = trainer_service.retrain_from_db()
     if not result["success"]:

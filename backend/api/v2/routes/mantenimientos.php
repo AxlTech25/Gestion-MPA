@@ -12,7 +12,7 @@ if ($segment === 'historial') {
     if (!$codigo) {
         http_response_code(400);
         echo json_encode(["success" => false, "message" => "Código patrimonial requerido."]);
-        exit;
+        v2Detener();
     }
     if ($method === 'GET') {
         $controller->historialByCodigo($codigo);
@@ -20,7 +20,7 @@ if ($segment === 'historial') {
         http_response_code(405);
         echo json_encode(["success" => false, "message" => "Método no permitido."]);
     }
-    exit;
+    v2Detener();
 }
 
 if ($segment !== null && is_numeric($segment)) {
@@ -30,7 +30,7 @@ if ($segment !== null && is_numeric($segment)) {
         http_response_code(405);
         echo json_encode(["success" => false, "message" => "Método no permitido."]);
     }
-    exit;
+    v2Detener();
 }
 
 switch ($method) {

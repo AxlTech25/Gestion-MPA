@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { CalendarDays, MonitorSmartphone } from 'lucide-react';
 import { codigoCantidad, fechaLarga } from '../utils/cronogramaUtils';
 
@@ -101,4 +102,20 @@ export const CronogramaCantidadPopover = ({
       </div>
     </div>
   );
+};
+
+CronogramaCantidadPopover.propTypes = {
+  areaNombre: PropTypes.string,
+  fecha: PropTypes.string,
+  ocupada: PropTypes.shape({
+    cantidad: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  }),
+  max: PropTypes.number,
+  programados: PropTypes.number,
+  computadoras: PropTypes.number,
+  puedeEscribir: PropTypes.bool,
+  busy: PropTypes.bool,
+  onPick: PropTypes.func,
+  onLiberar: PropTypes.func,
+  onClose: PropTypes.func,
 };

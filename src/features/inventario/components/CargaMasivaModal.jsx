@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { X, Download, Upload, FileSpreadsheet, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { equiposService } from '../services/equiposService';
 
@@ -148,4 +149,9 @@ export const CargaMasivaModal = ({ onClose, onSuccess }) => {
       </div>
     </div>
   );
+};
+
+CargaMasivaModal.propTypes = {
+  onClose: PropTypes.func,
+  onSuccess: PropTypes.func,
 };

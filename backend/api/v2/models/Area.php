@@ -1,5 +1,7 @@
 <?php
 class Area {
+    private const P_GERENCIA = ':gerencia_id';
+
     private $conn;
     private $table_name = 'v2_areas';
 
@@ -53,9 +55,9 @@ class Area {
         $stmt->bindValue(':jefe_encargado', $jefe);
         $stmt->bindValue(':descripcion', $desc);
         if ($gerenciaId === null) {
-            $stmt->bindValue(':gerencia_id', null, PDO::PARAM_NULL);
+            $stmt->bindValue(self::P_GERENCIA, null, PDO::PARAM_NULL);
         } else {
-            $stmt->bindValue(':gerencia_id', $gerenciaId, PDO::PARAM_INT);
+            $stmt->bindValue(self::P_GERENCIA, $gerenciaId, PDO::PARAM_INT);
         }
 
         try {
@@ -91,9 +93,9 @@ class Area {
         $stmt->bindValue(':descripcion', $desc);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         if ($gerenciaId === null) {
-            $stmt->bindValue(':gerencia_id', null, PDO::PARAM_NULL);
+            $stmt->bindValue(self::P_GERENCIA, null, PDO::PARAM_NULL);
         } else {
-            $stmt->bindValue(':gerencia_id', $gerenciaId, PDO::PARAM_INT);
+            $stmt->bindValue(self::P_GERENCIA, $gerenciaId, PDO::PARAM_INT);
         }
         try {
             $stmt->execute();

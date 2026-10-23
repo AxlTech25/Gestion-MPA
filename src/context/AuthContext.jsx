@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { TOKEN_KEY, USER_KEY } from '../constants/config';
 
 const AuthContext = createContext();
@@ -38,6 +39,10 @@ export const AuthProvider = ({ children }) => {
             {children}
         </AuthContext.Provider>
     );
+};
+
+AuthProvider.propTypes = {
+    children: PropTypes.node,
 };
 
 export const useAuth = () => useContext(AuthContext);

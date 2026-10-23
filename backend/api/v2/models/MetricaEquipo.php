@@ -30,14 +30,14 @@ class MetricaEquipo {
         $polvo = isset($data->nivel_polvo) && $data->nivel_polvo !== '' ? $data->nivel_polvo : null;
 
         $stmt->bindValue(':equipo_id', $equipoId, PDO::PARAM_INT);
-        $stmt->bindValue(':mantenimiento_id', $mantenimientoId, $mantenimientoId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
-        $stmt->bindValue(':horas_uso', $horas, $horas === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+        $stmt->bindValue(':mantenimiento_id', $mantenimientoId, $this->tipoSql($mantenimientoId, PDO::PARAM_INT));
+        $stmt->bindValue(':horas_uso', $horas, $this->tipoSql($horas, PDO::PARAM_INT));
         $stmt->bindValue(':errores_smart', null, PDO::PARAM_NULL);
-        $stmt->bindValue(':contador_paginas', $paginas, $paginas === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
-        $stmt->bindValue(':salud_bateria', $bateria, $bateria === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
-        $stmt->bindValue(':temp_cpu', $tempCpu, $tempCpu === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
-        $stmt->bindValue(':temp_disco', $tempDisco, $tempDisco === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
-        $stmt->bindValue(':nivel_polvo', $polvo, $polvo === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+        $stmt->bindValue(':contador_paginas', $paginas, $this->tipoSql($paginas, PDO::PARAM_INT));
+        $stmt->bindValue(':salud_bateria', $bateria, $this->tipoSql($bateria, PDO::PARAM_STR));
+        $stmt->bindValue(':temp_cpu', $tempCpu, $this->tipoSql($tempCpu, PDO::PARAM_STR));
+        $stmt->bindValue(':temp_disco', $tempDisco, $this->tipoSql($tempDisco, PDO::PARAM_STR));
+        $stmt->bindValue(':nivel_polvo', $polvo, $this->tipoSql($polvo, PDO::PARAM_STR));
 
         try {
             return $stmt->execute();
@@ -45,5 +45,9 @@ class MetricaEquipo {
             error_log('MetricaEquipo::registrarDesdeMantenimiento: ' . $e->getMessage());
             return false;
         }
+    }
+
+    private function tipoSql($value, int $cuandoHayValor): int {
+        return $value === null ? PDO::PARAM_NULL : $cuandoHayValor;
     }
 }
