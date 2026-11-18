@@ -14,6 +14,7 @@ import { ConfiguracionPage } from './features/configuracion/components/Configura
 import { FichaTecnicaPage } from './features/inventario/components/FichaTecnicaPage';
 import { CronogramaListPage } from './features/cronograma/components/CronogramaListPage';
 import { CronogramaMatrizPage } from './features/cronograma/components/CronogramaMatrizPage';
+import { ReportesPage } from './features/reportes/components/ReportesPage';
 
 // Login
 import Login from './features/auth/Login';
@@ -100,6 +101,14 @@ function App() {
                                         <Route path="/v2/mantenimiento" element={<MantenimientoPage />} />
                                         <Route path="/v2/cronograma/:id" element={<CronogramaMatrizPage />} />
                                         <Route path="/v2/cronograma" element={<CronogramaListPage />} />
+                                        <Route
+                                            path="/v2/reportes"
+                                            element={
+                                                <RoleRoute roles={['Administrador', 'Tecnico']}>
+                                                    <ReportesPage />
+                                                </RoleRoute>
+                                            }
+                                        />
                                         <Route
                                             path="/v2/configuracion"
                                             element={

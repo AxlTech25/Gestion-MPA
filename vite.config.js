@@ -10,8 +10,9 @@ export default defineConfig(({ mode }) => {
     base,
     server: {
       proxy: {
+        // En este equipo IIS ocupa :80; Apache/XAMPP escucha en :8000 (httpd.conf Listen 8000)
         '/gestion_mpa/backend': {
-          target: 'http://localhost',
+          target: 'http://localhost:8000',
           changeOrigin: true,
           secure: false,
           configure: (proxy) => {

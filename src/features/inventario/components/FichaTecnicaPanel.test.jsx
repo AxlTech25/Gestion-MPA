@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { downloadPdf } from '../../../lib/api';
 import { mlService } from '../../ml/services/mlService';
 import { fichaTecnicaService } from '../services/fichaTecnicaService';
@@ -19,6 +19,7 @@ vi.mock('../../ml/services/mlService', () => ({
 vi.mock('../services/fichaTecnicaService', () => ({
   fichaTecnicaService: {
     getFicha: vi.fn(),
+    getHistorial: vi.fn(),
     saveFicha: vi.fn(),
   },
 }));
@@ -73,6 +74,15 @@ function ponerArchivo(input, files) {
   fireEvent.change(input);
 }
 
+beforeAll(() => {
+  if (typeof URL.createObjectURL !== 'function') {
+    URL.createObjectURL = vi.fn(() => 'blob:mock-preview');
+  }
+  if (typeof URL.revokeObjectURL !== 'function') {
+    URL.revokeObjectURL = vi.fn();
+  }
+});
+
 function forzarCambio(element, value) {
   const propsKey = Object.keys(element).find((key) => key.startsWith('__reactProps$'));
   act(() => {
@@ -110,6 +120,7 @@ function badge(text) {
 beforeEach(() => {
   vi.spyOn(window, 'alert').mockImplementation(() => {});
   fichaTecnicaService.getFicha.mockResolvedValue({ success: true, data: fichaCpu });
+  fichaTecnicaService.getHistorial.mockResolvedValue({ success: true, data: [] });
   fichaTecnicaService.saveFicha.mockResolvedValue({ success: true });
   mlService.getRiesgoEquipo.mockResolvedValue({ success: false });
   downloadPdf.mockResolvedValue(undefined);
@@ -171,8 +182,8 @@ describe('FichaTecnicaPanel', () => {
     expect(screen.getByText('Ana')).toBeTruthy();
     expect(screen.getByText('Piso 2')).toBeTruthy();
     expect(screen.getAllByText('CPU').length).toBeGreaterThan(0);
-    const evaluacion = new Date(fichaCpu.fecha_evaluacion).toLocaleString('es-PE');
-    expect(document.querySelector('.ml-auto').textContent).toContain(evaluacion);
+    expect(screen.getByLabelText('Fecha').value).toBe('2024-06-01');
+    expect(screen.getByLabelText('N° de orden')).toBeTruthy();
     expect(screen.getByText(new Date(fichaCpu.fecha_adquisicion).toLocaleDateString('es-PE'))).toBeTruthy();
     expect(screen.getByText(new Date(fichaCpu.fecha_registro).toLocaleDateString('es-PE'))).toBeTruthy();
     expect(screen.getByText('Imagen actual: frente.jpg')).toBeTruthy();
@@ -208,10 +219,9 @@ describe('FichaTecnicaPanel', () => {
     await waitFor(() => expect(downloadPdf).toHaveBeenCalledWith('/reportes/equipo/9'));
   });
 
-  it('recorre los estados de conservación y las causales', async () => {
+  it('recorre el estado físico y la evaluación de la hoja', async () => {
     await cargarFicha();
-    const conservacion = screen.getByLabelText('Estado de Conservación');
-    const causales = screen.getByLabelText('Causales');
+    const fisico = screen.getByLabelText('Estado físico');
 
     [
       ['Nuevo', 'bg-emerald-100'],
@@ -219,38 +229,25 @@ describe('FichaTecnicaPanel', () => {
       ['Regular', 'bg-amber-100'],
       ['Malo', 'bg-red-100'],
     ].forEach(([valor, clase]) => {
-      fireEvent.change(conservacion, { target: { value: valor } });
+      fireEvent.change(fisico, { target: { value: valor } });
       expect(badge(valor).className).toContain(clase);
     });
-    fireEvent.change(conservacion, { target: { value: '' } });
+    forzarCambio(fisico, '');
     expect(badge('—').className).toContain('bg-slate-100');
-    forzarCambio(conservacion, 'Desconocido');
+    forzarCambio(fisico, 'Desconocido');
     expect(badge('Desconocido').className).toContain('bg-slate-100');
-    fireEvent.change(conservacion, { target: { value: 'Bueno' } });
+    fireEvent.change(fisico, { target: { value: 'Bueno' } });
 
-    [
-      ['Dañado', 'bg-orange-100'],
-      ['ESTADO DE EXCEDENCIA', 'bg-slate-200'],
-      ['ESTADO DE CHATARRA', 'bg-red-100'],
-      ['MANTENIMIENTO O REPARACION ONEROSA', 'bg-slate-100'],
-      ['OBSOLESCENCIA TECNICA', 'bg-rose-100'],
-      ['RAEE', 'bg-slate-300'],
-    ].forEach(([valor, clase]) => {
-      fireEvent.change(causales, { target: { value: valor } });
-      expect(badge(valor).className).toContain(clase);
+    fireEvent.change(screen.getByLabelText('N° de orden'), { target: { value: 'N° 51' } });
+    fireEvent.change(screen.getByLabelText('Fecha'), { target: { value: '2026-10-13' } });
+    fireEvent.change(screen.getByLabelText('Funcionamiento'), { target: { value: 'Con fallas' } });
+    fireEvent.change(screen.getByLabelText('Obsolescencia tecnológica'), { target: { value: 'No' } });
+    fireEvent.change(screen.getByLabelText('Repuestos disponibles'), { target: { value: 'No' } });
+    fireEvent.change(screen.getByLabelText('Resultado de la evaluación'), {
+      target: { value: 'Se recomienda retirar del servicio' },
     });
-    [
-      ['Operativo', 'bg-emerald-100'],
-      ['MANTENIMIENTO O REPARACION', 'bg-blue-100'],
-      ['ONEROSA', 'bg-amber-100'],
-      ['Excedencia', 'bg-slate-200'],
-      ['Baja', 'bg-red-100'],
-    ].forEach(([valor, clase]) => {
-      forzarCambio(causales, valor);
-      expect(badge(valor).className).toContain(clase);
-    });
-    forzarCambio(causales, '');
-    expect(badge('—').className).toContain('bg-slate-100');
+    expect(screen.getByText('Resultado: Se recomienda retirar del servicio')).toBeTruthy();
+    expect(badge('Operativo').className).toContain('bg-emerald-100');
   });
 
   it('usa valores por defecto en una laptop incompleta y en un PC', async () => {
@@ -283,13 +280,16 @@ describe('FichaTecnicaPanel', () => {
 
   it('omite hardware en impresora y cuando no hay tipo', async () => {
     await cargarFicha({ tipo_equipo: 'Impresora', marca: 'Epson', modelo: '' });
-    expect(screen.getByText(/no aplican para equipos tipo/i)).toBeTruthy();
+    expect(screen.queryByText(/no aplican para equipos tipo/i)).toBeNull();
     expect(screen.getAllByText('Impresora').length).toBeGreaterThan(0);
     expect(screen.getByText('Epson / —')).toBeTruthy();
     expect(screen.queryByText('Hardware')).toBeNull();
+    expect(screen.getByLabelText('N° de orden')).toBeTruthy();
+    expect(screen.getByLabelText('Funcionamiento')).toBeTruthy();
 
     await cargarFicha({ costo_estimado: 0, marca: '', modelo: '' }, { equipoId: 12 });
-    expect(screen.getAllByText(/no aplican para equipos tipo/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/no aplican para equipos tipo/i)).toBeNull();
+    expect(screen.queryByText('Hardware')).toBeNull();
     expect(screen.queryByText('S/ 0')).toBeNull();
   });
 
@@ -335,8 +335,10 @@ describe('FichaTecnicaPanel', () => {
       fireEvent.change(screen.getByLabelText('Software Instalado'), { target: { value: 'Office\nAV' } });
       fireEvent.change(screen.getByLabelText('Dirección MAC'), { target: { value: '11:22:33:44:55:66' } });
       fireEvent.change(screen.getByLabelText('IP Asignada'), { target: { value: '10.1.1.8' } });
-      fireEvent.change(screen.getByLabelText('Estado de Conservación'), { target: { value: 'Malo' } });
-      fireEvent.change(screen.getByLabelText('Causales'), { target: { value: 'Dañado' } });
+      fireEvent.change(screen.getByLabelText('Estado físico'), { target: { value: 'Malo' } });
+      fireEvent.change(screen.getByLabelText('N° de orden'), { target: { value: '51' } });
+      fireEvent.change(screen.getByLabelText('Fecha'), { target: { value: '2026-10-13' } });
+      fireEvent.change(screen.getByLabelText('Resultado de la evaluación'), { target: { value: 'Requiere reparación' } });
       fireEvent.change(screen.getByLabelText('Diagnóstico'), { target: { value: 'No enciende' } });
       fireEvent.change(screen.getByLabelText('Conclusión y/o Motivo'), { target: { value: 'Reparar' } });
 
@@ -380,7 +382,10 @@ describe('FichaTecnicaPanel', () => {
       expect(formData.get('mac_address')).toBe('11:22:33:44:55:66');
       expect(formData.get('ip_asignada')).toBe('10.1.1.8');
       expect(formData.get('estado_conservacion')).toBe('Malo');
-      expect(formData.get('estado_operativo')).toBe('Dañado');
+      expect(formData.get('estado_operativo')).toBe('Operativo');
+      expect(formData.get('numero_ficha')).toBe('51');
+      expect(formData.get('fecha_evaluacion')).toBe('2026-10-13');
+      expect(formData.get('resultado_evaluacion')).toBe('Requiere reparación');
       expect(formData.get('diagnostico')).toBe('No enciende');
       expect(formData.get('conclusion_motivo')).toBe('Reparar');
       expect(formData.getAll('imagen_1')).toEqual([file1]);
@@ -433,6 +438,26 @@ describe('FichaTecnicaPanel', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('muestra el historial de cada guardado', async () => {
+    fichaTecnicaService.getHistorial.mockResolvedValue({
+      success: true,
+      data: [{
+        id: 4,
+        accion: 'Actualización',
+        fecha: '2026-11-18 11:40:00',
+        usuario: 'Denky Navarro Navarro',
+        cambios: [
+          { campo: 'resultado_evaluacion', antes: '', despues: 'Puede continuar en servicio' },
+        ],
+      }],
+    });
+    await cargarFicha();
+    expect(screen.getByRole('heading', { name: 'Historial de cambios' })).toBeTruthy();
+    expect(screen.getByText(/Denky Navarro Navarro/)).toBeTruthy();
+    expect(screen.getByText(/Resultado de la evaluación:/)).toBeTruthy();
+    expect(screen.getByText(/vacío → Puede continuar en servicio/)).toBeTruthy();
   });
 
   it('oculta cerrar y cancelar cuando no recibe onClose', async () => {

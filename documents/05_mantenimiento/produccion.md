@@ -13,7 +13,7 @@ Guía para publicar el sistema en un servidor web convencional (Apache + PHP + M
 | Frontend (React compilado) | DocumentRoot (raíz del sitio) |
 | Backend PHP + API | `{DocumentRoot}/backend/` |
 | Base de datos | MySQL / MariaDB del servidor |
-| ML (opcional) | Proceso FastAPI en `127.0.0.1:8000` o URL interna |
+| ML (opcional) | Proceso FastAPI en `127.0.0.1:8080` o URL interna |
 
 **Estructura final en el servidor:**
 
@@ -260,7 +260,7 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 4. En `local.php` del servidor web:
 
 ```php
-'ml_service_url' => 'http://127.0.0.1:8000',
+'ml_service_url' => 'http://127.0.0.1:8080',
 ```
 
 (Solo si PHP y Python corren en la misma máquina, o use una URL interna equivalente.)

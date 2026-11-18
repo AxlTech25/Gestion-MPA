@@ -3,13 +3,16 @@
 **Tesis:** Estrada Flores, Axel Sebastián — Ingeniería de Sistemas e Informática, Universidad Continental  
 **Caso:** Sigemad MPA V2 — Municipalidad Provincial de Acobamba  
 **Metodología aplicada:** Prompt-Centered SDLC v1.2 (Rojas Camayo)  
+**Refinamiento de lectura:** Guía de aplicación de Prompt-Centered SDLC AI 2.0 (12 de octubre de 2026). No sustituye la v1.2. En el Word queda en los apartados 1.4, 2.2, 4.5, 5.4, 7.2, 8.2, 9.1, 11, 13 y en la referencia [26].  
 **Fuente del índice:** `Anexo7_Intervencion_Metodologica_Prompt_Centered_SDLC.docx`  
-**Documento:** el Word ya tiene prosa de trabajo (pasada sin 3.4/3.5). Macroprocesos y Bizagi se rellenan después.  
+**Documento:** el Word ya tiene prosa de trabajo (pasada sin 3.4/3.5). Macroprocesos y Bizagi se rellenan después. La guía 2.0 se incorporó el 28 de octubre de 2026 como lectura posterior.  
 **Plantilla Word (guía + tablas y figuras):** [Anexo7_Intervencion_Metodologica_Prompt_Centered_SDLC.docx](./Anexo7_Intervencion_Metodologica_Prompt_Centered_SDLC.docx)  
 **Solo indicaciones (respaldo):** [Anexo7_Intervencion_Metodologica_Prompt_Centered_SDLC_solo_indicaciones.docx](./Anexo7_Intervencion_Metodologica_Prompt_Centered_SDLC_solo_indicaciones.docx)  
 **Plantillas en Markdown:** [Anexo07_Plantillas_Figuras_Tablas.md](./Anexo07_Plantillas_Figuras_Tablas.md)
 
-Este anexo documenta la **intervención metodológica** (cómo se desarrolló el sistema con prompts versionados). No sustituye el Capítulo III (método de investigación) ni el Capítulo IV (resultados estadísticos). Alimenta el § 4.1 *Resumen de resultados de intervención metodológica*.
+Este anexo documenta dos intervenciones en apartados distintos. **A7.1 a A7.14** documentan cómo se desarrolló el sistema con prompts versionados y alimentan el § 4.1. **A7.15** documenta la intervención analítica (captura, nominación de 0 a 5 e implementación del modelo) y alimenta el § 4.2. Ninguno sustituye el Capítulo III ni la contrastación de hipótesis del Capítulo IV.
+
+Texto de A7.15: [Anexo07_A7.15_Intervencion_Analitica.md](./Anexo07_A7.15_Intervencion_Analitica.md).
 
 ---
 
@@ -23,6 +26,8 @@ Este anexo documenta la **intervención metodológica** (cómo se desarrolló el
   - A7.1.2.2 Objetivos específicos
 - **A7.1.3** Alcance
 - **A7.1.4** Marco metodológico de referencia (dimensiones D1–D5)
+  - Correspondencia con la guía 2.0: fases metodológicas 1 a 5. R/D/I/T/M quedan dentro de la fase 3.
+  - Glosario: en este anexo, incremento 1…8 es la entrega de producto (0.1.0…0.10.7). En la guía 2.0, incremento es la versión aceptada; lo pendiente es artefacto.
 
 *Visuales:* Figura A7-1 (cadena de la intervención), Figura A7-2 (D1–D5), Tabla A7-1 (objetivos × evidencia).
 
@@ -33,6 +38,7 @@ Este anexo documenta la **intervención metodológica** (cómo se desarrolló el
   - A7.2.2.1 ISO 9001
   - A7.2.2.2 ISO/IEC 25000
   - A7.2.2.3 ISO/IEC/IEEE 29119-2
+  - La guía 2.0 cita SWEBOK 4.0, ISO/IEC/IEEE 15289, ISO/IEC 29110 (Entry y Basic) e ISO/IEC/IEEE 12207:2026 como anclaje del manual posterior. No sustituyen las tres normas de este apartado.
 - **A7.2.3** Posicionamiento frente a la literatura de IA en el SDLC
   - A7.2.3.1 Yas, Alazzawi y Rahmatullah (2023): esqueleto del SDLC
   - A7.2.3.2 Paladino y Pons (2025): IA en el ciclo, con barreras
@@ -63,6 +69,7 @@ Este anexo documenta la **intervención metodológica** (cómo se desarrolló el
 - **A7.4.2** Repositorio de prompts
 - **A7.4.3** Definition of Done ampliada
 - **A7.4.4** Herramientas y modelos de IA
+- **A7.4.5** Lectura posterior del perfil del caso (guía 2.0): organización individual, autorrevisión del tesista, complejidad con varias interfaces y ML, riesgo reforzado. Clasificación hecha después del caso.
 
 *Visuales:* Figura A7-6 (árbol `prompts/`), Tabla A7-7 (DoD), Tabla A7-8 (herramienta × fase).
 
@@ -121,6 +128,7 @@ En cada fase: objetivo, entradas, técnicas de prompting, prompts ejecutados, ev
 
 - **A7.7.1** Propósito de la matriz
 - **A7.7.2** Fundamento teórico
+  - La guía 2.0, apartado 12, confirma la cadena procesos → procedimientos → actividades → funciones y la separación entre prompts P-ISO y prompts de desarrollo. No es estructura de ISO 9001.
 - **A7.7.3** Estructura de la matriz
 - **A7.7.4** Aplicación de la matriz en este caso
 - **A7.7.5** Uso de la matriz para mantenimiento
@@ -132,6 +140,7 @@ En cada fase: objetivo, entradas, técnicas de prompting, prompts ejecutados, ev
 
 - **A7.8.1** Nivel alcanzado
 - **A7.8.2** Justificación de no avanzar a niveles superiores
+  - La guía 2.0 declara N1–N5 orientativa, no validada. N5 no es destino. PHPUnit, Vitest y pytest no equivalen por sí solos a delegación agéntica.
 - **A7.8.3** Reglas de control
 
 *Visuales:* Figura A7-12 (escala N1–N5 con marca en N2), Tabla A7-17 (reglas de control).
@@ -139,6 +148,7 @@ En cada fase: objetivo, entradas, técnicas de prompting, prompts ejecutados, ev
 ### A7.9 Seguridad, gobernanza y monitoreo
 
 - **A7.9.1** Guardrails en los prompts
+  - Límite de SonarQube frente a ISO/IEC 25010 (también en A7.5.4).
 - **A7.9.2** Monitoreo
 - **A7.9.3** Cumplimiento de la política de uso de IA
 
@@ -150,21 +160,32 @@ En cada fase: objetivo, entradas, técnicas de prompting, prompts ejecutados, ev
 
 ### A7.11 Métricas de proceso de la intervención
 
-*Visuales:* Tabla A7-20 (tablero de indicadores), Figura A7-14 (prompts vigentes por fase). Sin gráficos de hipótesis (eso es Cap. IV).
+*Visuales:* Tabla A7-20 (tablero de indicadores), Figura A7-14 (prompts vigentes por fase). Sin gráficos de hipótesis (eso es Cap. IV). El tablero es inventario de proceso. No reconstruye los indicadores de tiempo de la guía 2.0.
 
 ### A7.12 Lecciones aprendidas de la intervención
 
-*Visuales:* Tabla A7-21 (hallazgo × mejora abierta).
+*Visuales:* Tabla A7-21 (hallazgo × mejora abierta). Incluye la fila de la guía 2.0 como lectura posterior.
 
 ### A7.13 Cierre del anexo
 
 ### A7.14 Referencias utilizadas en este anexo
 
 - **A7.14.1** Estándares y normas
-- **A7.14.2** Metodología propia
+- **A7.14.2** Metodología propia (v1.2 aplicada y guía 2.0 como refinamiento [26])
 - **A7.14.3** Artículos sobre metodologías o enfoques con IA en el SDLC
 - **A7.14.4** Fuentes de la matriz de doble entrada
 - **A7.14.5** Libros y otras fuentes
+
+### A7.15 Intervención analítica del modelo predictivo
+
+Apartado distinto de A7.1–A7.14. Sigue las tres fases del Anexo 06 de la tesis de referencia, con los 200 equipos de Sigemad.
+
+- **A7.15.1** Fase I. Captura de la información
+- **A7.15.2** Fase II. Preparación (selección, limpieza, nominación 0 a 5, reglas de riesgo)
+- **A7.15.3** Fase III. Bosque aleatorio y modelo estructural
+- **A7.15.4** Cierre
+
+*Visuales:* Tabla A7-22 (indicadores por dimensión), Tabla A7-23 (normalización 0 a 5), Tabla A7-24 (reglas de riesgo), Tabla A7-25 (dos equipos), Tabla A7-26 (métricas del bosque), Tabla A7-27 (caminos). Texto: [Anexo07_A7.15_Intervencion_Analitica.md](./Anexo07_A7.15_Intervencion_Analitica.md).
 
 ### Apéndices del Anexo 07
 
@@ -241,8 +262,8 @@ Numeración tentativa del anexo (`Figura A7-n`, `Tabla A7-n`). Al pasar a Word s
 
 | Va en el Anexo 07 | No va en el Anexo 07 |
 |-------------------|----------------------|
-| Aplicación del Prompt-Centered SDLC, prompts, D2, incrementos, matriz, procesos y BPMN | Capítulo III (tipo de investigación, población, instrumentos) |
-| Métricas de *proceso* (n.º de prompts, iteraciones, DoD) | Contrastación de hipótesis y estadística inferencial (Cap. IV) |
+| Aplicación del Prompt-Centered SDLC, prompts, D2, incrementos, matriz, procesos y BPMN (A7.1–A7.14) | Capítulo III (tipo de investigación, población, instrumentos) |
+| Captura, nominación de 0 a 5 e implementación del modelo (A7.15) | Contrastación de hipótesis (Cap. IV, § 4.3). A7.15 describe el procedimiento y remite la decisión al capítulo |
 | Figuras BPMN y tablas de procesos | Conclusiones y recomendaciones generales de la tesis |
 | Trazabilidad HU → prompt → commit | Historial de chats; el registro es la instrucción reejecutable |
 
@@ -263,3 +284,4 @@ Numeración tentativa del anexo (`Figura A7-n`, `Tabla A7-n`). Al pasar a Word s
 | A7.5.5 | M-001 … M-004 |
 | A7.6 / A7.11 | `prompts/gobernanza/registro_metricas.md` |
 | A7.7 / A7.10 | `documents/matriz_doble_entrada/` |
+| A7.15 | `ml/scripts/build_smartpls_dataset.py`, `ml/data/smartpls/smartpls_listo.csv`, `ml/models/metadata.json` |

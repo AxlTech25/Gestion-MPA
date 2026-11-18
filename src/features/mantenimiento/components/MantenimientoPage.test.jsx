@@ -331,24 +331,24 @@ describe('MantenimientoPage', () => {
     await screen.findByText('No hay intervenciones registradas.');
     fireEvent.change(codigoInput(), { target: { value: 'PAT-11' } });
     fireEvent.click(screen.getByRole('button', { name: 'Buscar Historial' }));
-    await screen.findByRole('button', { name: /Exportar historial PDF/i });
+    await screen.findByRole('button', { name: /Exportar fichas PDF/i });
 
-    fireEvent.click(screen.getByRole('button', { name: /Exportar historial PDF/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Exportar fichas PDF/i }));
     expect(await screen.findByText('Generando PDF...')).toBeTruthy();
     expect(screen.getByRole('button', { name: /Generando PDF/i }).disabled).toBe(true);
 
     await act(async () => {
       pendiente.resolve();
     });
-    expect(await screen.findByRole('button', { name: /Exportar historial PDF/i })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /Exportar fichas PDF/i })).toBeTruthy();
     expect(mantenimientoService.exportHistorialPdf).toHaveBeenCalledWith('PAT-11');
 
     mantenimientoService.exportHistorialPdf.mockRejectedValue(new Error('pdf'));
-    fireEvent.click(screen.getByRole('button', { name: /Exportar historial PDF/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Exportar fichas PDF/i }));
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith('No se pudo generar el PDF del historial.');
+      expect(window.alert).toHaveBeenCalledWith('No se pudo generar el PDF de las fichas.');
     });
-    expect(screen.getByRole('button', { name: /Exportar historial PDF/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Exportar fichas PDF/i })).toBeTruthy();
   });
 
   it('no exporta si el equipo encontrado no tiene código patrimonial', async () => {
@@ -363,7 +363,7 @@ describe('MantenimientoPage', () => {
     await screen.findByText('No hay intervenciones registradas.');
     fireEvent.change(codigoInput(), { target: { value: 'PAT-11' } });
     fireEvent.click(screen.getByRole('button', { name: 'Buscar Historial' }));
-    const exportar = await screen.findByRole('button', { name: /Exportar historial PDF/i });
+    const exportar = await screen.findByRole('button', { name: /Exportar fichas PDF/i });
     fireEvent.click(exportar);
     expect(mantenimientoService.exportHistorialPdf).not.toHaveBeenCalled();
     expect(window.alert).not.toHaveBeenCalled();

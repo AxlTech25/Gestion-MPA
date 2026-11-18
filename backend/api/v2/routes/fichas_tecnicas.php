@@ -25,6 +25,11 @@ if ($segment === 'buscar') {
     v2Detener();
 }
 
+if ($method === 'GET' && isset($request[2]) && $request[2] === 'historial' && is_numeric((string) $segment)) {
+    $controller->historial((int) $segment);
+    v2Detener();
+}
+
 if ($method === 'GET' && $segment !== null && !isset($request[2]) && preg_match('/^\d{12}$/', (string) $segment)) {
     $controller->searchByCodigo((string) $segment);
     v2Detener();

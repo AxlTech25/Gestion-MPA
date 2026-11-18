@@ -28,6 +28,9 @@ const Navbar = () => {
           <MenuLink to="/v2/ficha-tecnica" label="Ficha Técnica" active={location.pathname === '/v2/ficha-tecnica'} />
           <MenuLink to="/v2/mantenimiento" label="Mantenimiento" active={location.pathname === '/v2/mantenimiento'} />
           <MenuLink to="/v2/cronograma" label="Cronograma" active={location.pathname.startsWith('/v2/cronograma')} />
+          {(user?.rol === 'Administrador' || user?.rol === 'Tecnico') && (
+            <MenuLink to="/v2/reportes" label="Reportes" active={location.pathname === '/v2/reportes'} />
+          )}
           {user?.rol === 'Administrador' && (
             <MenuLink to="/v2/configuracion" label="Configuración" active={location.pathname === '/v2/configuracion'} />
           )}

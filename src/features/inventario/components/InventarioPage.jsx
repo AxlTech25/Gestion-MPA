@@ -8,6 +8,24 @@ import { EquipoForm } from './EquipoForm';
 import { FichaTecnicaModal } from './FichaTecnicaModal';
 import { CargaMasivaModal } from './CargaMasivaModal';
 
+const ORDEN_TIPOS = [
+  'Laptop', 'CPU', 'Monitor', 'Impresora', 'Escáner', 'Teclado', 'Mouse',
+  'Estabilizador', 'Switch', 'Access point', 'UPS', 'Router', 'Disco externo',
+  'Cámara', 'Equipo de audio',
+];
+
+const tiposDisponibles = (equipos) => {
+  const presentes = [...new Set(equipos.map((eq) => eq.tipo_equipo).filter(Boolean))];
+  return presentes.sort((a, b) => {
+    const ia = ORDEN_TIPOS.indexOf(a);
+    const ib = ORDEN_TIPOS.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b, 'es');
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+};
+
 export const InventarioPage = () => {
   const [equipos, setEquipos] = useState([]);
   const [riesgoMap, setRiesgoMap] = useState({});
@@ -77,6 +95,8 @@ export const InventarioPage = () => {
     }
   };
 
+  const tiposFiltro = tiposDisponibles(equipos);
+
   const filteredEquipos = equipos.filter(eq => {
     const matchSearch = eq.codigo_patrimonial?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                         eq.codigo_identificativo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -109,10 +129,9 @@ export const InventarioPage = () => {
           
           <select value={filterTipo} onChange={(e) => setFilterTipo(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Todos los tipos</option>
-            <option value="CPU">CPU</option>
-            <option value="Laptop">Laptop</option>
-            <option value="Monitor">Monitor</option>
-            <option value="Impresora">Impresora</option>
+            {tiposFiltro.map((tipo) => (
+              <option key={tipo} value={tipo}>{tipo}</option>
+            ))}
           </select>
 
           <select value={filterEstado} onChange={(e) => setFilterEstado(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">

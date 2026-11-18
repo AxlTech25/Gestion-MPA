@@ -215,7 +215,7 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 | `controllers/MlController.php` | Proxy HTTP hacia FastAPI, manejo de errores |
 | `routes/ml.php` | Rutas públicas autenticadas |
 | `models/Prediccion.php` | Persistencia en `v2_predicciones_ml` |
-| `config/Ml.php` | URL base del microservicio (`ML_SERVICE_URL`, default `http://127.0.0.1:8000`) |
+| `config/Ml.php` | URL base del microservicio (`ML_SERVICE_URL`, default `http://127.0.0.1:8080`) |
 | `backend/tools/migrate_ml_predicciones.php` | Migración de tabla en entornos existentes |
 | `backend/tools/verify_sprint6_ml.py` | Verificación automática end-to-end |
 

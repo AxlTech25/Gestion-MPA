@@ -4,6 +4,84 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 
+## [0.11.5] - 2026-11-18 — Hoja técnica en una A4 y versiones en el reporte
+
+### Cambiado
+- El PDF de la hoja de revisión técnica cabe en una página A4. La información general va en dos columnas. En CPU, laptop o PC, las especificaciones de hardware y software quedan al lado de la evaluación técnica y el resultado. Si hay diagnóstico y conclusión, también comparten la fila.
+- Las fotos van en la misma tabla que el rótulo IMAGEN, alineadas con el resto de la hoja. Una foto usa todo ese ancho; dos se reparten en partes iguales.
+- En Reportes, **Ficha técnica de un equipo** ya no trae solo la hoja vigente. El PDF adjunta cada versión que ese equipo tuvo, de la primera a la actual, una por página. Esas versiones se arman con los guardados de `v2_ficha_tecnica_historial`. Si la ficha nunca se volvió a guardar, el PDF tiene una sola hoja.
+- El botón PDF de la ficha y el reporte por año siguen imprimiendo la hoja vigente. El archivo del reporte por equipo se llama `fichas_tecnicas_{codigo}.pdf`.
+
+### Qué probar
+- Descargar el PDF de un CPU o laptop con diagnóstico, conclusión y una foto: una página A4, y el recuadro de la foto alineado con el título IMAGEN. Con dos fotos, cada una ocupa la mitad.
+- En Reportes, un equipo guardado más de una vez (por ejemplo `740000000000`) debe traer la hoja original y cada guardado posterior. Un equipo que solo tiene la carga inicial trae una hoja.
+- Un código inexistente no descarga archivo y muestra «Equipo no encontrado».
+
+## [0.11.4] - 2026-11-18 — Reportes en dos bloques, por año
+
+### Cambiado
+- Reportes tiene dos bloques: **Fichas técnicas** y **Fichas de mantenimiento**. En cada uno se descarga la ficha de un equipo o las fichas de un año, juntas en un PDF.
+- El filtro por día pasa a un menú de años. El año sale de la fecha de la ficha técnica o de la fecha de la intervención.
+
+### Qué probar
+- En cada bloque, un código existente descarga sus fichas y uno inexistente muestra «Equipo no encontrado».
+- Elegir un año con fichas y otro sin ellas. El segundo PDF trae el aviso.
+
+## [0.11.3] - 2026-11-18 — Reportes con las fichas completas
+
+### Cambiado
+- Reportes ya no imprime el historial de cambios. **Fichas del equipo** junta en un PDF la ficha técnica y cada ficha de mantenimiento de ese código, una por hoja. **Fichas de una fecha** junta las fichas de mantenimiento de los equipos atendidos ese día. Un equipo o un día sin fichas igual devuelve el PDF, con el aviso correspondiente.
+- En Mantenimiento, «Exportar fichas PDF» descarga esas fichas de mantenimiento, no la tabla de intervenciones.
+
+### Qué probar
+- Un equipo con ficha técnica y dos mantenimientos debe salir en tres hojas. Un código inexistente muestra «Equipo no encontrado».
+- Un día con intervenciones descarga una ficha por intervención. Un día vacío descarga el aviso.
+
+## [0.11.2] - 2026-11-18 — Apartado de reportes
+
+### Añadido
+- Menú **Reportes** (Administrador y Técnico). Cuatro PDF:
+  - Historial del equipo: datos del bien, cambios de la ficha y mantenimientos.
+  - Historial de fichas técnicas: cada guardado, con el valor anterior y el nuevo.
+  - Historial de mantenimientos de un equipo.
+  - Mantenimientos de una fecha: equipos atendidos ese día y el total.
+- `GET /reportes/historial-equipo/{codigo}`, `GET /reportes/ficha-historial/{codigo}`, `GET /reportes/mantenimientos-fecha/{YYYY-MM-DD}`.
+
+### Qué probar
+- Con un código que exista, descargar los tres historiales. Con un código inexistente, el PDF no se genera y la pantalla muestra el aviso.
+- Elegir un día con intervenciones y otro sin ellas. El segundo PDF indica cero equipos.
+
+## [0.11.1] - 2026-11-18 — Historial de la ficha técnica
+
+### Añadido
+- Cada guardado de la hoja de revisión deja una fila en `v2_ficha_tecnica_historial`: quién la guardó, cuándo, y el antes y el después de cada campo que cambió. La ficha muestra esa lista.
+- Migración: `php backend/tools/migrate_ficha_historial.php`.
+- `GET /fichas-tecnicas/{id}/historial`.
+
+### Qué probar
+- Guardar una ficha dos veces, cambiando el resultado. El historial debe mostrar la actualización, el usuario de la sesión y el valor anterior y el nuevo.
+- Un equipo que todavía no se evaluó en el sistema muestra «Aún no hay cambios».
+
+## [0.11.0] - 2026-11-18 — Hoja de revisión técnica 2026 y carga patrimonial
+
+### Añadido
+- La ficha técnica sigue el formato **Hoja de revisión técnica 2026**. Campos nuevos en `v2_fichas_tecnicas`: `funcionamiento` (Sin fallas / Con fallas), `obsolescencia_tecnologica` (Si / No), `repuestos_disponibles` (Si / No) y `resultado_evaluacion` (cinco resultados). Migración: `php backend/tools/migrate_hoja_revision.php`.
+- **N° de orden** (`numero_ficha`, único, se guarda como `N° {n}`) y **fecha de evaluación** se editan en la ficha. En blanco, el número se conserva o se asigna el siguiente; la fecha vacía usa la del día. Un número ya usado en otra ficha responde **409**.
+- El filtro de inventario lista los tipos que hay cargados: Laptop, CPU, Monitor, Impresora, Escáner, Teclado, Mouse, Estabilizador, Switch, Access point, UPS, Router, Disco externo, Cámara y Equipo de audio.
+- Carga del inventario municipal de cómputo y red (756 equipos, 47 áreas con jefe). Reglas y conteos: [carga_patrimonial_2026.md](./carga_patrimonial_2026.md).
+
+### Cambiado
+- Hardware, software y red de la ficha (y del PDF) solo aparecen si el tipo contiene `cpu`, `laptop` o `pc`. En el resto esos campos no se guardan.
+- El PDF usa el número y la fecha guardados, el año de adquisición y la evaluación 2026. La firma impresa sigue siendo Tec. Denky Navarro Navarro, con el rótulo Técnico PAD.
+- `tipo_equipo` en la base en uso y en `v2_estructura.sql` es `VARCHAR(100)`. Así se guarda el nombre real (Teclado, Cámara, etc.). El filtro **Otro** del dashboard sigue agrupando todo lo que no es Laptop, CPU, Impresora o Monitor.
+- Cada área muestra su **jefe a cargo** (`v2_areas.jefe_encargado`). El encargado de un equipo sigue en `responsable_nombre` y no es un usuario del sistema.
+
+### Qué probar
+- Buscar un CPU o laptop: la ficha muestra hardware, N° de orden y fecha editables, y las cinco opciones de resultado.
+- Buscar un teclado, una cámara o un equipo de audio: no aparecen procesador, sistema operativo, MAC ni IP.
+- Guardar un N° de orden ya usado en otra ficha y comprobar el mensaje de duplicado.
+- En inventario, filtrar por Cámara y por Malo. En Configuración, cada área debe mostrar un jefe.
+
 ## [0.10.7] - 2026-09-17 — Gerencias, CRUD de áreas y bandas (I-017)
 
 Cierra el **Incremento 8** (R-006 / I-010…I-017). Revisión humana: esta parte queda terminada.

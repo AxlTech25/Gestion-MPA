@@ -7,7 +7,7 @@ import sys
 import urllib.error
 import urllib.request
 
-FASTAPI = "http://127.0.0.1:8000"
+FASTAPI = "http://127.0.0.1:8080"
 PHP_API = "http://localhost/gestion_mpa/backend/api/v2/index.php?request="
 
 results: list[tuple[str, bool, str]] = []

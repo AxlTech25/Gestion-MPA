@@ -281,7 +281,18 @@ final class ControladoresRutasTest extends TestCase
         $this->assertTrue($this->ruta('routes/fichas_tecnicas.php')['json']['success']);
         $_POST = ['procesador' => 'i7', 'diagnostico' => 'ok'];
         $this->assertTrue($this->ruta('routes/fichas_tecnicas.php')['json']['success']);
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_POST = [];
+        $_GET['request'] = 'fichas-tecnicas/1/historial';
+        $historial = $this->ruta('routes/fichas_tecnicas.php');
+        $this->assertTrue($historial['json']['success']);
+        $this->assertSame('Actualización', $historial['json']['data'][0]['accion']);
+        $campos = array_column($historial['json']['data'][0]['cambios'], 'campo');
+        $this->assertContains('procesador', $campos);
+        $_GET['request'] = 'fichas-tecnicas/99/historial';
+        $this->assertSame(404, $this->ruta('routes/fichas_tecnicas.php')['code']);
         $_SERVER['REQUEST_METHOD'] = 'TRACE';
+        $_GET['request'] = 'fichas-tecnicas/1';
         $_POST = [];
         $this->assertSame(405, $this->ruta('routes/fichas_tecnicas.php')['code']);
 
@@ -457,6 +468,41 @@ final class ControladoresRutasTest extends TestCase
         $ficha = $this->capturar(fn () => $reporte->ficha_mantenimiento(1));
         $this->assertStringStartsWith('%PDF', $ficha['raw']);
 
+        $this->pdo->exec("INSERT INTO v2_ficha_tecnica_historial (equipo_id, usuario_id, accion, cambios, fecha)
+            VALUES (1, 1, 'Creación', '[{\"campo\":\"diagnostico\",\"antes\":\"\",\"despues\":\"Revisado\"}]', '2026-11-18 10:00:00')");
+        $this->pdo->exec("UPDATE v2_fichas_tecnicas SET diagnostico = 'Final' WHERE equipo_id = 1");
+        $this->pdo->exec("INSERT INTO v2_ficha_tecnica_historial (equipo_id, usuario_id, accion, cambios, fecha)
+            VALUES (1, 1, 'Actualización', '[{\"campo\":\"diagnostico\",\"antes\":\"Revisado\",\"despues\":\"Final\"}]', '2026-11-18 12:00:00')");
+        $metodoVersiones = new ReflectionMethod(ReporteController::class, 'versionesFichaTecnica');
+        $metodoVersiones->setAccessible(true);
+        $hojasEquipo = $metodoVersiones->invoke($reporte, 1);
+        $this->assertCount(2, $hojasEquipo);
+        $this->assertSame('Revisado', $hojasEquipo[0]['diagnostico']);
+        $this->assertSame('Final', $hojasEquipo[1]['diagnostico']);
+        $equipoPdf = $this->capturar(fn () => $reporte->historialEquipo('740000001111'));
+        $this->assertStringStartsWith('%PDF', $equipoPdf['raw']);
+        $this->assertSame(404, $this->capturar(fn () => $reporte->historialFicha('no-existe'))['code']);
+        $fichaHist = $this->capturar(fn () => $reporte->historialFicha('740000001111'));
+        $this->assertStringStartsWith('%PDF', $fichaHist['raw']);
+        $this->assertSame(400, $this->capturar(fn () => $reporte->mantenimientosFecha('32-13-2026'))['code']);
+        $dia = $this->capturar(fn () => $reporte->mantenimientosFecha('2026-10-19'));
+        $this->assertStringStartsWith('%PDF', $dia['raw']);
+        $vacio = $this->capturar(fn () => $reporte->mantenimientosFecha('2026-01-02'));
+        $this->assertStringStartsWith('%PDF', $vacio['raw']);
+
+        $this->assertSame(400, $this->capturar(fn () => $reporte->fichasTecnicasAnio('20'))['code']);
+        $this->assertSame(400, $this->capturar(fn () => $reporte->fichasMantenimientoAnio('no'))['code']);
+        $this->pdo->exec("UPDATE v2_fichas_tecnicas SET fecha_evaluacion = '2026-11-18' WHERE equipo_id = 1");
+        $tecnicasAnio = $this->capturar(fn () => $reporte->fichasTecnicasAnio('2026'));
+        $this->assertStringStartsWith('%PDF', $tecnicasAnio['raw']);
+        $mantAnio = $this->capturar(fn () => $reporte->fichasMantenimientoAnio('2026'));
+        $this->assertStringStartsWith('%PDF', $mantAnio['raw']);
+        $anioVacio = $this->capturar(fn () => $reporte->fichasMantenimientoAnio('2020'));
+        $this->assertStringStartsWith('%PDF', $anioVacio['raw']);
+        $lista = $this->capturar(fn () => $reporte->anios());
+        $this->assertTrue($lista['json']['success']);
+        $this->assertContains(2026, $lista['json']['data']['mantenimientos']);
+
         $this->assertSame(404, $this->capturar(fn () => $reporte->cronograma(99))['code']);
         $id = (new Cronograma($this->pdo))->crear((object) ['anio' => 2026, 'nombre' => 'Anual'], 1);
         $cronograma = $this->capturar(fn () => $reporte->cronograma((int) $id));
@@ -487,7 +533,13 @@ final class ControladoresRutasTest extends TestCase
             id INTEGER PRIMARY KEY, equipo_id INTEGER, procesador TEXT, sistema_operativo TEXT,
             licencia_so TEXT, mac_address TEXT, ip_asignada TEXT, software_base TEXT,
             observaciones_evaluacion TEXT, diagnostico TEXT, conclusion_motivo TEXT,
+            funcionamiento TEXT, obsolescencia_tecnologica TEXT, repuestos_disponibles TEXT,
+            resultado_evaluacion TEXT,
             imagen_1 TEXT, imagen_2 TEXT, fecha_evaluacion TEXT, numero_ficha TEXT
+        )');
+        $this->pdo->exec('CREATE TABLE v2_ficha_tecnica_historial (
+            id INTEGER PRIMARY KEY, equipo_id INTEGER, usuario_id INTEGER,
+            accion TEXT, cambios TEXT, fecha TEXT DEFAULT CURRENT_TIMESTAMP
         )');
         $this->pdo->exec('CREATE TABLE v2_hojas_baja (
             id INTEGER PRIMARY KEY, equipo_id INTEGER,

@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS v2_equipos (
   id INT PRIMARY KEY AUTO_INCREMENT,
   codigo_patrimonial VARCHAR(50) UNIQUE NOT NULL,
   codigo_identificativo VARCHAR(50),
-  tipo_equipo ENUM('Laptop', 'CPU', 'Impresora', 'Monitor', 'Otro') NOT NULL,
+  tipo_equipo VARCHAR(100) NOT NULL,
   marca VARCHAR(50),
   modelo VARCHAR(50),
   color VARCHAR(30),
@@ -139,11 +139,29 @@ CREATE TABLE IF NOT EXISTS v2_fichas_tecnicas (
   observaciones_evaluacion TEXT,
   diagnostico TEXT,
   conclusion_motivo TEXT,
+  funcionamiento VARCHAR(20),
+  obsolescencia_tecnologica VARCHAR(2),
+  repuestos_disponibles VARCHAR(2),
+  resultado_evaluacion VARCHAR(80),
   imagen_1 VARCHAR(255),
   imagen_2 VARCHAR(255),
   fecha_evaluacion DATETIME,
 
   FOREIGN KEY (equipo_id) REFERENCES v2_equipos(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Cada guardado de la hoja de revisión deja el antes y el después.
+CREATE TABLE IF NOT EXISTS v2_ficha_tecnica_historial (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  equipo_id INT NOT NULL,
+  usuario_id INT NULL,
+  accion VARCHAR(20) NOT NULL,
+  cambios LONGTEXT NOT NULL,
+  fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (equipo_id) REFERENCES v2_equipos(id) ON DELETE CASCADE,
+  FOREIGN KEY (usuario_id) REFERENCES v2_usuarios(id) ON DELETE SET NULL,
+  INDEX (equipo_id),
+  INDEX (fecha)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 5. Catálogo de fallas para evitar texto libre (Crucial para predecir qué va a fallar)

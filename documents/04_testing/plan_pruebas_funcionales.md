@@ -74,6 +74,7 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 | `/v2/cronograma` | Historial de cronogramas |
 | `/v2/cronograma/:id` | Matriz del documento |
 | `/v2/configuracion` | Áreas y personal |
+| `/v2/reportes` | Reportes (Administrador y Técnico) |
 
 ### 2.5 Criterios generales de aceptación
 
@@ -93,14 +94,15 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 | Autenticación | AUTH | 7 | Alta |
 | Configuración | CFG | 11 | Media |
 | Inventario | INV | 12 | Alta |
-| Ficha técnica | FIC | 8 | Alta |
+| Ficha técnica | FIC | 9 | Alta |
 | Mantenimiento | MNT | 18 | Alta |
 | Dashboard | DSH | 10 | Alta |
 | Machine Learning | ML | 7 | Media |
 | Cronograma | CRN | 17 | Alta |
+| Reportes | RPT | 4 | Alta |
 | Regresión / transversal | REG | 6 | Alta |
 
-**Total: 96 casos E2E** (no incluye INT/SEC/SMOKE/UAT/DEG/MIG).
+**Total: 101 casos E2E** (no incluye INT/SEC/SMOKE/UAT/DEG/MIG).
 
 ---
 
@@ -280,15 +282,19 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 
 #### FIC-006 — Exportar PDF ficha técnica
 - **Pasos:** Botón PDF en ficha.
-- **Resultado esperado:** PDF abre en nueva pestaña con datos del equipo.
+- **Resultado esperado:** Se descarga la hoja vigente en una página A4, con los datos del equipo. Las versiones anteriores no van en este botón; se piden en Reportes.
 
 #### FIC-007 — PDF equipo técnico vs no técnico
 - **Pasos:** Generar PDF para Laptop y para Monitor.
-- **Resultado esperado:** Laptop incluye tabla hardware; Monitor muestra nota de no aplicabilidad.
+- **Resultado esperado:** En la laptop, hardware y software quedan al lado de la evaluación. En el monitor no aparece esa tabla. Una foto queda alineada con el rótulo IMAGEN; dos fotos se reparten el ancho.
 
 #### FIC-008 — Observaciones de evaluación
 - **Pasos:** Completar textarea observaciones → guardar → reconsultar.
 - **Resultado esperado:** Texto persistido.
+
+#### FIC-009 — Historial en la ficha
+- **Pasos:** Abrir una ficha, cambiar el resultado y guardar. Guardar otra vez sin modificar nada.
+- **Resultado esperado:** El primer guardado aparece en Historial de cambios con el valor anterior y el nuevo, la persona y la fecha. El segundo no agrega una fila.
 
 ---
 
@@ -414,10 +420,10 @@ Crear **antes** de ejecutar casos de mantenimiento, ficha técnica y consultas:
 
 ### 4.7 Machine Learning (ML)
 
-> **Nota:** Casos ML-001 a ML-005 requieren FastAPI en `127.0.0.1:8000`. ML-006 y ML-007 validan degradación graceful.
+> **Nota:** Casos ML-001 a ML-005 requieren FastAPI en `127.0.0.1:8080`. ML-006 y ML-007 validan degradación graceful.
 
 #### ML-001 — Health check FastAPI
-- **Pasos:** `GET http://127.0.0.1:8000/health`
+- **Pasos:** `GET http://127.0.0.1:8080/health`
 - **Resultado esperado:** Respuesta JSON status ok.
 
 #### ML-002 — Alertas predictivas en dashboard
@@ -542,7 +548,7 @@ Migración previa: `php backend/tools/migrate_cronograma.php`. Roles de escritur
 ### 4.9 Regresión transversal (REG)
 
 #### REG-001 — Navegación Navbar
-- **Pasos:** Recorrer Dashboard → Inventario → Ficha técnica → Mantenimiento → Cronograma → Configuración.
+- **Pasos:** Recorrer Dashboard → Inventario → Ficha técnica → Mantenimiento → Cronograma → Reportes → Configuración.
 - **Resultado esperado:** Sin errores de consola críticos; rutas correctas. Cronograma no abre fichas de `/v2/mantenimiento`.
 
 #### REG-002 — Responsive básico
@@ -564,6 +570,27 @@ Migración previa: `php backend/tools/migrate_cronograma.php`. Roles de escritur
 #### REG-006 — Plantilla Excel alineada (regresión color)
 - **Pasos:** Descargar plantilla → abrir primera fila de datos.
 - **Resultado esperado:** 14 columnas; `color` y `numero_serie` no intercambiados. Caso unitario `EquipoPlantillaTest`.
+
+---
+
+### 4.10 Reportes (RPT) — 0.11.5
+
+#### RPT-001 — Ficha técnica de un equipo
+- **Precondición:** Sesión de Administrador o Técnico. Un equipo guardado más de una vez y otro que solo tiene la ficha de la carga.
+- **Pasos:** Menú Reportes → bloque Fichas técnicas → ingresar el código → Descargar PDF. Repetir con un código inexistente.
+- **Resultado esperado:** El equipo con varios guardados trae cada hoja, de la primera a la actual, una por página. El de la carga trae una sola hoja. Un código inexistente no descarga archivo y muestra «Equipo no encontrado».
+
+#### RPT-002 — Fichas técnicas por año
+- **Pasos:** En el mismo bloque, abrir el menú de años, elegir un año con fichas y descargar. Repetir con un año sin fichas.
+- **Resultado esperado:** El año con fichas trae cada hoja de revisión de esa fecha. El año vacío genera el PDF con el aviso.
+
+#### RPT-003 — Fichas de mantenimiento de un equipo
+- **Pasos:** Bloque Fichas de mantenimiento → ingresar el código → Descargar PDF.
+- **Resultado esperado:** Un PDF con cada ficha de mantenimiento de ese equipo. Sin intervenciones, el PDF lo indica.
+
+#### RPT-004 — Fichas de mantenimiento por año
+- **Pasos:** En el mismo bloque, elegir un año con intervenciones y otro sin ellas.
+- **Resultado esperado:** El año con intervenciones trae una ficha por cada una. El año vacío genera el aviso.
 
 ---
 

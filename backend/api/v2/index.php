@@ -43,6 +43,18 @@ switch ($resource) {
             }
         } elseif (isset($request[1]) && $request[1] === 'cronograma' && isset($request[2]) && is_numeric($request[2])) {
             $controller->cronograma((int) $request[2]);
+        } elseif (isset($request[1]) && $request[1] === 'historial-equipo' && isset($request[2])) {
+            $controller->historialEquipo(urldecode($request[2]));
+        } elseif (isset($request[1]) && $request[1] === 'ficha-historial' && isset($request[2])) {
+            $controller->historialFicha(urldecode($request[2]));
+        } elseif (isset($request[1]) && $request[1] === 'mantenimientos-fecha' && isset($request[2])) {
+            $controller->mantenimientosFecha(urldecode($request[2]));
+        } elseif (isset($request[1]) && $request[1] === 'anios') {
+            $controller->anios();
+        } elseif (isset($request[1]) && $request[1] === 'fichas-tecnicas-anio' && isset($request[2])) {
+            $controller->fichasTecnicasAnio(urldecode($request[2]));
+        } elseif (isset($request[1]) && $request[1] === 'fichas-mantenimiento-anio' && isset($request[2])) {
+            $controller->fichasMantenimientoAnio(urldecode($request[2]));
         } else {
             http_response_code(400);
             echo json_encode(["success" => false, "message" => "Ruta de reporte inválida."]);

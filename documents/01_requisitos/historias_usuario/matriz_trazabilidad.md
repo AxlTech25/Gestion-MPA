@@ -21,6 +21,10 @@ Relación entre historias de usuario, incrementos SDLC, versiones y módulos del
 | Post-incremento 7 | 0.8.x | HU-MNT-003–005, HU-MNT-008, HU-RPT-002–003 |
 | Parche seguridad / plantilla | 0.9.1 | HU-AUTH-005, HU-CFG-006, HU-INV-004 (ajuste) |
 | Incremento 8 | 0.10.0–0.10.7 (**cerrado** 2026-09-17) | HU-CRN-001–015, HU-CFG-007–008 ([R-006](../../../prompts/01_requisitos/R-006_cronograma_anual_v1.md), I-010…I-017) |
+| Hoja de revisión 2026 y carga patrimonial | 0.11.0 | HU-FIC-003, HU-FIC-005, HU-INV-001, HU-CFG-001 (ajuste). Ver [changelog](../../05_mantenimiento/changelog.md) y [carga](../../05_mantenimiento/carga_patrimonial_2026.md) |
+| Historial de la ficha | 0.11.1 | HU-FIC-003 (ajuste). Tabla `v2_ficha_tecnica_historial` |
+| Reportes en dos bloques, por año | 0.11.4 | HU-RPT-001, HU-RPT-002. Pantalla `ReportesPage` |
+| Hoja técnica en una A4 y versiones del equipo | 0.11.5 | HU-FIC-006, HU-RPT-001. PDF de `ReporteController` |
 
 ---
 
@@ -52,10 +56,10 @@ Relación entre historias de usuario, incrementos SDLC, versiones y módulos del
 | HU-INV-009 | Inventario | ✅ | — | EquipoForm | GET/PUT `/equipos/{id}` |
 | HU-FIC-001 | Ficha técnica | ✅ | 4+ | FichaTecnicaPage | GET `/fichas-tecnicas/buscar/{codigo}` |
 | HU-FIC-002 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | GET `/fichas-tecnicas/{id}` |
-| HU-FIC-003 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | PUT `/fichas-tecnicas/{id}` |
+| HU-FIC-003 | Ficha técnica | ✅ | 4; ajuste 0.11.0 y 0.11.1 | FichaTecnicaPanel | PUT `/fichas-tecnicas/{id}` y GET `.../historial` |
 | HU-FIC-004 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | PUT `/fichas-tecnicas/{id}` |
-| HU-FIC-005 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | GET `/reportes/equipo/{id}` |
-| HU-FIC-006 | Ficha técnica | ✅ | 4 | InventarioPage | GET `/reportes/equipo/{id}` |
+| HU-FIC-005 | Ficha técnica | ✅ | 4; ajuste 0.11.0 | FichaTecnicaPanel | GET `/reportes/equipo/{id}` |
+| HU-FIC-006 | Ficha técnica | ✅ | 4; ajuste 0.11.5 | InventarioPage | GET `/reportes/equipo/{id}` (hoja vigente, una A4) |
 | HU-FIC-007 | Ficha técnica | ✅ | 4 | FichaTecnicaPanel | PUT `/fichas-tecnicas/{id}` |
 | HU-FIC-008 | Ficha técnica | ✅ | 7 | FichaTecnicaPanel | GET `/ml/equipos/{id}/riesgo` |
 | HU-MNT-001 | Mantenimiento | ✅ | 3 | MantenimientoPage | GET `/mantenimientos` |
@@ -83,8 +87,8 @@ Relación entre historias de usuario, incrementos SDLC, versiones y módulos del
 | HU-ML-005 | ML | ✅ | 6 | Dashboard, Inventario | Fallback graceful |
 | HU-ML-006 | ML | ✅ | 7 Fase 2 | MlService | POST `/mantenimientos` + recálculo |
 | HU-ML-007 | ML | ✅ | 7 Fase 2 | MetricaEquipo | `v2_metricas_equipo` |
-| HU-RPT-001 | Reportes | ✅ | 4 | FichaTecnicaPanel | ReporteController |
-| HU-RPT-002 | Reportes | ✅ | 7+ | MantenimientoPage | `/reportes/mantenimiento/historial/` |
+| HU-RPT-001 | Reportes | ✅ | 4; ajuste 0.11.5 | FichaTecnicaPanel, ReportesPage | GET `/reportes/ficha-historial/{codigo}` (todas las versiones), `/reportes/fichas-tecnicas-anio/{anio}` (vigente) |
+| HU-RPT-002 | Reportes | ✅ | 7+; ajuste 0.11.4 | MantenimientoPage, ReportesPage | `/reportes/mantenimiento/historial/{codigo}`, `/reportes/fichas-mantenimiento-anio/{anio}` |
 | HU-RPT-003 | Reportes | ✅ | 7+ | MantenimientoDetalleModal | `/reportes/mantenimiento/{id}` |
 | HU-RPT-004 | Reportes | ✅ | 0.6.0 | lib/api.js | JWT en descarga blob |
 | HU-CRN-001 | Cronograma | ✅ | 8 / 0.10.0 | CronogramaMatrizPage | GET `/cronogramas/{id}` |

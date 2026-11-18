@@ -29,6 +29,7 @@ describe('Navbar', () => {
     expect(screen.getByText('Ana Ruiz')).toBeTruthy();
     expect(screen.getByText('Cronograma').className).toContain('text-[#00a8cc]');
     expect(screen.getByText('Dashboard').className).toContain('text-slate-300');
+    expect(screen.getByText('Reportes')).toBeTruthy();
 
     screen.getByRole('button', { name: /salir/i }).click();
     expect(localStorage.getItem('token')).toBeNull();
@@ -37,6 +38,7 @@ describe('Navbar', () => {
   it('oculta Configuración y usa el nombre por defecto', () => {
     renderNav('/v2/dashboard', { rol: 'Tecnico' });
     expect(screen.queryByText('Configuración')).toBeNull();
+    expect(screen.getByText('Reportes')).toBeTruthy();
     expect(screen.getByText('Administrador')).toBeTruthy();
     expect(screen.getByText('Dashboard').className).toContain('text-[#00a8cc]');
   });

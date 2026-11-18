@@ -5,7 +5,7 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
 **Stack:** React (Vite) · PHP API REST · MySQL · FastAPI (ML)
 
 **Metodología:** Prompt-Centered SDLC v1.2  
-**Versión actual:** 0.10.7 (Incremento 8 cerrado)
+**Versión actual:** 0.11.5 (hoja técnica en una A4 y versiones en el reporte)
 
 ---
 
@@ -21,6 +21,7 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
   - [Cronograma](#6-cronograma)
   - [Configuración](#7-configuración)
   - [Alertas predictivas (ML)](#8-alertas-predictivas-ml)
+  - [Reportes](#9-reportes)
 - [Roles y credenciales](#roles-y-credenciales)
 - [Documentación adicional](#documentación-adicional)
 - [Desarrollo](#desarrollo)
@@ -48,6 +49,8 @@ El marco de trabajo es la propuesta **Prompt-Centered SDLC v1.2** (en validació
      - `backend/sql/v2_ml_predicciones.sql`
      - `php backend/tools/migrate_cronograma.php` (Incremento 8)
      - `php backend/tools/migrate_gerencias.php` (0.10.7)
+     - `php backend/tools/migrate_hoja_revision.php` (0.11.0, hoja de revisión técnica)
+     - `php backend/tools/migrate_ficha_historial.php` (0.11.1, historial de la ficha)
 
 2. **Backend PHP**
    ```bash
@@ -103,11 +106,12 @@ Vista general del parque tecnológico.
 1. Pulse **Consultar equipos**.
 2. Seleccione una o más **etiquetas**:
    - **Tipo:** Laptop, CPU, Impresora, Monitor, Otro
+     - **Otro** agrupa el resto del parque (teclado, cámara, estabilizador, audio, red, etc.). Escriba el nombre exacto del tipo para ver solo ese grupo.
    - **Estado operativo:** Operativo, Dañado, En reparación, Excedencia, Baja
    - **Conservación:** Nuevo, Bueno, Regular, Malo
 3. La tabla inferior muestra los equipos que coinciden.
 
-**Tipos personalizados (Otro):** al elegir la etiqueta **Otro**, aparece un campo de texto al lado. Escriba el tipo específico (ej. `Plotter`, `Detector de billetes`) para refinar la búsqueda. Sin texto, se listan todos los equipos no estándar.
+**Tipos personalizados (Otro):** al elegir la etiqueta **Otro**, aparece un campo de texto al lado. Escriba el tipo tal como está en el inventario (`Cámara`, `Teclado`, `Equipo de audio`) para refinar la búsqueda. Sin texto, se listan todos los equipos que no son Laptop, CPU, Impresora ni Monitor.
 
 ---
 
@@ -118,7 +122,8 @@ Gestión del catálogo de equipos patrimoniales.
 #### Buscar y filtrar
 
 - Use el cuadro de búsqueda por **código patrimonial**, identificativo, marca o modelo.
-- Combine con los filtros de **tipo** y **estado de conservación**.
+- Combine con los filtros de **tipo** y **estado de conservación**. El filtro de tipo muestra los tipos que hay cargados (Laptop, CPU, Monitor, Impresora, Escáner, Teclado, Mouse, Estabilizador, Switch, Access point, UPS, Router, Disco externo, Cámara, Equipo de audio).
+- La columna **Responsable** es el encargado de ese equipo. No es un usuario del sistema. El jefe del área se ve en Configuración.
 
 #### Registrar un equipo nuevo
 
@@ -127,7 +132,7 @@ Gestión del catálogo de equipos patrimoniales.
    - **Código patrimonial:** exactamente **12 dígitos numéricos**
    - **Área asignada**
    - **Tipo de equipo**
-3. Si elige **Otro**, especifique el nombre del tipo (Plotter, Escáner, etc.).
+3. Si elige **Otro**, escriba el nombre del tipo (Teclado, Cámara, Escáner, etc.). El inventario guarda ese nombre.
 4. Para **CPU/Laptop**, complete RAM, almacenamiento, procesador y SO.
 5. Pulse **Registrar Equipo**.
 
@@ -143,6 +148,8 @@ Gestión del catálogo de equipos patrimoniales.
 2. Descargue la plantilla si no la tiene.
 3. Complete el archivo y súbalo.
 4. Revise el resumen de filas importadas y errores.
+
+La plantilla sirve para altas nuevas de Laptop, CPU, Impresora, Monitor u Otro. El parque municipal de 2026 no entró por esta pantalla: se cargó aparte para conservar oficina, encargado y tipos como Teclado o Cámara. El detalle está en [`documents/05_mantenimiento/carga_patrimonial_2026.md`](documents/05_mantenimiento/carga_patrimonial_2026.md).
 
 #### Acciones por fila
 
@@ -168,16 +175,26 @@ Consulta y evaluación del estado de un equipo.
 
 #### Evaluar un equipo
 
-En el panel de la ficha puede:
+La ficha sigue la **Hoja de revisión técnica 2026**. En el panel puede:
 
-- Ver datos generales (marca, modelo, área, ubicación).
-- Editar **hardware y software** (solo CPU/Laptop).
-- Actualizar **conservación** y **estado operativo**.
-- Registrar **observaciones** de la evaluación.
-- Pulse **Guardar Evaluación** para persistir los cambios.
-- Pulse **PDF** para exportar la ficha técnica.
+- Ver datos generales: patrimonial, identificativo, marca, modelo, serie, área, responsable, ubicación, costo y fecha de adquisición.
+- Editar el **N° de orden** y la **fecha**. Si deja el número en blanco, se conserva el que ya tenía o se asigna el siguiente. No puede repetir un número que ya usa otra ficha. La fecha vacía queda en el día de hoy. El PDF imprime esos dos datos, no la fecha del momento de imprimir.
+- Registrar **estado físico** (Nuevo, Bueno, Regular, Malo), **funcionamiento** (Sin fallas / Con fallas), **obsolescencia tecnológica** (Sí / No), **repuestos disponibles** (Sí / No) y uno de estos **resultados**:
+  - Puede continuar en servicio
+  - Requiere mantenimiento
+  - Requiere reparación
+  - Técnicamente no resulta ser utilizado
+  - Se recomienda retirar del servicio
+- Escribir **diagnóstico** y **conclusión**.
+- Adjuntar hasta dos fotos JPG o PNG.
+- Pulse **Guardar Evaluación** para persistir los cambios. Cada guardado queda en **Historial de cambios**, con la persona, la fecha y el valor anterior y el nuevo. Si no cambió ningún dato, no se agrega una fila.
+- Pulse **PDF** para exportar la hoja vigente. Sale en una página A4: datos generales en dos columnas; en CPU, laptop o PC, el hardware y el software al lado de la evaluación; diagnóstico y conclusión en la misma fila cuando ambos existen. Una foto ocupa el ancho de la hoja y dos se reparten a la mitad, siempre alineadas con el rótulo IMAGEN. La firma impresa es Tec. Denky Navarro Navarro, Técnico PAD. Las versiones anteriores de esa hoja se descargan desde Reportes.
 
-> La evaluación de estado también puede hacerse desde el inventario (icono de engranaje).
+**Hardware, software y red** (procesador, RAM, disco, sistema operativo, licencia, MAC e IP) solo aparecen en equipos cuyo tipo contiene CPU, laptop o PC. Un teclado, una impresora, una cámara o un equipo de audio no muestran esos apartados y, al guardar, no se les escribe procesador ni sistema operativo.
+
+Si el disco no tenía tipo (HDD, SSD o NVMe), el selector muestra SSD como primera opción. Elija el valor real antes de guardar; si no lo cambia, se grabará SSD.
+
+> La misma evaluación se abre desde el inventario (icono de engranaje).
 
 ---
 
@@ -246,7 +263,8 @@ Panel de administración organizacional (requiere rol **Administrador** en UI y 
 #### Pestaña Áreas
 
 - Ver, crear, **editar y eliminar** áreas (no se elimina un área que tenga equipos).
-- Asignar cada área a una **gerencia** (selector; opcional).
+- Cada área tiene un **jefe a cargo**. En la carga de 2026 ese nombre es el responsable principal de la dependencia. El encargado de un equipo puede ser otra persona y se ve en el inventario.
+- Asignar cada área a una **gerencia** (selector; opcional). Las 47 áreas cargadas en 2026 quedaron sin gerencia.
 - Las áreas aparecen en inventario y en el cronograma.
 
 #### Pestaña Gerencias
@@ -284,6 +302,23 @@ Más detalle en [`ml/README.md`](ml/README.md).
 
 ---
 
+### 9. Reportes
+
+Apartado para Administrador y Técnico. Cada botón descarga un PDF.
+
+Hay dos bloques. En cada uno se puede pedir un equipo o un año.
+
+| Bloque | Por equipo | Por año |
+|--------|------------|---------|
+| Fichas técnicas | Cada hoja de revisión que tuvo ese código, de la primera a la actual | La hoja vigente de cada equipo cuya fecha cae en el año elegido |
+| Fichas de mantenimiento | Cada ficha de mantenimiento de ese código | Las fichas de mantenimiento registradas en el año elegido |
+
+El año se elige en un menú. Si el código no existe, no se descarga el archivo y la pantalla muestra «Equipo no encontrado». Un año sin fichas sí genera el PDF, con el aviso. El reporte por equipo reconstruye cada guardado como una hoja completa; la lista de antes y después sigue viéndose al pie de la ficha, no como tabla en el PDF. Una ficha que nunca se volvió a guardar sale en una sola hoja.
+
+El PDF de una sola ficha de mantenimiento sigue descargándose desde el detalle de la intervención. Desde la búsqueda de Mantenimiento, «Exportar fichas PDF» adjunta las fichas de mantenimiento de ese equipo.
+
+---
+
 ## Roles y credenciales
 
 ### Usuario por defecto (desarrollo)
@@ -309,6 +344,7 @@ Más detalle en [`ml/README.md`](ml/README.md).
 | Cronograma (marcar / crear / borrar) | ✓ | ✓ | — |
 | Configuración | ✓ | — | — |
 | Carga masiva Excel | ✓ | — | — |
+| Reportes | ✓ | ✓ | — |
 
 La API refuerza lo mismo: `POST`/`PUT`/`PATCH`/`DELETE` `/usuarios` responden **403** si el token no es de Administrador. No basta con ocultar botones en la interfaz.
 
@@ -339,7 +375,7 @@ npm run build
 #    - Carpeta backend/    →  {DocumentRoot}/backend/
 ```
 
-4. Importe `backend/sql/v2_estructura.sql` (instalación nueva) o ejecute las migraciones pendientes (`migrate_fase7.php`, `migrate_cronograma.php`, `migrate_gerencias.php`) sobre la BD existente.  
+4. Importe `backend/sql/v2_estructura.sql` (instalación nueva) o ejecute las migraciones pendientes (`migrate_fase7.php`, `migrate_cronograma.php`, `migrate_gerencias.php`, `migrate_hoja_revision.php`, `migrate_ficha_historial.php`) sobre la BD existente.  
 5. Active SSL y cambie la contraseña del usuario `admin`.
 
 > Si FastAPI no está desplegado, deje `ml_service_url` vacío. El resto del sistema funciona con normalidad.
@@ -356,6 +392,7 @@ npm run build
 | [`prompts/`](prompts/) | Repositorio de prompts por fase |
 | [`documents/05_mantenimiento/produccion.md`](documents/05_mantenimiento/produccion.md) | Guía de despliegue en producción |
 | [`documents/05_mantenimiento/changelog.md`](documents/05_mantenimiento/changelog.md) | Historial de versiones |
+| [`documents/05_mantenimiento/carga_patrimonial_2026.md`](documents/05_mantenimiento/carga_patrimonial_2026.md) | Reglas y conteos de la carga municipal 2026 |
 | [`documents/01_requisitos/historias_usuario/`](documents/01_requisitos/historias_usuario/) | Historias de usuario por épica |
 | [`documents/04_testing/`](documents/04_testing/) | Planes de pruebas funcionales y unitarias |
 | [`documents/06_calidad/`](documents/06_calidad/) | Pruebas estáticas (SonarQube) y no conformidades |

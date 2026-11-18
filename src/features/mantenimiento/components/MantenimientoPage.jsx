@@ -174,7 +174,7 @@ export const MantenimientoPage = () => {
     try {
       await mantenimientoService.exportHistorialPdf(equipoBuscado.codigo_patrimonial);
     } catch {
-      alert('No se pudo generar el PDF del historial.');
+      alert('No se pudo generar el PDF de las fichas.');
     } finally {
       setExportandoPdf(false);
     }
@@ -268,7 +268,7 @@ export const MantenimientoPage = () => {
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-blue-300 text-blue-700 hover:bg-blue-100 rounded-lg text-sm font-medium"
               >
                 <FileText size={16} />
-                {exportandoPdf ? 'Generando PDF...' : 'Exportar historial PDF'}
+                {exportandoPdf ? 'Generando PDF...' : 'Exportar fichas PDF'}
               </button>
             </div>
           )}

@@ -52,6 +52,10 @@ vi.mock('./features/cronograma/components/CronogramaMatrizPage', () => ({
   CronogramaMatrizPage: () => <div data-testid="cronograma-matriz-page" />,
 }));
 
+vi.mock('./features/reportes/components/ReportesPage', () => ({
+  ReportesPage: () => <div data-testid="reportes-page" />,
+}));
+
 function renderAt(path) {
   window.history.pushState({}, '', path);
   return render(<App />);
@@ -68,6 +72,7 @@ describe('App', () => {
     mockAuth.logout.mockClear();
     window.history.replaceState({}, '', '/');
     vi.unstubAllEnvs();
+    vi.stubEnv('VITE_BASE_PATH', '/');
   });
 
   it('muestra el login público y redirige si no hay sesión', async () => {
@@ -87,6 +92,7 @@ describe('App', () => {
     ['/v2/ficha-tecnica', 'ficha-page', false],
     ['/v2/mantenimiento', 'mantenimiento-page', false],
     ['/v2/cronograma', 'cronograma-list-page', false],
+    ['/v2/reportes', 'reportes-page', false],
     ['/v2/cronograma/15', 'cronograma-matriz-page', true],
     ['/v2/cronograma/abc', 'cronograma-matriz-page', false],
   ])('ruta %s muestra %s (ancho=%s)', async (path, testId, wide) => {
@@ -126,6 +132,19 @@ describe('App', () => {
     mockAuth.user = null;
     renderAt('/v2/configuracion');
     expect(await screen.findByTestId('dashboard-page')).toBeTruthy();
+  });
+
+  it('deja entrar a reportes al técnico y saca al practicante', async () => {
+    mockAuth.isAuthenticated = true;
+    mockAuth.user = { id: 2, rol: 'Tecnico' };
+    const tecnico = renderAt('/v2/reportes');
+    expect(await screen.findByTestId('reportes-page')).toBeTruthy();
+    tecnico.unmount();
+
+    mockAuth.user = { id: 3, rol: 'Practicante' };
+    renderAt('/v2/reportes');
+    expect(await screen.findByTestId('dashboard-page')).toBeTruthy();
+    expect(screen.queryByTestId('reportes-page')).toBeNull();
   });
 
   it('cierra la sesión al evento auth:logout y deja de escuchar al desmontar', async () => {

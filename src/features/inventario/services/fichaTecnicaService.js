@@ -6,6 +6,11 @@ export const fichaTecnicaService = {
     return response.data;
   },
 
+  getHistorial: async (equipoId) => {
+    const response = await api.get(`/fichas-tecnicas/${equipoId}/historial`);
+    return response.data;
+  },
+
   buscarPorCodigo: async (codigo) => {
     const encoded = encodeURIComponent(codigo.trim());
     const response = await api.get(`/fichas-tecnicas/buscar/${encoded}`);

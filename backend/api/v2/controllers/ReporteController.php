@@ -52,7 +52,8 @@ class ReporteController {
 
     private function pdfStyles(): string {
         return '
-            body  { font-family: "Helvetica", sans-serif; font-size: 13px; color: #1f2937; margin: 2px 10px 20px; }
+            @page { margin: 10mm 12mm 10mm 12mm; }
+            body  { font-family: "Helvetica", sans-serif; font-size: 13px; color: #1f2937; margin: 0; }
             h1    { color: #111827; text-align: center; font-size: 18px; font-weight: 700;
                     margin: 0 0 18px 0; }
             .sub  { text-align:center; color:#64748b; font-size:11px; margin-bottom:20px; }
@@ -62,6 +63,7 @@ class ReporteController {
             th, td{ border:1px solid #e5e7eb; padding:8px 12px; text-align:left; font-size:12px; }
             .general-info-table th, .general-info-table td { padding:5px 10px; }
             th    { background-color:#f3f4f6; width:35%; color:#374151; font-weight:600; }
+            table.datos th { width: auto; }
             td    { color:#111827; }
             .badge{ display:inline-block; padding:2px 10px; border-radius:20px;
                     background:#e5e7eb; color:#111827; font-size:11px; font-weight:bold; }
@@ -69,13 +71,30 @@ class ReporteController {
             .badge-preventivo { background:#f3f4f6; color:#111827; }
             .text-block { white-space: pre-wrap; line-height: 1.5; }
             .image-heading { margin-top:16px; border:1px solid #111827; border-bottom:0; padding:3px; text-align:center; font-size:12px; font-weight:700; }
-            .image-row { width:100%; display:table; table-layout:fixed; border:1px solid #111827; border-top:0; }
-            .image-box { display:table-cell; width:50%; padding:1px; vertical-align:top; background:#ffffff; }
-            .image-box img { width:300px; height:190px; object-fit:contain; display:block; margin:0 auto; }
-            .ficha-pdf { margin:0 10px 8px; font-size:11px; }
-            .ficha-pdf h3 { margin-top:12px !important; margin-bottom:4px !important; }
-            .ficha-pdf .image-heading { margin-top:8px; }
-            .ficha-pdf .general-info-table th, .ficha-pdf .general-info-table td { padding:3px 8px; }
+            .image-row { width:100%; display:table; table-layout:fixed; border:1px solid #111827; border-top:0; border-collapse:collapse; }
+            .image-box { display:table-cell; width:50%; padding:8px; vertical-align:middle; text-align:center; background:#ffffff; }
+            .image-box.image-box-full { width:100%; }
+            .image-box + .image-box { border-left:1px solid #d1d5db; }
+            .image-frame { width:100%; height:200px; overflow:hidden; background:#f8fafc; border:1px solid #e5e7eb; }
+            .image-box img { width:100%; height:200px; object-fit:cover; object-position:center; display:block; }
+            .ficha-pdf { margin:0; font-size:11px; }
+            .ficha-pdf h3 { margin-top:8px !important; margin-bottom:3px !important; font-size:11px !important; letter-spacing:0.4px; }
+            .ficha-pdf th, .ficha-pdf td { padding:4px 7px; font-size:11px; }
+            .ficha-pdf .general-info-table th { width:18%; }
+            .ficha-pdf .general-info-table td { width:32%; }
+            .ficha-pdf table.par, .ficha-pdf table.par td.par-col, .ficha-pdf table.firma, .ficha-pdf table.firma td { border:0; background:transparent; padding:0 4px; }
+            .ficha-pdf table.par { margin-top:4px; }
+            .ficha-pdf table.par table th { width:42%; }
+            .ficha-pdf .text-block { line-height:1.35; font-size:11px; }
+            .ficha-pdf table.imagenes { width:100%; border-collapse:collapse; margin-top:8px; table-layout:fixed; }
+            .ficha-pdf table.imagenes td { border:1px solid #111827; padding:4px; text-align:center; vertical-align:middle; background:#ffffff; }
+            .ficha-pdf table.imagenes td.rotulo { font-size:11px; font-weight:700; letter-spacing:0.4px; padding:3px; }
+            .ficha-pdf table.imagenes img { width:100%; height:145px; display:block; }
+            .ficha-pdf .header-band { margin-bottom:6px; }
+            .ficha-pdf .brand-mark img { max-width:320px; max-height:46px; }
+            .ficha-pdf .header-title { font-size:14px; line-height:1.2; }
+            .ficha-pdf .sheet-number { min-width:0; padding:4px 8px; font-size:13px; }
+            .ficha-pdf .issue-date { min-width:0; margin-top:6px; font-size:11px; }
             .header-band { width:100%; display:block; margin-bottom:18px; }
             .brand-box { width:100%; }
             .brand-mark {
@@ -93,6 +112,8 @@ class ReporteController {
             .footer{ margin-top:50px; text-align:center; font-size:10px; color:#6b7280;
                      border-top:1px solid #e5e7eb; padding-top:10px; }
             .timeline-row:nth-child(even) td { background:#f9fafb; }
+            .hoja { page-break-after: always; }
+            .hoja:last-child { page-break-after: auto; }
         ';
     }
 
@@ -139,9 +160,7 @@ class ReporteController {
             return '';
         }
 
-           return '<div class="image-box">'
-               . '<img src="' . $uri . '" alt="' . $this->h($title) . '" />'
-             . '</div>';
+        return '<img src="' . $uri . '" alt="' . $this->h($title) . '" />';
     }
 
     private function logoDataUri(): string {
@@ -167,6 +186,231 @@ class ReporteController {
         }
 
         return '';
+    }
+
+    private function documentoPdf(string $titulo, string $cuerpo): string {
+        return '<html><head><meta charset="UTF-8"><style>' . $this->pdfStyles() . '</style></head><body>'
+            . '<h1>' . $this->h($titulo) . '</h1>'
+            . '<p class="sub">Sistema de Gestión de Equipos &mdash; MPA</p>'
+            . $cuerpo
+            . '<div class="footer">Documento generado automáticamente &bull; Fecha de emisión: '
+            . date(self::FORMATO_FECHA_HORA) . '</div></body></html>';
+    }
+
+    private function documentoHojas(array $cuerpos): string {
+        $bloques = '';
+        foreach ($cuerpos as $cuerpo) {
+            $bloques .= '<div class="hoja">' . $cuerpo . '</div>';
+        }
+        return '<html><head><meta charset="UTF-8"><style>' . $this->pdfStyles()
+            . '</style></head><body>' . $bloques . '</body></html>';
+    }
+
+    private function nombrePdf(string $codigo, string $reserva): string {
+        $limpio = preg_replace('/[^A-Za-z0-9._-]+/', '_', $codigo);
+        $limpio = trim((string) $limpio, '._-');
+        return $limpio !== '' ? $limpio : $reserva;
+    }
+
+    private function equipoParaReporte(string $codigo): ?array {
+        $codigo = trim($codigo);
+        if ($codigo === '') {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "Código patrimonial requerido."]);
+            return null;
+        }
+        $stmt = $this->db->prepare(
+            "SELECT e.id, e.codigo_patrimonial, e.codigo_identificativo, e.tipo_equipo,
+                    e.marca, e.modelo, e.numero_serie, e.estado_operativo, e.estado_conservacion,
+                    e.ubicacion_fisica, e.responsable_nombre, a.nombre AS area_nombre
+             FROM v2_equipos e
+             LEFT JOIN v2_areas a ON a.id = e.area_id
+             WHERE e.codigo_patrimonial = :codigo
+             LIMIT 1"
+        );
+        $stmt->bindValue(':codigo', $codigo);
+        $stmt->execute();
+        $equipo = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$equipo) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "message" => "Equipo no encontrado."]);
+            return null;
+        }
+        return $equipo;
+    }
+
+    private function tablaEquipo(array $equipo): string {
+        return '<h3>Equipo</h3><table>
+            <tr><th>Código patrimonial</th><td><strong>' . $this->h($equipo['codigo_patrimonial']) . '</strong></td></tr>
+            <tr><th>Código identificativo</th><td>' . $this->h($equipo['codigo_identificativo'] ?: '—') . '</td></tr>
+            <tr><th>Tipo / marca / modelo</th><td>' . $this->h(($equipo['tipo_equipo'] ?? '—') . ' · ' . ($equipo['marca'] ?? '—') . ' ' . ($equipo['modelo'] ?? '')) . '</td></tr>
+            <tr><th>N° de serie</th><td>' . $this->h($equipo['numero_serie'] ?: '—') . '</td></tr>
+            <tr><th>Área</th><td>' . $this->h($equipo['area_nombre'] ?? '—') . '</td></tr>
+            <tr><th>Encargado</th><td>' . $this->h($equipo['responsable_nombre'] ?: '—') . '</td></tr>
+            <tr><th>Ubicación</th><td>' . $this->h($equipo['ubicacion_fisica'] ?: '—') . '</td></tr>
+            <tr><th>Conservación / operativo</th><td>' . $this->h(($equipo['estado_conservacion'] ?? '—') . ' · ' . ($equipo['estado_operativo'] ?? '—')) . '</td></tr>
+        </table>';
+    }
+
+    private function versionesFichaTecnica(int $equipoId): array {
+        $actual = $this->filaHojaTecnica($equipoId);
+        if (!$actual || empty($actual['ficha_id'])) {
+            return [];
+        }
+        $filas = $this->filasHistorialFicha($equipoId);
+        if ($filas === []) {
+            return [$actual];
+        }
+
+        $estado = $actual;
+        $visto = [];
+        foreach ($filas as $fila) {
+            foreach ($this->cambiosDeFila($fila) as $cambio) {
+                $campo = (string) ($cambio['campo'] ?? '');
+                if ($campo === '' || isset($visto[$campo])) {
+                    continue;
+                }
+                $visto[$campo] = true;
+                $estado[$campo] = $this->valorVersion($cambio['antes'] ?? null);
+            }
+        }
+
+        $versiones = [];
+        if ((string) ($filas[0]['accion'] ?? '') !== 'Creación') {
+            $versiones[] = $estado;
+        }
+        foreach ($filas as $fila) {
+            foreach ($this->cambiosDeFila($fila) as $cambio) {
+                $campo = (string) ($cambio['campo'] ?? '');
+                if ($campo === '') {
+                    continue;
+                }
+                $estado[$campo] = $this->valorVersion($cambio['despues'] ?? null);
+            }
+            $versiones[] = $estado;
+        }
+        if ($versiones === []) {
+            return [$actual];
+        }
+        $versiones[count($versiones) - 1] = $actual;
+        return $versiones;
+    }
+
+    private function cambiosDeFila(array $fila): array {
+        $cambios = json_decode((string) ($fila['cambios'] ?? ''), true);
+        return is_array($cambios) ? $cambios : [];
+    }
+
+    private function valorVersion($valor): ?string {
+        if ($valor === null) {
+            return null;
+        }
+        $texto = trim((string) $valor);
+        return $texto === '' ? null : $texto;
+    }
+
+    private function filasHistorialFicha(int $equipoId): array {
+        $stmt = $this->db->prepare(
+            'SELECT h.accion, h.cambios, h.fecha, u.nombre_completo AS usuario
+             FROM v2_ficha_tecnica_historial h
+             LEFT JOIN v2_usuarios u ON u.id = h.usuario_id
+             WHERE h.equipo_id = :id
+             ORDER BY h.fecha ASC, h.id ASC'
+        );
+        $stmt->bindValue(':id', $equipoId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function bloquesFicha(array $filas): string {
+        if ($filas === []) {
+            return '<p>Sin cambios registrados en la ficha técnica.</p>';
+        }
+        $html = '';
+        foreach ($filas as $fila) {
+            $cambios = json_decode((string) ($fila['cambios'] ?? ''), true);
+            $cambios = is_array($cambios) ? $cambios : [];
+            $html .= '<h3>' . $this->h($fila['accion'] ?? 'Cambio') . ' · '
+                . $this->fmtFecha($fila['fecha'] ?? null) . ' · '
+                . $this->h($fila['usuario'] ?: 'Sin usuario') . '</h3>';
+            $html .= '<table class="datos"><tr><th>Campo</th><th>Antes</th><th>Después</th></tr>';
+            foreach ($cambios as $cambio) {
+                $antes = trim((string) ($cambio['antes'] ?? ''));
+                $despues = trim((string) ($cambio['despues'] ?? ''));
+                $html .= '<tr><td>' . $this->h($this->etiquetaCambio((string) ($cambio['campo'] ?? ''))) . '</td>'
+                    . '<td class="text-block">' . $this->h($antes !== '' ? $antes : 'vacío') . '</td>'
+                    . '<td class="text-block">' . $this->h($despues !== '' ? $despues : 'vacío') . '</td></tr>';
+            }
+            $html .= '</table>';
+        }
+        return $html;
+    }
+
+    private function tablaMantenimientos(array $filas): string {
+        if ($filas === []) {
+            return '<p>Sin intervenciones registradas.</p>';
+        }
+        $html = '<table class="datos"><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Técnico</th><th>Estado posterior</th><th>Costo</th></tr>';
+        foreach ($filas as $fila) {
+            $html .= '<tr>
+                <td>' . $this->fmtFecha($fila['fecha_intervencion'] ?? null) . '</td>
+                <td>' . $this->h($fila['tipo_mantenimiento'] ?? '—') . '</td>
+                <td>' . $this->h($fila['categoria_falla'] ?? '—') . '</td>
+                <td>' . $this->h($fila['tecnico'] ?? '—') . '</td>
+                <td>' . $this->h($fila['estado_post_mantenimiento'] ?? '—') . '</td>
+                <td>' . $this->fmtMoneda($fila['costo_reparacion'] ?? null) . '</td>
+            </tr>';
+        }
+        return $html . '</table>';
+    }
+
+    private function etiquetaCambio(string $campo): string {
+        $etiquetas = [
+            'numero_ficha' => 'N° de orden',
+            'fecha_evaluacion' => 'Fecha',
+            'procesador' => 'Procesador',
+            'sistema_operativo' => 'Sistema operativo',
+            'licencia_so' => 'Licencia SO',
+            'mac_address' => 'Dirección MAC',
+            'ip_asignada' => 'IP asignada',
+            'software_base' => 'Software instalado',
+            'diagnostico' => 'Diagnóstico',
+            'conclusion_motivo' => 'Conclusión',
+            'funcionamiento' => 'Funcionamiento',
+            'obsolescencia_tecnologica' => 'Obsolescencia tecnológica',
+            'repuestos_disponibles' => 'Repuestos disponibles',
+            'resultado_evaluacion' => 'Resultado de la evaluación',
+            'imagen_1' => 'Imagen 1',
+            'imagen_2' => 'Imagen 2',
+            'ram_gb' => 'Memoria RAM (GB)',
+            'almacenamiento_gb' => 'Almacenamiento (GB)',
+            'tipo_disco' => 'Tipo de disco',
+            'estado_conservacion' => 'Estado físico',
+            'estado_operativo' => 'Estado operativo',
+        ];
+        return $etiquetas[$campo] ?? $campo;
+    }
+
+    private function fechaReporte(string $fecha): ?string {
+        $fecha = trim($fecha);
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $fecha, $parte)) {
+            return null;
+        }
+        if (!checkdate((int) $parte[2], (int) $parte[3], (int) $parte[1])) {
+            return null;
+        }
+        return sprintf('%04d-%02d-%02d', (int) $parte[1], (int) $parte[2], (int) $parte[3]);
+    }
+
+    private function anioReporte(string $anio): ?int {
+        if (!preg_match('/^\d{4}$/', trim($anio))) {
+            return null;
+        }
+        $valor = (int) $anio;
+        if ($valor < 1990 || $valor > 2100) {
+            return null;
+        }
+        return $valor;
     }
 
     private function renderPdf(string $html, string $filename, string $orientation = 'portrait', string $paper = 'A4'): void {
@@ -211,81 +455,100 @@ class ReporteController {
     }
 
     public function ficha_tecnica($equipo_id) {
-         $query = "SELECT e.*, a.nombre as area_nombre, a.jefe_encargado,
-                         ft.procesador, ft.sistema_operativo, ft.licencia_so,
-                         ft.mac_address, ft.ip_asignada, ft.software_base,
-                         ft.observaciones_evaluacion, ft.diagnostico, ft.conclusion_motivo,
-                         ft.numero_ficha,
-                    ft.imagen_1, ft.imagen_2,
-                    hb.causal_danio, hb.causal_excedencia, hb.causal_chatarra,
-                    hb.causal_reparacion_onerosa, hb.causal_obsolescencia_tecnica,
-                    hb.causal_raee
-                  FROM v2_equipos e
-                  LEFT JOIN v2_areas a ON e.area_id = a.id
-                  LEFT JOIN v2_fichas_tecnicas ft ON e.id = ft.equipo_id
-                LEFT JOIN v2_hojas_baja hb ON e.id = hb.equipo_id
-                  WHERE e.id = :id LIMIT 1";
-
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(":id", $equipo_id);
-        $stmt->execute();
-
-        $e = $stmt->fetch(PDO::FETCH_ASSOC);
+        $e = $this->filaHojaTecnica((int) $equipo_id);
         if (!$e) {
             http_response_code(404);
             echo json_encode(["success" => false, "message" => "Equipo no encontrado"]);
             return;
         }
+        $codigo = $this->nombrePdf((string) ($e['codigo_patrimonial'] ?? ''), (string) $equipo_id);
+        $this->renderPdf(
+            $this->documentoHojas([$this->cuerpoFichaTecnica($e)]),
+            "ficha_tecnica_{$codigo}.pdf"
+        );
+    }
+
+    private function filaHojaTecnica(int $equipo_id): ?array {
+        $query = "SELECT e.*, a.nombre as area_nombre, a.jefe_encargado,
+                         ft.equipo_id AS ficha_id,
+                         ft.procesador, ft.sistema_operativo, ft.licencia_so,
+                         ft.mac_address, ft.ip_asignada, ft.software_base,
+                         ft.observaciones_evaluacion, ft.diagnostico, ft.conclusion_motivo,
+                         ft.numero_ficha, ft.fecha_evaluacion,
+                         ft.funcionamiento, ft.obsolescencia_tecnologica,
+                         ft.repuestos_disponibles, ft.resultado_evaluacion,
+                         ft.imagen_1, ft.imagen_2
+                  FROM v2_equipos e
+                  LEFT JOIN v2_areas a ON e.area_id = a.id
+                  LEFT JOIN v2_fichas_tecnicas ft ON e.id = ft.equipo_id
+                  WHERE e.id = :id LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id', $equipo_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    private function cuerpoFichaTecnica(array $e): string {
+        $equipo_id = (int) ($e['id'] ?? 0);
         $esTecnico = $this->isTechnical($e['tipo_equipo']);
         $tipoEquipo = strtoupper(trim((string) ($e['tipo_equipo'] ?? 'EQUIPO')));
         $numeroFicha = trim((string) ($e['numero_ficha'] ?? ''));
         if ($numeroFicha === '') {
-            $numeroFicha = 'N°' . str_pad((string) ((int) ($e['id'] ?? $equipo_id)), 3, '0', STR_PAD_LEFT);
+            $numeroFicha = 'N° ' . (int) ($e['id'] ?? $equipo_id);
         }
-
-        $causalLabels = [
-            'causal_danio' => 'Daño',
-            'causal_excedencia' => 'Estado De Excedencia',
-            'causal_chatarra' => 'Estado De Chatarra',
-            'causal_reparacion_onerosa' => 'Mantenimiento O Reparacion Onerosa',
-            'causal_obsolescencia_tecnica' => 'Obsolescencia Tecnica',
-            'causal_raee' => 'Raee',
-        ];
-        $causales = [];
-        foreach ($causalLabels as $field => $label) {
-            if (!empty($e[$field])) {
-                $causales[] = $label;
+        $fechaHoja = $this->fmtFechaCorta($e['fecha_evaluacion'] ?? null);
+        if ($fechaHoja === '—') {
+            $fechaHoja = date('d/m/Y');
+        }
+        $anioAdquisicion = '—';
+        if (!empty($e['fecha_adquisicion'])) {
+            $tsAdq = strtotime((string) $e['fecha_adquisicion']);
+            if ($tsAdq) {
+                $anioAdquisicion = date('Y', $tsAdq);
             }
         }
-        $causalesTexto = $causales ? implode(', ', $causales) : '—';
-
-        // ── Sección de especificaciones técnicas (solo si es CPU/Laptop) ──
-        $observacionesEvaluacion = trim((string) ($e['observaciones_evaluacion'] ?? ''));
 
         if ($esTecnico) {
             $seccionTecnica = '
-            <h3 style="color:#1e3a8a;margin-top:28px;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:1px;">
-                Especificaciones de Hardware y Software
-            </h3>
+            <h3>Especificaciones de hardware y software</h3>
             <table>
                 <tr><th>Procesador</th><td>'       . htmlspecialchars($e['procesador']       ?? 'N/A') . '</td></tr>
                 <tr><th>Memoria RAM</th><td>'      . htmlspecialchars(($e['ram_gb'] ?? '-') . ' GB') . '</td></tr>
                 <tr><th>Almacenamiento</th><td>'   . htmlspecialchars(($e['almacenamiento_gb'] ?? '-') . ' GB ' . ($e['tipo_disco'] ?? '')) . '</td></tr>
-                <tr><th>Sistema Operativo</th><td>'. htmlspecialchars($e['sistema_operativo'] ?? 'N/A') . '</td></tr>
+                <tr><th>Sistema operativo</th><td>'. htmlspecialchars($e['sistema_operativo'] ?? 'N/A') . '</td></tr>
                 <tr><th>Licencia SO</th><td>'      . htmlspecialchars($e['licencia_so']       ?? 'N/A') . '</td></tr>
                 <tr><th>Dirección MAC</th><td>'    . htmlspecialchars($e['mac_address']       ?? 'N/A') . '</td></tr>
-                <tr><th>IP Asignada</th><td>'      . htmlspecialchars($e['ip_asignada']       ?? 'DHCP') . '</td></tr>
-                <tr><th>Software Base</th><td>'    . htmlspecialchars($e['software_base']     ?? 'N/A') . '</td></tr>
+                <tr><th>IP asignada</th><td>'      . htmlspecialchars($e['ip_asignada']       ?? 'DHCP') . '</td></tr>
+                <tr><th>Software base</th><td>'    . htmlspecialchars($e['software_base']     ?? 'N/A') . '</td></tr>
             </table>';
-        } elseif (strtolower(trim($e['tipo_equipo'] ?? '')) === 'monitor') {
-            $seccionTecnica = '';
         } else {
-            $seccionTecnica = '
-            <div style="margin-top:20px;padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-size:12px;">
-                Las especificaciones técnicas de hardware y software no aplican para equipos de tipo
-                <strong>' . htmlspecialchars($e['tipo_equipo'] ?? '') . '</strong>.
-            </div>';
+            $seccionTecnica = '';
         }
+
+        $opcionesResultado = [
+            'Puede continuar en servicio',
+            'Requiere mantenimiento',
+            'Requiere reparación',
+            'Técnicamente no resulta ser utilizado',
+            'Se recomienda retirar del servicio',
+        ];
+        $filasResultado = '';
+        foreach ($opcionesResultado as $opcion) {
+            $marca = strcasecmp(trim((string) ($e['resultado_evaluacion'] ?? '')), $opcion) === 0 ? 'X' : '';
+            $filasResultado .= '<tr><td>' . $this->h(mb_strtoupper($opcion, 'UTF-8')) . '</td>'
+                . '<td style="width:36px;text-align:center;font-weight:700;">' . $marca . '</td></tr>';
+        }
+        $seccionEvaluacion = '
+            <h3>Evaluación técnica</h3>
+            <table>
+                <tr><th>Estado físico</th><td>' . $this->h($e['estado_conservacion'] ?? '—') . '</td></tr>
+                <tr><th>Funcionamiento</th><td>' . $this->h($e['funcionamiento'] ?? '—') . '</td></tr>
+                <tr><th>Obsolescencia tecnológica</th><td>' . $this->h($e['obsolescencia_tecnologica'] ?? '—') . '</td></tr>
+                <tr><th>Repuestos disponibles</th><td>' . $this->h($e['repuestos_disponibles'] ?? '—') . '</td></tr>
+            </table>
+            <h3>Resultado de la evaluación</h3>
+            <table>' . $filasResultado . '</table>';
 
         $diagnosticoText = trim((string) ($e['diagnostico'] ?? $e['observaciones_evaluacion'] ?? ''));
         $conclusionText = trim((string) ($e['conclusion_motivo'] ?? ''));
@@ -294,37 +557,40 @@ class ReporteController {
 
         $seccionDiagnostico = '';
         if ($diagnosticoText !== '') {
-            $seccionDiagnostico = '
-            <h3 style="color:#1e3a8a;margin-top:28px;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:1px;">
-                Diagnóstico
-            </h3>
-            <div class="text-block">' . $this->h($diagnosticoText) . '</div>';
+            $seccionDiagnostico = '<h3>Diagnóstico técnico</h3><div class="text-block">' . $this->h($diagnosticoText) . '</div>';
         }
 
         $seccionConclusion = '';
         if ($conclusionText !== '') {
-            $seccionConclusion = '
-            <h3 style="color:#1e3a8a;margin-top:28px;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:1px;">
-                Conclusión y/o Motivo
-            </h3>
-            <div class="text-block">' . $this->h($conclusionText) . '</div>';
+            $seccionConclusion = '<h3>Opinión técnica o conclusión</h3><div class="text-block">' . $this->h($conclusionText) . '</div>';
+        }
+        if ($seccionDiagnostico !== '' && $seccionConclusion !== '') {
+            $seccionDiagnostico = '<table class="par"><tr><td class="par-col">' . $seccionDiagnostico
+                . '</td><td class="par-col">' . $seccionConclusion . '</td></tr></table>';
+            $seccionConclusion = '';
         }
 
+        $fotos = array_values(array_filter([$imagen1Tag, $imagen2Tag], static function ($tag) {
+            return $tag !== '';
+        }));
         $seccionImagenes = '';
-        if ($imagen1Tag !== '' || $imagen2Tag !== '') {
-            $seccionImagenes = '
-            <div class="image-heading">IMAGEN</div>
-            <div class="image-row">' . $imagen1Tag . $imagen2Tag . '</div>';
+        if ($fotos !== []) {
+            $celdas = '';
+            foreach ($fotos as $foto) {
+                $celdas .= '<td>' . $foto . '</td>';
+            }
+            $seccionImagenes = '<table class="imagenes"><tr><td class="rotulo" colspan="'
+                . count($fotos) . '">IMAGEN</td></tr><tr>' . $celdas . '</tr></table>';
         }
 
         $firmante = $this->firmanteInfo();
         $firmaHtml = '
-        <table style="width:100%; border:0; margin-top:36px;">
-            <tr><td style="border:0; text-align:center;">
-            <div style="width:42%; margin:0 auto; text-align:center;">
-                <div style="height:42px; border-bottom:2px solid #1e293b; margin-bottom:10px; opacity:0.9;"></div>
-                <div style="font-size:10px; color:#475569; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; margin-bottom:6px;">' . $this->h($firmante['rol']) . '</div>
-                <div style="font-size:13px; color:#0f172a; font-weight:700; letter-spacing:0.2px;">' . $this->h($firmante['nombre']) . '</div>
+        <table class="firma" style="width:100%; margin-top:14px;">
+            <tr><td style="text-align:center;">
+            <div style="width:46%; margin:0 auto; text-align:center;">
+                <div style="height:26px; border-bottom:1px solid #1e293b; margin-bottom:4px;"></div>
+                <div style="font-size:10px; color:#475569; letter-spacing:1px; text-transform:uppercase; font-weight:700;">Técnico PAD</div>
+                <div style="font-size:12px; color:#0f172a; font-weight:700;">' . $this->h($firmante['nombre']) . '</div>
             </div>
             </td></tr>
         </table>';
@@ -340,56 +606,51 @@ class ReporteController {
                     <div class="header-title">HOJA DE REVISIÓN TÉCNICA DE ' . $this->h($tipoEquipo) . '</div>
                     <div class="header-meta">
                         <div class="sheet-number">' . $this->h($numeroFicha) . '</div>
-                        <div class="issue-date">FECHA: ' . date('d/m/Y') . '</div>
+                        <div class="issue-date">FECHA: ' . $this->h($fechaHoja) . '</div>
                     </div>
                 </div>
             </div>
         </div>
         ';
 
-        $html = '
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <style>' . $this->pdfStyles() . '</style>
-        </head>
-        <body class="ficha-pdf">
+        $bloqueMedio = $esTecnico
+            ? '<table class="par"><tr><td class="par-col">' . $seccionTecnica . '</td><td class="par-col">' . $seccionEvaluacion . '</td></tr></table>'
+            : $seccionEvaluacion;
+
+        return '
+        <div class="ficha-pdf">
             ' . $headerHtml . '
 
-            <h3 style="margin-top:10px;">Información General</h3>
+            <h3>Información general</h3>
             <table class="general-info-table">
-                <tr><th>Código Patrimonial</th><td><strong>' . $this->h($e['codigo_patrimonial'] ?? '') . '</strong></td></tr>
-                <tr><th>Código Identificativo</th><td>'     . $this->h($e['codigo_identificativo'] ?? '—') . '</td></tr>
-                <tr><th>Tipo de Equipo</th><td><span class="badge">' . $this->h($e['tipo_equipo'] ?? '') . '</span></td></tr>
-                <tr><th>Marca</th><td>'                  . $this->h($e['marca'] ?? '—') . '</td></tr>
-                <tr><th>Modelo</th><td>'                 . $this->h($e['modelo'] ?? '—') . '</td></tr>
-                <tr><th>Color</th><td>'                  . $this->h($e['color'] ?? '—') . '</td></tr>
-                <tr><th>Número de Serie</th><td>'           . $this->h($e['numero_serie'] ?? '—') . '</td></tr>
-                <tr><th>Oficina</th><td>'                   . $this->h($e['area_nombre'] ?? '—') . '</td></tr>
-                <tr><th>Responsable</th><td>'               . $this->h($e['responsable_nombre'] ?? $e['jefe_encargado'] ?? '—') . '</td></tr>
-                <tr><th>Causales</th><td>'                  . $this->h($causalesTexto) . '</td></tr>
-                <tr><th>Estado Conservación</th><td>'       . $this->h($e['estado_conservacion'] ?? '—') . '</td></tr>
-                <tr><th>Estado Operativo</th><td>'          . $this->h($e['estado_operativo'] ?? '—') . '</td></tr>
+                <tr>
+                    <th>Código patrimonial</th><td><strong>' . $this->h($e['codigo_patrimonial'] ?? '') . '</strong></td>
+                    <th>Código identificativo</th><td>' . $this->h($e['codigo_identificativo'] ?? '—') . '</td>
+                </tr>
+                <tr>
+                    <th>Tipo de equipo</th><td>' . $this->h($e['tipo_equipo'] ?? '') . '</td>
+                    <th>Marca</th><td>' . $this->h($e['marca'] ?? '—') . '</td>
+                </tr>
+                <tr>
+                    <th>Modelo</th><td>' . $this->h($e['modelo'] ?? '—') . '</td>
+                    <th>Color</th><td>' . $this->h($e['color'] ?? '—') . '</td>
+                </tr>
+                <tr>
+                    <th>Número de serie</th><td>' . $this->h($e['numero_serie'] ?? '—') . '</td>
+                    <th>Oficina</th><td>' . $this->h($e['area_nombre'] ?? '—') . '</td>
+                </tr>
+                <tr>
+                    <th>Responsable</th><td>' . $this->h($e['responsable_nombre'] ?? $e['jefe_encargado'] ?? '—') . '</td>
+                    <th>Año de adquisición</th><td>' . $this->h($anioAdquisicion) . '</td>
+                </tr>
             </table>
 
-            ' . implode("\n            ", [
-                $seccionTecnica,
-                $seccionDiagnostico,
-                $seccionConclusion,
-                $seccionImagenes,
-                $firmaHtml,
-            ]) . '
-
-        </body>
-        </html>';
-
-        $codigoArchivo = preg_replace(
-            '/[^A-Za-z0-9._-]+/',
-            '_',
-            (string) ($e['codigo_patrimonial'] ?? $equipo_id)
-        );
-        $codigoArchivo = trim($codigoArchivo, '._-') ?: (string) $equipo_id;
-        $this->renderPdf($html, "ficha_tecnica_{$codigoArchivo}.pdf");
+            ' . $bloqueMedio . '
+            ' . $seccionDiagnostico . '
+            ' . $seccionConclusion . '
+            ' . $seccionImagenes . '
+            ' . $firmaHtml . '
+        </div>';
     }
 
     public function historial_mantenimiento(string $codigo) {
@@ -408,65 +669,175 @@ class ReporteController {
         }
 
         $stmt = $this->mantenimiento->getByEquipoId((int) $equipo['id']);
-        $historial = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $filas = array_reverse($stmt->fetchAll(PDO::FETCH_ASSOC));
+        $cuerpos = $filas === []
+            ? [$this->avisoSinFichas('Este equipo no tiene fichas de mantenimiento.')]
+            : $this->cuerposMantenimiento($filas);
+        $codigo = $this->nombrePdf((string) $equipo['codigo_patrimonial'], 'equipo');
+        $this->renderPdf($this->documentoHojas($cuerpos), "fichas_mantenimiento_{$codigo}.pdf");
+    }
 
-        $filas = '';
-        if (count($historial) === 0) {
-            $filas = '<tr><td colspan="6" style="text-align:center;color:#64748b;">Sin intervenciones registradas.</td></tr>';
-        } else {
-            foreach ($historial as $m) {
-                $tipoCls = ($m['tipo_mantenimiento'] ?? '') === 'Correctivo' ? 'badge-correctivo' : 'badge-preventivo';
-                $filas .= '<tr class="timeline-row">
-                    <td>' . $this->fmtFecha($m['fecha_intervencion'] ?? null) . '</td>
-                    <td><span class="badge ' . $tipoCls . '">' . $this->h($m['tipo_mantenimiento'] ?? '—') . '</span></td>
-                    <td>' . $this->h($m['categoria_falla'] ?? '—') . '</td>
-                    <td>' . $this->h($m['tecnico'] ?? '—') . '</td>
-                    <td>' . $this->h($m['estado_post_mantenimiento'] ?? '—') . '</td>
-                    <td>' . $this->fmtMoneda($m['costo_reparacion'] ?? null) . '</td>
-                </tr>';
-            }
+    public function historialEquipo(string $codigo): void {
+        $equipo = $this->equipoParaReporte($codigo);
+        if (!$equipo) {
+            return;
+        }
+        $cuerpos = $this->cuerposFichasEquipo((int) $equipo['id']);
+        if ($cuerpos === []) {
+            $cuerpos[] = $this->avisoSinFichas('Este equipo no tiene fichas registradas.');
+        }
+        $archivo = $this->nombrePdf((string) $equipo['codigo_patrimonial'], 'equipo');
+        $this->renderPdf($this->documentoHojas($cuerpos), "fichas_equipo_{$archivo}.pdf");
+    }
+
+    public function historialFicha(string $codigo): void {
+        $equipo = $this->equipoParaReporte($codigo);
+        if (!$equipo) {
+            return;
+        }
+        $hojas = $this->versionesFichaTecnica((int) $equipo['id']);
+        $cuerpos = $hojas === []
+            ? [$this->avisoSinFichas('Este equipo no tiene ficha técnica.')]
+            : array_map(fn (array $hoja) => $this->cuerpoFichaTecnica($hoja), $hojas);
+        $archivo = $this->nombrePdf((string) $equipo['codigo_patrimonial'], 'equipo');
+        $this->renderPdf($this->documentoHojas($cuerpos), "fichas_tecnicas_{$archivo}.pdf");
+    }
+
+    public function mantenimientosFecha(string $fecha): void {
+        $dia = $this->fechaReporte($fecha);
+        if ($dia === null) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "La fecha del reporte no es válida."]);
+            return;
         }
 
-        $html = '
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <style>' . $this->pdfStyles() . '</style>
-        </head>
-        <body>
-            <h1>Historial de Mantenimiento</h1>
-            <p class="sub">Sistema de Gestión de Equipos &mdash; MPA V2</p>
+        $stmt = $this->db->prepare(
+            "SELECT m.id
+             FROM v2_fichas_mantenimiento m
+             LEFT JOIN v2_equipos e ON e.id = m.equipo_id
+             WHERE DATE(m.fecha_intervencion) = :fecha
+             ORDER BY e.codigo_patrimonial, m.fecha_intervencion, m.id"
+        );
+        $stmt->bindValue(':fecha', $dia);
+        $stmt->execute();
+        $cuerpos = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
+            $m = $this->mantenimiento->getById((int) $fila['id']);
+            if ($m) {
+                $cuerpos[] = $this->cuerpoFichaMantenimiento($m);
+            }
+        }
+        if ($cuerpos === []) {
+            $cuerpos[] = $this->avisoSinFichas('No hay fichas de mantenimiento en esa fecha.');
+        }
+        $this->renderPdf($this->documentoHojas($cuerpos), 'fichas_' . $dia . '.pdf');
+    }
 
-            <h3>Equipo</h3>
-            <table>
-                <tr><th>Código Patrimonial</th><td><strong>' . $this->h($equipo['codigo_patrimonial']) . '</strong></td></tr>
-                <tr><th>Tipo / Marca / Modelo</th><td>' . $this->h(($equipo['tipo_equipo'] ?? '—') . ' · ' . ($equipo['marca'] ?? '—') . ' ' . ($equipo['modelo'] ?? '')) . '</td></tr>
-                <tr><th>Área</th><td>' . $this->h($equipo['area_nombre'] ?? '—') . '</td></tr>
-                <tr><th>Estado operativo</th><td>' . $this->h($equipo['estado_operativo'] ?? '—') . '</td></tr>
-                <tr><th>Último mantenimiento</th><td>' . $this->fmtFechaCorta($equipo['fecha_ultimo_mantenimiento'] ?? null) . '</td></tr>
-                <tr><th>Total intervenciones</th><td>' . count($historial) . '</td></tr>
-            </table>
+    public function anios(): void {
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'tecnicas' => $this->aniosDe('SELECT fecha_evaluacion AS fecha FROM v2_fichas_tecnicas'),
+                'mantenimientos' => $this->aniosDe('SELECT fecha_intervencion AS fecha FROM v2_fichas_mantenimiento'),
+            ],
+        ]);
+    }
 
-            <h3>Cronología de intervenciones</h3>
-            <table>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Tipo</th>
-                    <th>Categoría</th>
-                    <th>Técnico</th>
-                    <th>Estado posterior</th>
-                    <th>Costo</th>
-                </tr>
-                ' . $filas . '
-            </table>
+    public function fichasTecnicasAnio(string $anio): void {
+        $valor = $this->anioReporte($anio);
+        if ($valor === null) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'El año del reporte no es válido.']);
+            return;
+        }
+        $stmt = $this->db->prepare(
+            "SELECT ft.equipo_id
+             FROM v2_fichas_tecnicas ft
+             LEFT JOIN v2_equipos e ON e.id = ft.equipo_id
+             WHERE SUBSTR(ft.fecha_evaluacion, 1, 4) = :anio
+             ORDER BY e.codigo_patrimonial, ft.numero_ficha, ft.equipo_id"
+        );
+        $stmt->bindValue(':anio', (string) $valor);
+        $stmt->execute();
+        $cuerpos = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
+            $hoja = $this->filaHojaTecnica((int) $fila['equipo_id']);
+            if ($hoja && !empty($hoja['ficha_id'])) {
+                $cuerpos[] = $this->cuerpoFichaTecnica($hoja);
+            }
+        }
+        if ($cuerpos === []) {
+            $cuerpos[] = $this->avisoSinFichas('No hay fichas técnicas en ese año.');
+        }
+        $this->renderPdf($this->documentoHojas($cuerpos), 'fichas_tecnicas_' . $valor . '.pdf');
+    }
 
-            <div class="footer">
-                Documento generado automáticamente &bull; Fecha de emisión: ' . date(self::FORMATO_FECHA_HORA) . '
-            </div>
-        </body>
-        </html>';
+    public function fichasMantenimientoAnio(string $anio): void {
+        $valor = $this->anioReporte($anio);
+        if ($valor === null) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'El año del reporte no es válido.']);
+            return;
+        }
+        $stmt = $this->db->prepare(
+            "SELECT m.id
+             FROM v2_fichas_mantenimiento m
+             LEFT JOIN v2_equipos e ON e.id = m.equipo_id
+             WHERE SUBSTR(m.fecha_intervencion, 1, 4) = :anio
+             ORDER BY m.fecha_intervencion, e.codigo_patrimonial, m.id"
+        );
+        $stmt->bindValue(':anio', (string) $valor);
+        $stmt->execute();
+        $cuerpos = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
+            $m = $this->mantenimiento->getById((int) $fila['id']);
+            if ($m) {
+                $cuerpos[] = $this->cuerpoFichaMantenimiento($m);
+            }
+        }
+        if ($cuerpos === []) {
+            $cuerpos[] = $this->avisoSinFichas('No hay fichas de mantenimiento en ese año.');
+        }
+        $this->renderPdf($this->documentoHojas($cuerpos), 'fichas_mantenimiento_' . $valor . '.pdf');
+    }
 
-        $this->renderPdf($html, "historial_mantenimiento_" . $equipo['codigo_patrimonial'] . ".pdf");
+    private function aniosDe(string $sql): array {
+        $anios = [(int) date('Y')];
+        $stmt = $this->db->query($sql);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
+            $anio = $this->anioReporte(substr((string) ($fila['fecha'] ?? ''), 0, 4));
+            if ($anio !== null) {
+                $anios[] = $anio;
+            }
+        }
+        $anios = array_values(array_unique($anios));
+        rsort($anios);
+        return $anios;
+    }
+
+    private function cuerposFichasEquipo(int $equipoId): array {
+        $cuerpos = [];
+        $hoja = $this->filaHojaTecnica($equipoId);
+        if ($hoja && !empty($hoja['ficha_id'])) {
+            $cuerpos[] = $this->cuerpoFichaTecnica($hoja);
+        }
+        $stmt = $this->mantenimiento->getByEquipoId($equipoId);
+        $filas = array_reverse($stmt->fetchAll(PDO::FETCH_ASSOC));
+        return array_merge($cuerpos, $this->cuerposMantenimiento($filas));
+    }
+
+    private function cuerposMantenimiento(array $filas): array {
+        $cuerpos = [];
+        foreach ($filas as $fila) {
+            $cuerpos[] = $this->cuerpoFichaMantenimiento($fila);
+        }
+        return $cuerpos;
+    }
+
+    private function avisoSinFichas(string $texto): string {
+        return '<h1>Fichas</h1>'
+            . '<p class="sub">Sistema de Gestión de Equipos &mdash; MPA</p>'
+            . '<p>' . $this->h($texto) . '</p>';
     }
 
     public function ficha_mantenimiento(int $id) {
@@ -477,6 +848,14 @@ class ReporteController {
             return;
         }
 
+        $archivo = $this->nombrePdf((string) ($m['nro_orden'] ?? ''), (string) $id);
+        $this->renderPdf(
+            $this->documentoHojas([$this->cuerpoFichaMantenimiento($m)]),
+            "ficha_mantenimiento_{$archivo}.pdf"
+        );
+    }
+
+    private function cuerpoFichaMantenimiento(array $m): string {
         $tipoCls = ($m['tipo_mantenimiento'] ?? '') === 'Correctivo' ? 'badge-correctivo' : 'badge-preventivo';
         $esCorrectivo = ($m['tipo_mantenimiento'] ?? '') === 'Correctivo';
 
@@ -505,13 +884,7 @@ class ReporteController {
                 <tr><th>Inactividad (min)</th><td>' . $this->h($m['tiempo_inactividad_min'] ?? '0') . '</td></tr>
             </table>';
 
-        $html = '
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <style>' . $this->pdfStyles() . '</style>
-        </head>
-        <body>
+        return '
             <h1>Ficha de Mantenimiento</h1>
             <p class="sub">Sistema de Gestión de Equipos &mdash; MPA V2</p>
 
@@ -543,11 +916,7 @@ class ReporteController {
 
             <div class="footer">
                 Documento generado automáticamente &bull; Fecha de emisión: ' . date(self::FORMATO_FECHA_HORA) . '
-            </div>
-        </body>
-        </html>';
-
-        $this->renderPdf($html, "ficha_mantenimiento_" . ($m['nro_orden'] ?? $id) . ".pdf");
+            </div>';
     }
 
     public function cronograma(int $id): void {

@@ -49,7 +49,7 @@ final class ConfigAuthTest extends TestCase
 
         $this->valores([]);
         putenv('ML_SERVICE_URL');
-        $this->assertSame('http://127.0.0.1:8000', MlConfig::getServiceUrl());
+        $this->assertSame('http://127.0.0.1:8080', MlConfig::getServiceUrl());
         $this->assertSame(90, MlConfig::getTimeoutSeconds());
     }
 

@@ -1,12 +1,23 @@
-import React, { Children, cloneElement, isValidElement, useEffect, useId, useState } from 'react';
+import React, {
+  Children, cloneElement, isValidElement, useEffect, useId, useRef, useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import {
-  Save, FileText, Cpu, HardDrive, Monitor, Wifi, Key, Package, ClipboardCheck, Brain
+  Save, FileText, Cpu, HardDrive, Monitor, Wifi, Key, Package, ClipboardCheck, Brain,
+  ImagePlus, Replace, X, History,
 } from 'lucide-react';
 import { downloadPdf } from '../../../lib/api';
+import { API_BASE_URL } from '../../../constants/config';
 import { fichaTecnicaService } from '../services/fichaTecnicaService';
 import { mlService } from '../../ml/services/mlService';
 import { RiesgoBadge } from '../../ml/components/RiesgoBadge';
+
+const FICHAS_UPLOADS_URL = API_BASE_URL.replace(/\/api\/v2\/?$/, '/uploads/fichas_tecnicas');
+
+function urlImagenFicha(fileName) {
+  if (!fileName) return null;
+  return `${FICHAS_UPLOADS_URL}/${encodeURIComponent(fileName)}`;
+}
 
 function withFieldId(node, id) {
   if (!isValidElement(node)) return node;
@@ -43,10 +54,162 @@ Field.propTypes = {
   children: PropTypes.node,
 };
 
+const ImageUploadField = ({ name, label, currentName, file, onFileChange, onClear }) => {
+  const fieldId = useId();
+  const inputRef = useRef(null);
+  const [preview, setPreview] = useState(null);
+
+  useEffect(() => {
+    if (file) {
+      if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+        const url = URL.createObjectURL(file);
+        setPreview(url);
+        return () => {
+          if (typeof URL.revokeObjectURL === 'function') URL.revokeObjectURL(url);
+        };
+      }
+      setPreview(null);
+      return undefined;
+    }
+    setPreview(urlImagenFicha(currentName));
+    return undefined;
+  }, [file, currentName]);
+
+  const displayName = file?.name || currentName || '';
+  const hasImage = Boolean(preview);
+
+  return (
+    <div className="space-y-2">
+      <label htmlFor={fieldId} className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+        <ImagePlus size={12} /> {label}
+      </label>
+      <input
+        ref={inputRef}
+        id={fieldId}
+        type="file"
+        name={name}
+        accept="image/jpeg,image/png"
+        onChange={onFileChange}
+        className="sr-only"
+      />
+      <div
+        className={`relative overflow-hidden rounded-xl border-2 border-dashed transition-colors ${
+          hasImage
+            ? 'border-slate-200 bg-slate-50'
+            : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/40'
+        }`}
+      >
+        {hasImage ? (
+          <div className="relative aspect-[4/3] bg-slate-100">
+            <img
+              src={preview}
+              alt={displayName || label}
+              className="absolute inset-0 h-full w-full object-contain p-2"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <div className="absolute inset-x-0 bottom-0 flex gap-2 bg-gradient-to-t from-slate-900/70 to-transparent p-3">
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-white/95 px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-white"
+              >
+                <Replace size={14} /> Cambiar
+              </button>
+              {file && (
+                <button
+                  type="button"
+                  onClick={onClear}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-white/95 px-3 py-1.5 text-xs font-medium text-red-600 shadow-sm hover:bg-white"
+                >
+                  <X size={14} /> Quitar
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="flex w-full flex-col items-center justify-center gap-2 px-4 py-8 text-center"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+              <ImagePlus size={22} />
+            </span>
+            <span className="text-sm font-medium text-slate-700">Agregar imagen</span>
+            <span className="text-xs text-slate-400">JPG o PNG · clic para seleccionar</span>
+          </button>
+        )}
+      </div>
+      {displayName && (
+        <p className="truncate text-xs text-slate-500" title={displayName}>
+          {file ? `Nueva: ${file.name}` : `Imagen actual: ${currentName}`}
+        </p>
+      )}
+    </div>
+  );
+};
+
+ImageUploadField.propTypes = {
+  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  currentName: PropTypes.string,
+  file: PropTypes.object,
+  onFileChange: PropTypes.func.isRequired,
+  onClear: PropTypes.func.isRequired,
+};
+
 const inputCls = 'w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white';
 const selectCls = `${inputCls} bg-white`;
 
 const TECHNICAL_TYPES = ['CPU', 'Laptop', 'PC'];
+const CAMPOS_COMPUTO = [
+  'procesador', 'sistema_operativo', 'licencia_so', 'mac_address', 'ip_asignada',
+  'software_base', 'ram_gb', 'almacenamiento_gb', 'tipo_disco',
+];
+const RESULTADOS_EVALUACION = [
+  'Puede continuar en servicio',
+  'Requiere mantenimiento',
+  'Requiere reparación',
+  'Técnicamente no resulta ser utilizado',
+  'Se recomienda retirar del servicio',
+];
+
+const fechaParaInput = (valor) => (valor ? String(valor).slice(0, 10) : '');
+
+const ETIQUETAS_HISTORIAL = {
+  numero_ficha: 'N° de orden',
+  fecha_evaluacion: 'Fecha',
+  procesador: 'Procesador',
+  sistema_operativo: 'Sistema operativo',
+  licencia_so: 'Licencia SO',
+  mac_address: 'Dirección MAC',
+  ip_asignada: 'IP asignada',
+  software_base: 'Software instalado',
+  diagnostico: 'Diagnóstico',
+  conclusion_motivo: 'Conclusión',
+  funcionamiento: 'Funcionamiento',
+  obsolescencia_tecnologica: 'Obsolescencia tecnológica',
+  repuestos_disponibles: 'Repuestos disponibles',
+  resultado_evaluacion: 'Resultado de la evaluación',
+  imagen_1: 'Imagen 1',
+  imagen_2: 'Imagen 2',
+  ram_gb: 'Memoria RAM (GB)',
+  almacenamiento_gb: 'Almacenamiento (GB)',
+  tipo_disco: 'Tipo de disco',
+  estado_conservacion: 'Estado físico',
+  estado_operativo: 'Estado operativo',
+};
+
+const textoCambio = (valor) => (valor ? valor : 'vacío');
+
+const fechaHistoria = (valor) => {
+  if (!valor) return '';
+  const fecha = new Date(String(valor).replace(' ', 'T'));
+  if (Number.isNaN(fecha.getTime())) return String(valor);
+  return fecha.toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
+};
 
 const estadoBadge = (tipo, valor) => {
   const map = {
@@ -91,6 +254,12 @@ const buildFormState = (data) => ({
   estado_operativo: data.estado_operativo || 'Operativo',
   diagnostico: data.diagnostico || data.observaciones_evaluacion || '',
   conclusion_motivo: data.conclusion_motivo || '',
+  numero_ficha: data.numero_ficha || '',
+  fecha_evaluacion: fechaParaInput(data.fecha_evaluacion),
+  funcionamiento: data.funcionamiento || '',
+  obsolescencia_tecnologica: data.obsolescencia_tecnologica || '',
+  repuestos_disponibles: data.repuestos_disponibles || '',
+  resultado_evaluacion: data.resultado_evaluacion || '',
   imagen_1: data.imagen_1 || '',
   imagen_2: data.imagen_2 || '',
 });
@@ -104,6 +273,7 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
   const [riesgo, setRiesgo] = useState(null);
+  const [historial, setHistorial] = useState([]);
 
   const isTechnical = data
     ? TECHNICAL_TYPES.some((t) => data.tipo_equipo?.toLowerCase().includes(t.toLowerCase()))
@@ -128,6 +298,12 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
         setData(res.data);
         setForm(buildFormState(res.data));
         loadRiesgo(equipoId);
+        try {
+          const hist = await fichaTecnicaService.getHistorial(equipoId);
+          setHistorial(hist.success && Array.isArray(hist.data) ? hist.data : []);
+        } catch {
+          setHistorial([]);
+        }
       } else {
         setError(res.message || 'No se pudo cargar la ficha.');
       }
@@ -146,7 +322,20 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
 
   const handleFileChange = (e) => {
     const { name, files: fileList } = e.target;
-    setFiles({ ...files, [name]: fileList?.[0] ?? null });
+    const nextFile = fileList?.[0] ?? null;
+    setFiles((prev) => ({ ...prev, [name]: nextFile }));
+    if (nextFile) {
+      setForm((prev) => ({ ...prev, [name]: nextFile.name }));
+    }
+    e.target.value = '';
+  };
+
+  const handleClearImage = (name) => {
+    setFiles((prev) => ({ ...prev, [name]: null }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: data?.[name] || '',
+    }));
   };
 
   const handleSave = async () => {
@@ -157,6 +346,9 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
       if (['imagen_1', 'imagen_2'].includes(key)) {
+        return;
+      }
+      if (!isTechnical && CAMPOS_COMPUTO.includes(key)) {
         return;
       }
       if (value !== null && value !== undefined) {
@@ -170,6 +362,7 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
       const res = await fichaTecnicaService.saveFicha(equipoId, formData, true);
       if (res.success) {
         setSaved(true);
+        setFiles({ imagen_1: null, imagen_2: null });
         setTimeout(() => setSaved(false), 3000);
         await loadFicha();
       } else {
@@ -246,10 +439,9 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
               <p className="text-xs text-slate-400 mb-1">Operativo</p>
               {estadoBadge('operativo', form.estado_operativo)}
             </div>
-            {data.fecha_evaluacion && (
+            {form.resultado_evaluacion && (
               <div className="text-xs text-slate-500 ml-auto">
-                Última evaluación:{' '}
-                {new Date(data.fecha_evaluacion).toLocaleString('es-PE')}
+                Resultado: {form.resultado_evaluacion}
               </div>
             )}
           </div>
@@ -342,12 +534,7 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
               </div>
             </div>
           </>
-        ) : (
-          <div className="bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm text-slate-500">
-            Las especificaciones de hardware/software no aplican para equipos tipo{' '}
-            <strong className="text-slate-700">{data.tipo_equipo}</strong>.
-          </div>
-        )}
+        ) : null}
 
         {riesgo && (
           <div className="bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-100 rounded-xl p-5">
@@ -395,19 +582,56 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
             <ClipboardCheck size={16} className="text-blue-500" /> Registrar Evaluación
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <Field label="Estado de Conservación">
+            <Field label="N° de orden">
+              <input
+                name="numero_ficha"
+                value={form.numero_ficha}
+                onChange={handleChange}
+                className={inputCls}
+                placeholder="Ej: 51 o N° 51"
+              />
+            </Field>
+            <Field label="Fecha">
+              <input
+                type="date"
+                name="fecha_evaluacion"
+                value={form.fecha_evaluacion}
+                onChange={handleChange}
+                className={inputCls}
+              />
+            </Field>
+            <Field label="Estado físico">
               <select name="estado_conservacion" value={form.estado_conservacion} onChange={handleChange} className={selectCls}>
                 <option>Nuevo</option><option>Bueno</option><option>Regular</option><option>Malo</option>
               </select>
             </Field>
-            <Field label="Causales">
-              <select name="estado_operativo" value={form.estado_operativo} onChange={handleChange} className={selectCls}>
-                <option>Dañado</option>
-                <option>ESTADO DE EXCEDENCIA</option>
-                <option>ESTADO DE CHATARRA</option>
-                <option>MANTENIMIENTO O REPARACION ONEROSA</option>
-                <option>OBSOLESCENCIA TECNICA</option>
-                <option>RAEE</option>
+            <Field label="Funcionamiento">
+              <select name="funcionamiento" value={form.funcionamiento} onChange={handleChange} className={selectCls}>
+                <option value="">Seleccione</option>
+                <option>Sin fallas</option>
+                <option>Con fallas</option>
+              </select>
+            </Field>
+            <Field label="Obsolescencia tecnológica">
+              <select name="obsolescencia_tecnologica" value={form.obsolescencia_tecnologica} onChange={handleChange} className={selectCls}>
+                <option value="">Seleccione</option>
+                <option>Si</option>
+                <option>No</option>
+              </select>
+            </Field>
+            <Field label="Repuestos disponibles">
+              <select name="repuestos_disponibles" value={form.repuestos_disponibles} onChange={handleChange} className={selectCls}>
+                <option value="">Seleccione</option>
+                <option>Si</option>
+                <option>No</option>
+              </select>
+            </Field>
+            <Field label="Resultado de la evaluación">
+              <select name="resultado_evaluacion" value={form.resultado_evaluacion} onChange={handleChange} className={selectCls}>
+                <option value="">Seleccione</option>
+                {RESULTADOS_EVALUACION.map((opcion) => (
+                  <option key={opcion}>{opcion}</option>
+                ))}
               </select>
             </Field>
           </div>
@@ -432,31 +656,57 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
             />
           </Field>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Imagen del equipo 1">
-              <input
-                type="file"
-                name="imagen_1"
-                accept="image/jpeg,image/png"
-                onChange={handleFileChange}
-                className="w-full text-sm text-slate-600"
-              />
-              {data.imagen_1 && (
-                <p className="text-xs text-slate-500 mt-1">Imagen actual: {data.imagen_1}</p>
-              )}
-            </Field>
-            <Field label="Imagen del equipo 2">
-              <input
-                type="file"
-                name="imagen_2"
-                accept="image/jpeg,image/png"
-                onChange={handleFileChange}
-                className="w-full text-sm text-slate-600"
-              />
-              {data.imagen_2 && (
-                <p className="text-xs text-slate-500 mt-1">Imagen actual: {data.imagen_2}</p>
-              )}
-            </Field>
+            <ImageUploadField
+              name="imagen_1"
+              label="Imagen del equipo 1"
+              currentName={files.imagen_1 ? '' : (form.imagen_1 || data.imagen_1 || '')}
+              file={files.imagen_1}
+              onFileChange={handleFileChange}
+              onClear={() => handleClearImage('imagen_1')}
+            />
+            <ImageUploadField
+              name="imagen_2"
+              label="Imagen del equipo 2"
+              currentName={files.imagen_2 ? '' : (form.imagen_2 || data.imagen_2 || '')}
+              file={files.imagen_2}
+              onFileChange={handleFileChange}
+              onClear={() => handleClearImage('imagen_2')}
+            />
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+          <History size={16} className="text-slate-500" />
+          <h3 className="font-semibold text-slate-800">Historial de cambios</h3>
+        </div>
+        <div className="p-6">
+          {historial.length === 0 ? (
+            <p className="text-sm text-slate-400">Aún no hay cambios. El historial empieza cuando se guarda esta ficha.</p>
+          ) : (
+            <ol className="space-y-4">
+              {historial.map((entrada) => (
+                <li key={entrada.id} className="border-l-2 border-slate-200 pl-4">
+                  <p className="text-sm font-medium text-slate-800">
+                    {entrada.accion}
+                    <span className="font-normal text-slate-500">
+                      {' · '}{fechaHistoria(entrada.fecha)}
+                      {entrada.usuario ? ` · ${entrada.usuario}` : ''}
+                    </span>
+                  </p>
+                  <ul className="mt-1 space-y-1">
+                    {(entrada.cambios || []).map((cambio) => (
+                      <li key={`${entrada.id}-${cambio.campo}`} className="text-sm text-slate-600 break-words">
+                        <span className="font-medium text-slate-700">{ETIQUETAS_HISTORIAL[cambio.campo] || cambio.campo}:</span>
+                        {' '}{textoCambio(cambio.antes)} → {textoCambio(cambio.despues)}
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+          )}
         </div>
       </div>
 
