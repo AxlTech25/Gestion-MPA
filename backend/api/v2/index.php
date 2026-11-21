@@ -13,9 +13,10 @@ $resource = $request[0] ?? null;
 
 $publicResources = ['auth'];
 
+$usuarioAuth = null;
 if (!in_array($resource, $publicResources, true)) {
     require_once __DIR__ . '/middleware/AuthMiddleware.php';
-    AuthMiddleware::requireAuth();
+    $usuarioAuth = AuthMiddleware::requireAuth();
 }
 
 switch ($resource) {
@@ -30,6 +31,23 @@ switch ($resource) {
     case 'reportes':
         require_once 'controllers/ReporteController.php';
         $controller = new ReporteController();
+        $reportesDeGestion = [
+            'historial-equipo',
+            'ficha-historial',
+            'mantenimientos-fecha',
+            'anios',
+            'fichas-tecnicas-anio',
+            'fichas-mantenimiento-anio',
+        ];
+        if (isset($request[1]) && in_array($request[1], $reportesDeGestion, true)
+            && !AuthMiddleware::tieneRol($usuarioAuth, 'Administrador', 'Tecnico')) {
+            http_response_code(403);
+            echo json_encode([
+                "success" => false,
+                "message" => "No autorizado. Se requiere rol: Administrador o Tecnico.",
+            ]);
+            break;
+        }
         if (isset($request[1]) && $request[1] === 'equipo' && isset($request[2])) {
             $controller->ficha_tecnica($request[2]);
         } elseif (isset($request[1]) && $request[1] === 'mantenimiento') {

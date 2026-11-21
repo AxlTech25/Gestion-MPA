@@ -307,9 +307,17 @@ class FichaTecnicaController {
         $esComputo               = $this->esEquipoDeComputo((int) $equipo_id);
         $ram_gb                  = $esComputo ? $this->sanitizeInt($requestData['ram_gb'] ?? null) : null;
         $almacenamiento_gb       = $esComputo ? $this->sanitizeInt($requestData['almacenamiento_gb'] ?? null) : null;
-        $tipo_disco              = $esComputo ? $this->sanitizeString($requestData['tipo_disco'] ?? null) : null;
+        $tipo_disco              = null;
+        if ($esComputo) {
+            $pedidoDisco = $this->sanitizeString($requestData['tipo_disco'] ?? null);
+            $tipo_disco = $this->opcionPermitida($pedidoDisco, ['HDD', 'SSD', 'NVMe']);
+            if ($pedidoDisco !== null && $tipo_disco === null) {
+                http_response_code(400);
+                echo json_encode(["success" => false, "message" => "El tipo de disco no es válido."]);
+                return;
+            }
+        }
         $estado_conservacion     = $this->sanitizeString($requestData['estado_conservacion']     ?? null);
-        $estado_operativo        = $this->sanitizeString($requestData['estado_operativo']        ?? null);
         $imagen_1                = null;
         $imagen_2                = null;
         if (!$esComputo) {
@@ -406,20 +414,21 @@ class FichaTecnicaController {
                     ram_gb              = :ram_gb,
                     almacenamiento_gb   = :almacenamiento_gb,
                     tipo_disco          = :tipo_disco,
-                    estado_conservacion = :estado_conservacion,
-                    estado_operativo    = :estado_operativo
+                    estado_conservacion = :estado_conservacion
                   WHERE id = :id");
                 $upd->bindParam(":ram_gb", $ram_gb);
                 $upd->bindParam(":almacenamiento_gb", $almacenamiento_gb);
-                $upd->bindParam(":tipo_disco", $tipo_disco);
+                if ($tipo_disco === null) {
+                    $upd->bindValue(':tipo_disco', null, PDO::PARAM_NULL);
+                } else {
+                    $upd->bindValue(':tipo_disco', $tipo_disco);
+                }
             } else {
                 $upd = $this->db->prepare("UPDATE v2_equipos SET
-                    estado_conservacion = :estado_conservacion,
-                    estado_operativo    = :estado_operativo
+                    estado_conservacion = :estado_conservacion
                   WHERE id = :id");
             }
             $upd->bindParam(":estado_conservacion", $estado_conservacion);
-            $upd->bindParam(":estado_operativo", $estado_operativo);
             $upd->bindParam(":id", $equipo_id);
             $upd->execute();
 
@@ -444,7 +453,7 @@ class FichaTecnicaController {
                 'almacenamiento_gb' => $esComputo ? $almacenamiento_gb : ($antes['almacenamiento_gb'] ?? null),
                 'tipo_disco' => $esComputo ? $tipo_disco : ($antes['tipo_disco'] ?? null),
                 'estado_conservacion' => $estado_conservacion,
-                'estado_operativo' => $estado_operativo,
+                'estado_operativo' => $antes['estado_operativo'] ?? null,
             ], !$fichaExistente);
 
             $this->db->commit();
@@ -452,6 +461,13 @@ class FichaTecnicaController {
         } catch (PDOException $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
+            }
+            $duplicado = (int) ($e->errorInfo[1] ?? 0) === 1062
+                && str_contains($e->getMessage(), 'numero_ficha');
+            if ($duplicado) {
+                http_response_code(409);
+                echo json_encode(["success" => false, "message" => "Ese número de orden ya está registrado en otra ficha."]);
+                return;
             }
             http_response_code(500);
             echo json_encode(["success" => false, "message" => "Error: " . $e->getMessage()]);

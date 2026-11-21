@@ -10,9 +10,10 @@ export default defineConfig(({ mode }) => {
     base,
     server: {
       proxy: {
-        // En este equipo IIS ocupa :80; Apache/XAMPP escucha en :8000 (httpd.conf Listen 8000)
+        // Apache de esta PC escucha en el puerto 80.
+        // Si el 80 está ocupado, defina VITE_API_PROXY=http://localhost:8000
         '/gestion_mpa/backend': {
-          target: 'http://localhost:8000',
+          target: env.VITE_API_PROXY || 'http://localhost',
           changeOrigin: true,
           secure: false,
           configure: (proxy) => {

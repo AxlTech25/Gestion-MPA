@@ -95,7 +95,7 @@ return [
     'cors_origins' => 'https://tudominio.com,https://www.tudominio.com',
 
     // Vacío = ML deshabilitado. Con FastAPI en el mismo servidor:
-    // 'ml_service_url' => 'http://127.0.0.1:8000',
+    // 'ml_service_url' => 'http://127.0.0.1:8080',
     'ml_service_url' => '',
 ];
 ```
@@ -253,7 +253,7 @@ Si el servidor puede ejecutar Python (VPS, máquina institucional, contenedor):
 ```bash
 cd ml
 pip install -r requirements.txt
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
 ```
 
 3. Use un supervisor (`systemd`, `supervisor`) para mantener FastAPI activo.

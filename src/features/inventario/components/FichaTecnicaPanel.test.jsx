@@ -258,10 +258,10 @@ describe('FichaTecnicaPanel', () => {
     });
     expect(screen.getByText('Hardware')).toBeTruthy();
     expect(screen.getByLabelText('Diagnóstico').value).toBe('Obs previa');
-    expect(document.querySelector('select[name="tipo_disco"]').value).toBe('SSD');
+    expect(document.querySelector('select[name="tipo_disco"]').value).toBe('');
     expect(screen.getByLabelText('Sistema Operativo').value).toBe('');
     expect(badge('Bueno')).toBeTruthy();
-    expect(badge('Operativo')).toBeTruthy();
+    expect(screen.queryByText('Operativo', { selector: 'span' })).toBeNull();
     expect(screen.queryByText(/Última evaluación/)).toBeNull();
     expect(screen.queryByText(/Imagen actual/)).toBeNull();
     expect(screen.getByText('— / —')).toBeTruthy();

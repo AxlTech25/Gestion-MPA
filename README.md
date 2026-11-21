@@ -192,7 +192,7 @@ La ficha sigue la **Hoja de revisión técnica 2026**. En el panel puede:
 
 **Hardware, software y red** (procesador, RAM, disco, sistema operativo, licencia, MAC e IP) solo aparecen en equipos cuyo tipo contiene CPU, laptop o PC. Un teclado, una impresora, una cámara o un equipo de audio no muestran esos apartados y, al guardar, no se les escribe procesador ni sistema operativo.
 
-Si el disco no tenía tipo (HDD, SSD o NVMe), el selector muestra SSD como primera opción. Elija el valor real antes de guardar; si no lo cambia, se grabará SSD.
+Si el disco no tenía tipo (HDD, SSD o NVMe), el selector queda vacío. Guardar sin elegir uno no le asigna SSD.
 
 > La misma evaluación se abre desde el inventario (icono de engranaje).
 

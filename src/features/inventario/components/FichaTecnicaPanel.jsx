@@ -249,9 +249,9 @@ const buildFormState = (data) => ({
   software_base: data.software_base || '',
   ram_gb: data.ram_gb || '',
   almacenamiento_gb: data.almacenamiento_gb || '',
-  tipo_disco: data.tipo_disco || 'SSD',
+  tipo_disco: data.tipo_disco || '',
   estado_conservacion: data.estado_conservacion || 'Bueno',
-  estado_operativo: data.estado_operativo || 'Operativo',
+  estado_operativo: data.estado_operativo || '',
   diagnostico: data.diagnostico || data.observaciones_evaluacion || '',
   conclusion_motivo: data.conclusion_motivo || '',
   numero_ficha: data.numero_ficha || '',
@@ -491,6 +491,7 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
                   <div className="flex gap-2">
                     <input type="number" name="almacenamiento_gb" value={form.almacenamiento_gb} onChange={handleChange} className="w-20 px-2 py-2 border border-slate-200 rounded-lg outline-none text-sm" />
                     <select name="tipo_disco" value={form.tipo_disco} onChange={handleChange} className="flex-1 px-2 py-2 border border-slate-200 rounded-lg bg-white text-sm outline-none">
+                      <option value="">Seleccione</option>
                       <option>SSD</option><option>NVMe</option><option>HDD</option>
                     </select>
                   </div>

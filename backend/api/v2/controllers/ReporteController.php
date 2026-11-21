@@ -413,7 +413,15 @@ class ReporteController {
         return $valor;
     }
 
+    private function prepararPdfExtenso(): void {
+        @ini_set('memory_limit', '512M');
+        @set_time_limit(180);
+    }
+
     private function renderPdf(string $html, string $filename, string $orientation = 'portrait', string $paper = 'A4'): void {
+        if (strlen($html) > 500000) {
+            $this->prepararPdfExtenso();
+        }
         $options = new Options();
         $options->set('defaultFont', 'Helvetica');
         $options->set('isHtml5ParserEnabled', true);
@@ -744,6 +752,7 @@ class ReporteController {
     }
 
     public function fichasTecnicasAnio(string $anio): void {
+        $this->prepararPdfExtenso();
         $valor = $this->anioReporte($anio);
         if ($valor === null) {
             http_response_code(400);
@@ -773,6 +782,7 @@ class ReporteController {
     }
 
     public function fichasMantenimientoAnio(string $anio): void {
+        $this->prepararPdfExtenso();
         $valor = $this->anioReporte($anio);
         if ($valor === null) {
             http_response_code(400);

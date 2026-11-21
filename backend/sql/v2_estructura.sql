@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS v2_fichas_tecnicas (
   numero_ficha VARCHAR(20) UNIQUE,
   
   procesador VARCHAR(100),
-  sistema_operativo ENUM('Windows 7', 'Windows 8', 'Windows 8.1', 'Windows 10', 'Windows 11', 'Linux', 'macOS'),
+  sistema_operativo VARCHAR(100),
   licencia_so VARCHAR(100),
   mac_address VARCHAR(50),
   ip_asignada VARCHAR(15),
