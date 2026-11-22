@@ -166,7 +166,7 @@ const selectCls = `${inputCls} bg-white`;
 const TECHNICAL_TYPES = ['CPU', 'Laptop', 'PC'];
 const CAMPOS_COMPUTO = [
   'procesador', 'sistema_operativo', 'licencia_so', 'mac_address', 'ip_asignada',
-  'software_base', 'ram_gb', 'almacenamiento_gb', 'tipo_disco',
+  'software_base', 'software_lista', 'ram_gb', 'almacenamiento_gb', 'tipo_disco',
 ];
 const RESULTADOS_EVALUACION = [
   'Puede continuar en servicio',
@@ -175,8 +175,29 @@ const RESULTADOS_EVALUACION = [
   'Técnicamente no resulta ser utilizado',
   'Se recomienda retirar del servicio',
 ];
+const CATALOGO_VACIO = {
+  procesador: [],
+  sistema_operativo: [],
+  software: [],
+  tipo_impresora: [],
+};
+const OTRO_VALOR = '__otro__';
 
 const fechaParaInput = (valor) => (valor ? String(valor).slice(0, 10) : '');
+
+const listaSoftwareDe = (data) => {
+  if (Array.isArray(data?.software_lista) && data.software_lista.length) {
+    return data.software_lista;
+  }
+  const texto = String(data?.software_base || '').trim();
+  if (!texto) return [];
+  return [...new Set(texto.split(/\s*\|\s*|\n|\r/).map((p) => p.trim()).filter(Boolean))];
+};
+
+const esImpresoraTipo = (tipo) => {
+  const t = String(tipo || '').toLowerCase();
+  return t.includes('impresora') || t.includes('plotter') || t.includes('fotocopi');
+};
 
 const ETIQUETAS_HISTORIAL = {
   numero_ficha: 'N° de orden',
@@ -187,6 +208,7 @@ const ETIQUETAS_HISTORIAL = {
   mac_address: 'Dirección MAC',
   ip_asignada: 'IP asignada',
   software_base: 'Software instalado',
+  tipo_impresora: 'Tipo de impresora',
   diagnostico: 'Diagnóstico',
   conclusion_motivo: 'Conclusión',
   funcionamiento: 'Funcionamiento',
@@ -200,6 +222,248 @@ const ETIQUETAS_HISTORIAL = {
   tipo_disco: 'Tipo de disco',
   estado_conservacion: 'Estado físico',
   estado_operativo: 'Estado operativo',
+};
+
+const valoresDe = (items = []) => items.map((item) => (
+  typeof item === 'string' ? item : item.valor
+)).filter(Boolean);
+
+const CatalogSelect = ({ name, label, icon: Icon, options, value, onChange, onEliminar }) => {
+  const fieldId = useId();
+  const valores = valoresDe(options);
+  const [modoOtro, setModoOtro] = useState(() => Boolean(value) && !valoresDe(options).includes(value));
+  const [otro, setOtro] = useState(() => (
+    Boolean(value) && !valoresDe(options).includes(value) ? value : ''
+  ));
+  const [borrando, setBorrando] = useState('');
+
+  useEffect(() => {
+    const lista = valoresDe(options);
+    if (!value) {
+      if (!modoOtro) setOtro('');
+      return;
+    }
+    if (lista.includes(value)) {
+      setModoOtro(false);
+      setOtro('');
+      return;
+    }
+    setModoOtro(true);
+    setOtro(value);
+  }, [value, options, modoOtro]);
+
+  const emitir = (siguiente) => onChange({ target: { name, value: siguiente } });
+  const seleccion = modoOtro ? OTRO_VALOR : (value || '');
+  const personalizados = options.filter((item) => item && typeof item === 'object' && !item.es_predefinido);
+
+  const quitar = async (valor) => {
+    if (!onEliminar || borrando) return;
+    if (!window.confirm(`¿Eliminar "${valor}" del catálogo?`)) return;
+    setBorrando(valor);
+    try {
+      await onEliminar(valor);
+      if (value === valor) emitir('');
+    } catch (err) {
+      window.alert(err.message || 'No se pudo eliminar del catálogo.');
+    } finally {
+      setBorrando('');
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <Field label={label} icon={Icon}>
+        <select
+          id={fieldId}
+          name={name}
+          aria-label={label}
+          value={seleccion}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v === OTRO_VALOR) {
+              setModoOtro(true);
+              emitir(otro.trim());
+              return;
+            }
+            setModoOtro(false);
+            setOtro('');
+            emitir(v);
+          }}
+          className={selectCls}
+        >
+          <option value="">Seleccione</option>
+          {valores.map((opcion) => (
+            <option key={opcion} value={opcion}>{opcion}</option>
+          ))}
+          <option value={OTRO_VALOR}>Otro…</option>
+        </select>
+      </Field>
+      {modoOtro && (
+        <input
+          aria-label={`${label} (otro)`}
+          value={otro}
+          onChange={(e) => {
+            setOtro(e.target.value);
+            emitir(e.target.value);
+          }}
+          className={inputCls}
+          placeholder="Escriba el valor. Se guardará para próximas fichas."
+        />
+      )}
+      {personalizados.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {personalizados.map((item) => (
+            <span
+              key={item.valor}
+              className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-700"
+            >
+              {item.valor}
+              <button
+                type="button"
+                aria-label={`Eliminar ${item.valor} del catálogo`}
+                disabled={borrando === item.valor}
+                onClick={() => quitar(item.valor)}
+                className="text-slate-400 hover:text-red-600 disabled:opacity-40"
+              >
+                <X size={12} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+CatalogSelect.propTypes = {
+  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  icon: PropTypes.elementType,
+  options: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape({ valor: PropTypes.string, es_predefinido: PropTypes.bool }),
+  ])).isRequired,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  onEliminar: PropTypes.func,
+};
+
+const SoftwareChecklist = ({ options, selected, onChange, onEliminar }) => {
+  const [nuevo, setNuevo] = useState('');
+  const [borrando, setBorrando] = useState('');
+  const mapa = new Map();
+  options.forEach((item) => {
+    if (typeof item === 'string') {
+      mapa.set(item, { valor: item, es_predefinido: true });
+      return;
+    }
+    if (item?.valor) mapa.set(item.valor, item);
+  });
+  selected.forEach((valor) => {
+    if (!mapa.has(valor)) {
+      mapa.set(valor, { valor, es_predefinido: false });
+    }
+  });
+  const visibles = [...mapa.values()].sort((a, b) => a.valor.localeCompare(b.valor, 'es'));
+
+  const toggle = (item) => {
+    if (selected.includes(item)) {
+      onChange(selected.filter((v) => v !== item));
+      return;
+    }
+    onChange([...selected, item]);
+  };
+
+  const agregar = () => {
+    const texto = nuevo.trim();
+    if (!texto) return;
+    if (!selected.includes(texto)) {
+      onChange([...selected, texto]);
+    }
+    setNuevo('');
+  };
+
+  const quitar = async (valor) => {
+    if (!onEliminar || borrando) return;
+    if (!window.confirm(`¿Eliminar "${valor}" del catálogo?`)) return;
+    setBorrando(valor);
+    try {
+      await onEliminar(valor);
+      onChange(selected.filter((v) => v !== valor));
+    } catch (err) {
+      window.alert(err.message || 'No se pudo eliminar del catálogo.');
+    } finally {
+      setBorrando('');
+    }
+  };
+
+  return (
+    <div className="space-y-3 md:col-span-2">
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+        <Package size={12} /> Software instalado
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-slate-200 p-3 bg-slate-50">
+        {visibles.map((item) => (
+          <div key={item.valor} className="flex items-center gap-2 text-sm text-slate-700">
+            <label className="flex flex-1 items-center gap-2 min-w-0">
+              <input
+                type="checkbox"
+                checked={selected.includes(item.valor)}
+                onChange={() => toggle(item.valor)}
+              />
+              <span className="truncate">{item.valor}</span>
+            </label>
+            {!item.es_predefinido && (
+              <button
+                type="button"
+                aria-label={`Eliminar ${item.valor} del catálogo`}
+                disabled={borrando === item.valor}
+                onClick={() => quitar(item.valor)}
+                className="text-slate-400 hover:text-red-600 disabled:opacity-40"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        ))}
+        {visibles.length === 0 && (
+          <p className="text-xs text-slate-400 sm:col-span-2">Aún no hay software en el catálogo.</p>
+        )}
+      </div>
+      <div className="flex gap-2">
+        <input
+          aria-label="Agregar software"
+          value={nuevo}
+          onChange={(e) => setNuevo(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              agregar();
+            }
+          }}
+          className={inputCls}
+          placeholder="Agregar otro (ej. CorelDRAW). Quedará para la próxima ficha."
+        />
+        <button
+          type="button"
+          onClick={agregar}
+          className="px-3 py-2 rounded-lg bg-slate-800 text-white text-sm font-medium whitespace-nowrap"
+        >
+          Agregar
+        </button>
+      </div>
+    </div>
+  );
+};
+
+SoftwareChecklist.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape({ valor: PropTypes.string, es_predefinido: PropTypes.bool }),
+  ])).isRequired,
+  selected: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onChange: PropTypes.func.isRequired,
+  onEliminar: PropTypes.func,
 };
 
 const textoCambio = (valor) => (valor ? valor : 'vacío');
@@ -246,7 +510,8 @@ const buildFormState = (data) => ({
   licencia_so: data.licencia_so || '',
   mac_address: data.mac_address || '',
   ip_asignada: data.ip_asignada || '',
-  software_base: data.software_base || '',
+  software_lista: listaSoftwareDe(data),
+  tipo_impresora: data.tipo_impresora || '',
   ram_gb: data.ram_gb || '',
   almacenamiento_gb: data.almacenamiento_gb || '',
   tipo_disco: data.tipo_disco || '',
@@ -274,10 +539,12 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
   const [error, setError] = useState('');
   const [riesgo, setRiesgo] = useState(null);
   const [historial, setHistorial] = useState([]);
+  const [catalogo, setCatalogo] = useState(CATALOGO_VACIO);
 
   const isTechnical = data
     ? TECHNICAL_TYPES.some((t) => data.tipo_equipo?.toLowerCase().includes(t.toLowerCase()))
     : false;
+  const esImpresora = data ? esImpresoraTipo(data.tipo_equipo) : false;
 
   const loadRiesgo = async (id) => {
     try {
@@ -286,6 +553,25 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
     } catch {
       setRiesgo(null);
     }
+  };
+
+  const loadCatalogo = async () => {
+    try {
+      const res = await fichaTecnicaService.getCatalogo();
+      if (res.success && res.data) {
+        setCatalogo({ ...CATALOGO_VACIO, ...res.data });
+      }
+    } catch {
+      setCatalogo(CATALOGO_VACIO);
+    }
+  };
+
+  const eliminarDelCatalogo = async (categoria, valor) => {
+    const res = await fichaTecnicaService.eliminarCatalogo(categoria, valor);
+    if (!res.success) {
+      throw new Error(res.message || 'No se pudo eliminar del catálogo.');
+    }
+    await loadCatalogo();
   };
 
   const loadFicha = async () => {
@@ -313,6 +599,10 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadCatalogo();
+  }, []);
 
   useEffect(() => {
     if (equipoId) loadFicha();
@@ -345,10 +635,19 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
-      if (['imagen_1', 'imagen_2'].includes(key)) {
+      if (['imagen_1', 'imagen_2', 'software_base'].includes(key)) {
         return;
       }
       if (!isTechnical && CAMPOS_COMPUTO.includes(key)) {
+        return;
+      }
+      if (key === 'tipo_impresora' && !esImpresora) {
+        return;
+      }
+      if (key === 'software_lista') {
+        if (isTechnical) {
+          formData.append('software_lista', JSON.stringify(value || []));
+        }
         return;
       }
       if (value !== null && value !== undefined) {
@@ -364,7 +663,7 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
         setSaved(true);
         setFiles({ imagen_1: null, imagen_2: null });
         setTimeout(() => setSaved(false), 3000);
-        await loadFicha();
+        await Promise.all([loadFicha(), loadCatalogo()]);
       } else {
         setError(res.message || 'No se pudo guardar la ficha.');
       }
@@ -481,9 +780,15 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
                 <Cpu size={16} className="text-blue-500" /> Hardware
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="Procesador" icon={Cpu}>
-                  <input name="procesador" value={form.procesador} onChange={handleChange} className={inputCls} placeholder="Ej: Intel Core i7-12700" />
-                </Field>
+                <CatalogSelect
+                  name="procesador"
+                  label="Procesador"
+                  icon={Cpu}
+                  options={catalogo.procesador}
+                  value={form.procesador || ''}
+                  onChange={handleChange}
+                  onEliminar={(valor) => eliminarDelCatalogo('procesador', valor)}
+                />
                 <Field label="Memoria RAM (GB)" icon={HardDrive}>
                   <input type="number" name="ram_gb" value={form.ram_gb} onChange={handleChange} className={inputCls} />
                 </Field>
@@ -504,20 +809,24 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
                 <Monitor size={16} className="text-blue-500" /> Software
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="Sistema Operativo" icon={Monitor}>
-                  <select name="sistema_operativo" value={form.sistema_operativo} onChange={handleChange} className={selectCls}>
-                    <option value="">— Sin SO —</option>
-                    <option>Windows 7</option><option>Windows 8</option>
-                    <option>Windows 8.1</option><option>Windows 10</option><option>Windows 11</option>
-                    <option>Linux</option><option>macOS</option>
-                  </select>
-                </Field>
+                <CatalogSelect
+                  name="sistema_operativo"
+                  label="Sistema Operativo"
+                  icon={Monitor}
+                  options={catalogo.sistema_operativo}
+                  value={form.sistema_operativo || ''}
+                  onChange={handleChange}
+                  onEliminar={(valor) => eliminarDelCatalogo('sistema_operativo', valor)}
+                />
                 <Field label="Licencia SO" icon={Key}>
                   <input name="licencia_so" value={form.licencia_so} onChange={handleChange} className={inputCls} />
                 </Field>
-                <Field label="Software Instalado" icon={Package}>
-                  <textarea name="software_base" value={form.software_base} onChange={handleChange} rows={3} className={inputCls} placeholder="Office, Antivirus..." />
-                </Field>
+                <SoftwareChecklist
+                  options={catalogo.software}
+                  selected={form.software_lista || []}
+                  onChange={(lista) => setForm((prev) => ({ ...prev, software_lista: lista }))}
+                  onEliminar={(valor) => eliminarDelCatalogo('software', valor)}
+                />
               </div>
             </div>
 
@@ -536,6 +845,25 @@ export const FichaTecnicaPanel = ({ equipoId, onClose, showHeader = true }) => {
             </div>
           </>
         ) : null}
+
+        {esImpresora && (
+          <div>
+            <h3 className="text-sm font-bold text-slate-700 mb-3 pb-1 border-b border-slate-100 flex items-center gap-2">
+              <Package size={16} className="text-blue-500" /> Impresora
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CatalogSelect
+                name="tipo_impresora"
+                label="Tipo de impresora"
+                icon={Package}
+                options={catalogo.tipo_impresora}
+                value={form.tipo_impresora || ''}
+                onChange={handleChange}
+                onEliminar={(valor) => eliminarDelCatalogo('tipo_impresora', valor)}
+              />
+            </div>
+          </div>
+        )}
 
         {riesgo && (
           <div className="bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-100 rounded-xl p-5">

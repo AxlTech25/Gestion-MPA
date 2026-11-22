@@ -374,6 +374,7 @@ class ReporteController {
             'mac_address' => 'Dirección MAC',
             'ip_asignada' => 'IP asignada',
             'software_base' => 'Software instalado',
+            'tipo_impresora' => 'Tipo de impresora',
             'diagnostico' => 'Diagnóstico',
             'conclusion_motivo' => 'Conclusión',
             'funcionamiento' => 'Funcionamiento',

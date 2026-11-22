@@ -1,14 +1,16 @@
 <?php
 require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../models/CatalogoFicha.php';
 
 class FichaTecnicaController {
     private const P_EQUIPO = ':equipo_id';
 
     private $db;
+    private CatalogoFicha $catalogo;
 
     private const SELECT_QUERY = "
         SELECT e.id AS equipo_id, e.codigo_patrimonial, e.codigo_identificativo,
-               e.tipo_equipo, e.marca, e.modelo, e.numero_serie,
+               e.tipo_equipo, e.tipo_impresora, e.marca, e.modelo, e.numero_serie,
                e.ram_gb, e.almacenamiento_gb, e.tipo_disco,
                e.fecha_adquisicion, e.fecha_registro,
                e.costo_estimado, e.ubicacion_fisica,
@@ -29,6 +31,36 @@ class FichaTecnicaController {
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
+        $this->catalogo = new CatalogoFicha($this->db);
+    }
+
+    public function catalogo(): void {
+        $categoria = isset($_GET['categoria']) ? trim((string) $_GET['categoria']) : null;
+        if ($categoria === '') {
+            $categoria = null;
+        }
+        if ($categoria !== null && !in_array($categoria, CatalogoFicha::CATEGORIAS, true)) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "Categoría de catálogo no válida."]);
+            return;
+        }
+        echo json_encode(["success" => true, "data" => $this->catalogo->listar($categoria)]);
+    }
+
+    public function eliminarCatalogo(): void {
+        $requestData = json_decode(v2CuerpoRaw(), true);
+        if (!is_array($requestData)) {
+            $requestData = $_POST ?: [];
+        }
+        $resultado = $this->catalogo->eliminar(
+            trim((string) ($requestData['categoria'] ?? '')),
+            $requestData['valor'] ?? null
+        );
+        http_response_code((int) $resultado['code']);
+        echo json_encode([
+            'success' => (bool) $resultado['ok'],
+            'message' => $resultado['message'],
+        ]);
     }
 
     public function show($equipo_id) {
@@ -60,6 +92,7 @@ class FichaTecnicaController {
         if (isset($data['equipo_id']) && !isset($data['id'])) {
             $data['id'] = $data['equipo_id'];
         }
+        $data['software_lista'] = CatalogoFicha::partirSoftware($data['software_base'] ?? null);
 
         echo json_encode(["success" => true, "data" => $data]);
     }
@@ -89,6 +122,7 @@ class FichaTecnicaController {
         if (isset($data['equipo_id']) && !isset($data['id'])) {
             $data['id'] = $data['equipo_id'];
         }
+        $data['software_lista'] = CatalogoFicha::partirSoftware($data['software_base'] ?? null);
 
         echo json_encode(["success" => true, "data" => $data]);
     }
@@ -103,16 +137,44 @@ class FichaTecnicaController {
     }
 
     private function esEquipoDeComputo(int $equipoId): bool {
-        $stmt = $this->db->prepare('SELECT tipo_equipo FROM v2_equipos WHERE id = :id');
-        $stmt->bindValue(':id', $equipoId, PDO::PARAM_INT);
-        $stmt->execute();
-        $tipo = strtolower(trim((string) $stmt->fetchColumn()));
+        $tipo = $this->tipoEquipoDe($equipoId);
         foreach (['cpu', 'laptop', 'pc'] as $marca) {
             if ($tipo !== '' && str_contains($tipo, $marca)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private function esImpresora(int $equipoId): bool {
+        $tipo = $this->tipoEquipoDe($equipoId);
+        return $tipo !== '' && (str_contains($tipo, 'impresora') || str_contains($tipo, 'plotter') || str_contains($tipo, 'fotocopi'));
+    }
+
+    private function tipoEquipoDe(int $equipoId): string {
+        $stmt = $this->db->prepare('SELECT tipo_equipo FROM v2_equipos WHERE id = :id');
+        $stmt->bindValue(':id', $equipoId, PDO::PARAM_INT);
+        $stmt->execute();
+        return strtolower(trim((string) $stmt->fetchColumn()));
+    }
+
+    private function resolverSoftware(array $requestData): ?string {
+        if (array_key_exists('software_lista', $requestData)) {
+            $lista = $requestData['software_lista'];
+            if (is_string($lista)) {
+                $decodificado = json_decode($lista, true);
+                if (is_array($decodificado)) {
+                    $lista = $decodificado;
+                } else {
+                    $lista = CatalogoFicha::partirSoftware($lista);
+                }
+            }
+            if (!is_array($lista)) {
+                return null;
+            }
+            return CatalogoFicha::unirSoftware($lista);
+        }
+        return $this->sanitizeString($requestData['software_base'] ?? null);
     }
 
     private function numeroFichaActual(int $equipoId): ?string {
@@ -291,7 +353,8 @@ class FichaTecnicaController {
         $licencia_so             = $this->sanitizeString($requestData['licencia_so']             ?? null);
         $mac_address             = $this->sanitizeString($requestData['mac_address']             ?? null);
         $ip_asignada             = $this->sanitizeString($requestData['ip_asignada']             ?? null);
-        $software_base           = $this->sanitizeString($requestData['software_base']           ?? null);
+        $software_base           = $this->resolverSoftware($requestData);
+        $tipo_impresora          = $this->sanitizeString($requestData['tipo_impresora']          ?? null);
         $diagnostico             = $this->sanitizeString($requestData['diagnostico']             ?? $requestData['observaciones_evaluacion'] ?? null);
         $conclusion_motivo       = $this->sanitizeString($requestData['conclusion_motivo']       ?? null);
         $funcionamiento          = $this->opcionPermitida($requestData['funcionamiento'] ?? null, ['Sin fallas', 'Con fallas']);
@@ -320,8 +383,22 @@ class FichaTecnicaController {
         $estado_conservacion     = $this->sanitizeString($requestData['estado_conservacion']     ?? null);
         $imagen_1                = null;
         $imagen_2                = null;
+        $esImpresora = $this->esImpresora((int) $equipo_id);
         if (!$esComputo) {
             $procesador = $sistema_operativo = $licencia_so = $mac_address = $ip_asignada = $software_base = null;
+        }
+        if (!$esImpresora) {
+            $tipo_impresora = null;
+        }
+        if ($esComputo) {
+            $procesador = $this->catalogo->registrar('procesador', $procesador);
+            $sistema_operativo = $this->catalogo->registrar('sistema_operativo', $sistema_operativo);
+            foreach (CatalogoFicha::partirSoftware($software_base) as $item) {
+                $this->catalogo->registrar('software', $item);
+            }
+        }
+        if ($esImpresora && $tipo_impresora !== null) {
+            $tipo_impresora = $this->catalogo->registrar('tipo_impresora', $tipo_impresora);
         }
 
         $numeroResuelto = $this->resolverNumeroFicha((int) $equipo_id, $requestData['numero_ficha'] ?? null);
@@ -423,6 +500,16 @@ class FichaTecnicaController {
                 } else {
                     $upd->bindValue(':tipo_disco', $tipo_disco);
                 }
+            } elseif ($esImpresora) {
+                $upd = $this->db->prepare("UPDATE v2_equipos SET
+                    tipo_impresora      = :tipo_impresora,
+                    estado_conservacion = :estado_conservacion
+                  WHERE id = :id");
+                if ($tipo_impresora === null) {
+                    $upd->bindValue(':tipo_impresora', null, PDO::PARAM_NULL);
+                } else {
+                    $upd->bindValue(':tipo_impresora', $tipo_impresora);
+                }
             } else {
                 $upd = $this->db->prepare("UPDATE v2_equipos SET
                     estado_conservacion = :estado_conservacion
@@ -441,6 +528,7 @@ class FichaTecnicaController {
                 'mac_address' => $mac_address,
                 'ip_asignada' => $ip_asignada,
                 'software_base' => $software_base,
+                'tipo_impresora' => $esImpresora ? $tipo_impresora : ($antes['tipo_impresora'] ?? null),
                 'diagnostico' => $diagnostico,
                 'conclusion_motivo' => $conclusion_motivo,
                 'funcionamiento' => $funcionamiento,
@@ -487,7 +575,7 @@ class FichaTecnicaController {
                     ft.diagnostico, ft.conclusion_motivo, ft.funcionamiento,
                     ft.obsolescencia_tecnologica, ft.repuestos_disponibles, ft.resultado_evaluacion,
                     ft.imagen_1, ft.imagen_2,
-                    e.ram_gb, e.almacenamiento_gb, e.tipo_disco,
+                    e.ram_gb, e.almacenamiento_gb, e.tipo_disco, e.tipo_impresora,
                     e.estado_conservacion, e.estado_operativo
              FROM v2_equipos e
              LEFT JOIN v2_fichas_tecnicas ft ON ft.equipo_id = e.id

@@ -6,6 +6,18 @@ export const fichaTecnicaService = {
     return response.data;
   },
 
+  getCatalogo: async () => {
+    const response = await api.get('/fichas-tecnicas/catalogo');
+    return response.data;
+  },
+
+  eliminarCatalogo: async (categoria, valor) => {
+    const response = await api.delete('/fichas-tecnicas/catalogo', {
+      data: { categoria, valor },
+    });
+    return response.data;
+  },
+
   getHistorial: async (equipoId) => {
     const response = await api.get(`/fichas-tecnicas/${equipoId}/historial`);
     return response.data;

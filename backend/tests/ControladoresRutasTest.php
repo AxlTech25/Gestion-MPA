@@ -266,6 +266,12 @@ final class ControladoresRutasTest extends TestCase
         $_GET['request'] = 'fichas-tecnicas/740000001111';
         $this->assertTrue($this->ruta('routes/fichas_tecnicas.php')['json']['success']);
 
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_GET['request'] = 'fichas-tecnicas/catalogo';
+        $catalogo = $this->ruta('routes/fichas_tecnicas.php');
+        $this->assertTrue($catalogo['json']['success']);
+        $this->assertContains('Windows 11', array_column($catalogo['json']['data']['sistema_operativo'], 'valor'));
+
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_GET['request'] = 'fichas-tecnicas/1';
         $_SERVER['CONTENT_TYPE'] = 'application/json';
@@ -274,11 +280,26 @@ final class ControladoresRutasTest extends TestCase
         $this->cuerpo([
             'procesador' => 'i5',
             'sistema_operativo' => 'Windows 11',
+            'software_lista' => ['Antivirus', 'CorelDRAW'],
             'ram_gb' => '16',
             'almacenamiento_gb' => 'no',
             'estado_operativo' => 'Operativo',
         ]);
         $this->assertTrue($this->ruta('routes/fichas_tecnicas.php')['json']['success']);
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_GET['request'] = 'fichas-tecnicas/catalogo';
+        $catalogo2 = $this->ruta('routes/fichas_tecnicas.php');
+        $this->assertContains('CorelDRAW', array_column($catalogo2['json']['data']['software'], 'valor'));
+        $this->assertContains('i5', array_column($catalogo2['json']['data']['procesador'], 'valor'));
+        $_SERVER['REQUEST_METHOD'] = 'DELETE';
+        $_GET['request'] = 'fichas-tecnicas/catalogo';
+        $this->cuerpo(['categoria' => 'software', 'valor' => 'CorelDRAW']);
+        $this->assertTrue($this->ruta('routes/fichas_tecnicas.php')['json']['success']);
+        $_SERVER['REQUEST_METHOD'] = 'DELETE';
+        $this->cuerpo(['categoria' => 'sistema_operativo', 'valor' => 'Windows 11']);
+        $this->assertSame(409, $this->ruta('routes/fichas_tecnicas.php')['code']);
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_GET['request'] = 'fichas-tecnicas/1';
         $_POST = ['procesador' => 'i7', 'diagnostico' => 'ok'];
         $this->assertTrue($this->ruta('routes/fichas_tecnicas.php')['json']['success']);
         $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -520,7 +541,7 @@ final class ControladoresRutasTest extends TestCase
         )');
         $this->pdo->exec('CREATE TABLE v2_equipos (
             id INTEGER PRIMARY KEY,
-            codigo_patrimonial TEXT, codigo_identificativo TEXT, tipo_equipo TEXT,
+            codigo_patrimonial TEXT, codigo_identificativo TEXT, tipo_equipo TEXT, tipo_impresora TEXT,
             marca TEXT, modelo TEXT, color TEXT, numero_serie TEXT,
             ram_gb INTEGER, almacenamiento_gb INTEGER, tipo_disco TEXT,
             horas_uso INTEGER, errores_smart INTEGER, contador_paginas INTEGER,
@@ -541,6 +562,13 @@ final class ControladoresRutasTest extends TestCase
             id INTEGER PRIMARY KEY, equipo_id INTEGER, usuario_id INTEGER,
             accion TEXT, cambios TEXT, fecha TEXT DEFAULT CURRENT_TIMESTAMP
         )');
+        $this->pdo->exec('CREATE TABLE v2_catalogo_ficha (
+            id INTEGER PRIMARY KEY, categoria TEXT, valor TEXT, es_predefinido INTEGER DEFAULT 0,
+            creado_en TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (categoria, valor)
+        )');
+        $this->pdo->exec("INSERT INTO v2_catalogo_ficha (categoria, valor, es_predefinido)
+            VALUES ('sistema_operativo', 'Windows 11', 1), ('software', 'Antivirus', 1)");
         $this->pdo->exec('CREATE TABLE v2_hojas_baja (
             id INTEGER PRIMARY KEY, equipo_id INTEGER,
             causal_danio INTEGER, causal_excedencia INTEGER, causal_chatarra INTEGER,

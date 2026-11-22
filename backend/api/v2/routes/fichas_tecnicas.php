@@ -9,6 +9,18 @@ $request = isset($_GET['request']) ? explode('/', trim($_GET['request'], '/')) :
 
 $segment = $request[1] ?? null;
 
+if ($segment === 'catalogo') {
+    if ($method === 'GET') {
+        $controller->catalogo();
+    } elseif ($method === 'DELETE') {
+        $controller->eliminarCatalogo();
+    } else {
+        http_response_code(405);
+        echo json_encode(["success" => false, "message" => "Método no permitido."]);
+    }
+    v2Detener();
+}
+
 if ($segment === 'buscar') {
     $codigo = $request[2] ?? null;
     if (!$codigo) {

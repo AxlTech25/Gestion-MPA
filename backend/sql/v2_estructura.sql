@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS v2_equipos (
   codigo_patrimonial VARCHAR(50) UNIQUE NOT NULL,
   codigo_identificativo VARCHAR(50),
   tipo_equipo VARCHAR(100) NOT NULL,
+  tipo_impresora VARCHAR(80),
   marca VARCHAR(50),
   modelo VARCHAR(50),
   color VARCHAR(30),
@@ -162,6 +163,17 @@ CREATE TABLE IF NOT EXISTS v2_ficha_tecnica_historial (
   FOREIGN KEY (usuario_id) REFERENCES v2_usuarios(id) ON DELETE SET NULL,
   INDEX (equipo_id),
   INDEX (fecha)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Valores reutilizables de la ficha (SO, procesador, software, tipo de impresora).
+CREATE TABLE IF NOT EXISTS v2_catalogo_ficha (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  categoria ENUM('procesador','sistema_operativo','software','tipo_impresora') NOT NULL,
+  valor VARCHAR(120) NOT NULL,
+  es_predefinido TINYINT(1) NOT NULL DEFAULT 0,
+  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_catalogo_ficha (categoria, valor),
+  INDEX (categoria)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 5. Catálogo de fallas para evitar texto libre (Crucial para predecir qué va a fallar)

@@ -19,6 +19,8 @@ vi.mock('../../ml/services/mlService', () => ({
 vi.mock('../services/fichaTecnicaService', () => ({
   fichaTecnicaService: {
     getFicha: vi.fn(),
+    getCatalogo: vi.fn(),
+    eliminarCatalogo: vi.fn(),
     getHistorial: vi.fn(),
     saveFicha: vi.fn(),
   },
@@ -120,6 +122,29 @@ function badge(text) {
 beforeEach(() => {
   vi.spyOn(window, 'alert').mockImplementation(() => {});
   fichaTecnicaService.getFicha.mockResolvedValue({ success: true, data: fichaCpu });
+  fichaTecnicaService.getCatalogo.mockResolvedValue({
+    success: true,
+    data: {
+      procesador: [
+        { valor: 'Intel Core i5', es_predefinido: true },
+        { valor: 'Intel Core i7', es_predefinido: true },
+      ],
+      sistema_operativo: [
+        { valor: 'Windows 10', es_predefinido: true },
+        { valor: 'Windows 11', es_predefinido: true },
+        { valor: 'Linux', es_predefinido: true },
+      ],
+      software: [
+        { valor: 'Microsoft Office 2024', es_predefinido: true },
+        { valor: 'Antivirus', es_predefinido: true },
+      ],
+      tipo_impresora: [
+        { valor: 'Impresora láser', es_predefinido: true },
+        { valor: 'Impresora de inyección', es_predefinido: true },
+      ],
+    },
+  });
+  fichaTecnicaService.eliminarCatalogo.mockResolvedValue({ success: true });
   fichaTecnicaService.getHistorial.mockResolvedValue({ success: true, data: [] });
   fichaTecnicaService.saveFicha.mockResolvedValue({ success: true });
   mlService.getRiesgoEquipo.mockResolvedValue({ success: false });
@@ -191,7 +216,8 @@ describe('FichaTecnicaPanel', () => {
     expect(screen.getByText('Hardware')).toBeTruthy();
     expect(screen.getByText('Software')).toBeTruthy();
     expect(screen.getByText('Red')).toBeTruthy();
-    expect(screen.getByLabelText('Procesador').value).toBe('i7');
+    expect(screen.getByLabelText('Procesador').value).toBe('__otro__');
+    expect(screen.getByLabelText('Procesador (otro)').value).toBe('i7');
     expect(badge('Bueno').className).toContain('bg-blue-100');
     expect(badge('Operativo').className).toContain('bg-emerald-100');
     expect(screen.getByText('80.0')).toBeTruthy();
@@ -326,13 +352,16 @@ describe('FichaTecnicaPanel', () => {
 
     try {
       await cargarFicha();
-      fireEvent.change(screen.getByLabelText('Procesador'), { target: { value: 'Ryzen 7' } });
+      fireEvent.change(screen.getByLabelText('Procesador'), { target: { value: '__otro__' } });
+      fireEvent.change(screen.getByLabelText('Procesador (otro)'), { target: { value: 'Ryzen 7' } });
       fireEvent.change(screen.getByLabelText('Memoria RAM (GB)'), { target: { value: '32' } });
       fireEvent.change(screen.getByLabelText('Almacenamiento (GB)'), { target: { value: '1024' } });
       fireEvent.change(document.querySelector('select[name="tipo_disco"]'), { target: { value: 'HDD' } });
       fireEvent.change(screen.getByLabelText('Sistema Operativo'), { target: { value: 'Windows 11' } });
       fireEvent.change(screen.getByLabelText('Licencia SO'), { target: { value: 'OEM' } });
-      fireEvent.change(screen.getByLabelText('Software Instalado'), { target: { value: 'Office\nAV' } });
+      fireEvent.click(screen.getByLabelText('Microsoft Office 2024'));
+      fireEvent.change(screen.getByLabelText('Agregar software'), { target: { value: 'AV' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Agregar' }));
       fireEvent.change(screen.getByLabelText('Dirección MAC'), { target: { value: '11:22:33:44:55:66' } });
       fireEvent.change(screen.getByLabelText('IP Asignada'), { target: { value: '10.1.1.8' } });
       fireEvent.change(screen.getByLabelText('Estado físico'), { target: { value: 'Malo' } });
@@ -378,7 +407,9 @@ describe('FichaTecnicaPanel', () => {
       expect(formData.get('tipo_disco')).toBe('HDD');
       expect(formData.get('sistema_operativo')).toBe('Windows 11');
       expect(formData.get('licencia_so')).toBe('OEM');
-      expect(formData.get('software_base')).toBe('Office\nAV');
+      expect(JSON.parse(formData.get('software_lista'))).toEqual(
+        expect.arrayContaining(['Office', 'Microsoft Office 2024', 'AV']),
+      );
       expect(formData.get('mac_address')).toBe('11:22:33:44:55:66');
       expect(formData.get('ip_asignada')).toBe('10.1.1.8');
       expect(formData.get('estado_conservacion')).toBe('Malo');
