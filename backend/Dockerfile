@@ -23,6 +23,11 @@ RUN mkdir -p storage/login_throttle storage/ticket_throttle uploads/fichas_tecni
         '    AllowOverride All' \
         '    Require all granted' \
         '</Directory>' \
+        'Alias /uploads /var/www/backend/uploads' \
+        '<Directory /var/www/backend/uploads>' \
+        '    Options -Indexes' \
+        '    Require all granted' \
+        '</Directory>' \
         > /etc/apache2/conf-available/api-v2.conf \
     && a2enconf api-v2
 

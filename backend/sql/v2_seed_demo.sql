@@ -84,18 +84,145 @@ ON DUPLICATE KEY UPDATE
   responsable_nombre = VALUES(responsable_nombre),
   ubicacion_fisica = VALUES(ubicacion_fisica);
 
-INSERT INTO v2_fichas_tecnicas (equipo_id, numero_ficha, procesador, sistema_operativo, funcionamiento, resultado_evaluacion, fecha_evaluacion)
-VALUES
-  (1, 'FT-SIM-001', 'Intel Core i5-1235U', 'Windows 11 Pro', 'Operativo', 'Apto', NOW()),
-  (2, 'FT-SIM-002', 'Intel Core i5-1135G7', 'Windows 11 Pro', 'Operativo', 'Apto', NOW()),
-  (6, 'FT-SIM-003', 'Intel Core i5-10500', 'Windows 10 Pro', 'Operativo', 'Apto', NOW()),
-  (7, 'FT-SIM-004', 'Intel Core i3-9100', 'Windows 10 Pro', 'Con fallas', 'No apto', NOW()),
-  (8, 'FT-SIM-005', 'Intel Core i5-12400', 'Windows 11 Pro', 'Operativo', 'Apto', NOW())
+INSERT INTO v2_fichas_tecnicas (
+  equipo_id, numero_ficha, procesador, sistema_operativo, licencia_so,
+  mac_address, ip_asignada, software_base, funcionamiento,
+  obsolescencia_tecnologica, repuestos_disponibles, resultado_evaluacion,
+  diagnostico, observaciones_evaluacion, fecha_evaluacion
+) VALUES
+  (1, 'FT-SIM-001', 'Intel Core i5-1235U', 'Windows 11 Pro', 'OEM',
+   'AA:BB:CC:11:22:01', '10.0.1.11', 'Office 365; Antivirus institucional', 'Sin fallas',
+   'No', 'Si', 'Puede continuar en servicio',
+   'Equipo en buen estado. Sin alertas SMART.', 'Revisión rutinaria TI.', '2026-03-10 10:00:00'),
+  (2, 'FT-SIM-002', 'Intel Core i5-1135G7', 'Windows 11 Pro', 'OEM',
+   'AA:BB:CC:11:22:02', '10.0.1.12', 'Office 365', 'Sin fallas',
+   'No', 'Si', 'Puede continuar en servicio',
+   'Laptop reciente, rendimiento adecuado.', NULL, '2026-04-02 11:30:00'),
+  (3, 'FT-SIM-003', 'Intel Core i5-10210U', 'Windows 11 Pro', 'Retail',
+   'AA:BB:CC:11:22:03', '10.0.2.21', 'Office 2019', 'Sin fallas',
+   'No', 'Si', 'Puede continuar en servicio',
+   'Uso administrativo normal.', NULL, '2026-02-18 09:15:00'),
+  (4, 'FT-SIM-004', 'AMD Ryzen 5 5500U', 'Windows 10 Pro', 'OEM',
+   'AA:BB:CC:11:22:04', '10.0.3.14', 'Office 365', 'Con fallas',
+   'No', 'Si', 'Requiere reparación',
+   'Sobrecalentamiento y ventilador ruidoso. En taller.', 'Pendiente cambio de pasta térmica.', '2026-05-20 16:00:00'),
+  (6, 'FT-SIM-005', 'Intel Core i5-10500', 'Windows 10 Pro', 'OEM',
+   'AA:BB:CC:11:22:06', '10.0.2.31', 'Office 365; SIAP', 'Sin fallas',
+   'No', 'Si', 'Puede continuar en servicio',
+   'PC de contabilidad estable.', NULL, '2026-01-22 14:20:00'),
+  (7, 'FT-SIM-006', 'Intel Core i3-9100', 'Windows 10 Pro', 'OEM',
+   'AA:BB:CC:11:22:07', '10.0.2.32', 'Office 2016', 'Con fallas',
+   'Si', 'No', 'Se recomienda retirar del servicio',
+   'Disco HDD con sectores defectuosos. Lentitud extrema.', 'Candidato a baja o reposición.', '2026-06-01 08:45:00'),
+  (8, 'FT-SIM-007', 'Intel Core i5-12400', 'Windows 11 Pro', 'OEM',
+   'AA:BB:CC:11:22:08', '10.0.2.41', 'Office 365; Sistema de caja', 'Sin fallas',
+   'No', 'Si', 'Puede continuar en servicio',
+   'Equipo de tesorería OK.', NULL, '2026-03-28 13:10:00'),
+  (16, 'FT-SIM-008', NULL, NULL, NULL,
+   NULL, '10.0.2.50', NULL, 'Sin fallas',
+   'No', 'Si', 'Puede continuar en servicio',
+   'Impresora multifuncional operativa. Contador normal.', NULL, '2026-04-15 10:40:00'),
+  (17, 'FT-SIM-009', NULL, NULL, NULL,
+   NULL, '10.0.4.12', NULL, 'Sin fallas',
+   'No', 'Si', 'Requiere mantenimiento',
+   'Atascos ocasionales de papel. Limpieza pendiente.', NULL, '2026-05-05 09:00:00'),
+  (18, 'FT-SIM-010', NULL, NULL, NULL,
+   NULL, NULL, NULL, 'Con fallas',
+   'Si', 'No', 'Requiere reparación',
+   'No enciende / error de fusor (simulado).', 'Equipo dañado en mesa de partes.', '2026-05-28 15:30:00'),
+  (31, 'FT-SIM-011', 'Intel Core i5-1135G7', 'Windows 11 Home', 'OEM',
+   'AA:BB:CC:11:22:31', '10.0.4.5', 'Office 365', 'Sin fallas',
+   'No', 'Si', 'Puede continuar en servicio',
+   'Laptop de gerencia sin observaciones.', NULL, '2026-02-10 12:00:00'),
+  (35, 'FT-SIM-012', 'Intel Core i7-12700', 'Windows 11 Pro', 'OEM',
+   'AA:BB:CC:11:22:35', '10.0.8.2', 'Office 365; AutoCAD viewer', 'Sin fallas',
+   'No', 'Si', 'Puede continuar en servicio',
+   'Equipo nuevo de obras.', NULL, '2026-05-12 11:00:00')
 ON DUPLICATE KEY UPDATE
   procesador = VALUES(procesador),
   sistema_operativo = VALUES(sistema_operativo),
   funcionamiento = VALUES(funcionamiento),
-  resultado_evaluacion = VALUES(resultado_evaluacion);
+  obsolescencia_tecnologica = VALUES(obsolescencia_tecnologica),
+  repuestos_disponibles = VALUES(repuestos_disponibles),
+  resultado_evaluacion = VALUES(resultado_evaluacion),
+  diagnostico = VALUES(diagnostico),
+  observaciones_evaluacion = VALUES(observaciones_evaluacion),
+  fecha_evaluacion = VALUES(fecha_evaluacion);
+
+-- Categorías de falla: 1 preventivo, 4 red, 6 sobrecalentamiento, 8 disco, etc. (v2_estructura)
+INSERT INTO v2_fichas_mantenimiento (
+  id, nro_orden, equipo_id, fecha_intervencion, tecnico_id, tipo_mantenimiento,
+  categoria_falla_id, sintoma_usuario, causa_raiz, componente_principal,
+  nivel_polvo, temperatura_cpu, diagnostico_texto, actividades_realizadas,
+  piezas_reemplazadas, costo_reparacion, estado_post_mantenimiento
+) VALUES
+  (1, 'OM-2026-0001', 1, '2025-11-12 10:00:00', 2, 'Preventivo',
+   1, 'Limpieza programada', 'Suciedad acumulada', 'Ventilación',
+   'Medio', 48.5, 'Preventivo semestral.', 'Limpieza interna, actualización de SO y antivirus.',
+   NULL, 0.00, 'Operativo'),
+  (2, 'OM-2026-0002', 6, '2026-01-15 09:30:00', 2, 'Preventivo',
+   1, 'Mantenimiento de rutina', NULL, 'Gabinete',
+   'Bajo', 42.0, 'Sin fallas detectadas.', 'Limpieza y revisión de cables.',
+   NULL, 0.00, 'Operativo'),
+  (3, 'OM-2026-0003', 7, '2026-02-20 14:00:00', 2, 'Correctivo',
+   8, 'PC muy lenta / cuelga al abrir Excel', 'Sectores defectuosos en HDD', 'Disco duro',
+   'Alto', 55.0, 'SMART con errores. Se recomienda SSD.', 'Respaldo de datos; diagnóstico de disco.',
+   NULL, 0.00, 'Dañado'),
+  (4, 'OM-2026-0004', 4, '2026-05-18 11:20:00', 2, 'Correctivo',
+   6, 'Se apaga solo / muy caliente', 'Pasta térmica seca; polvo en disipador', 'Ventilador CPU',
+   'Alto', 78.0, 'Sobrecalentamiento confirmado.', 'Limpieza profunda; cambio de pasta térmica.',
+   'Pasta térmica', 25.00, 'Operativo'),
+  (5, 'OM-2026-0005', 8, '2026-03-05 16:45:00', 2, 'Preventivo',
+   1, 'Revisión de caja', NULL, 'Gabinete',
+   'Bajo', 40.0, 'OK.', 'Limpieza y prueba de impresión de tickets.',
+   NULL, 0.00, 'Operativo'),
+  (6, 'OM-2026-0006', 16, '2026-04-08 10:10:00', 2, 'Preventivo',
+   1, 'Mantenimiento impresora', 'Tóner / cabezal', 'Impresora',
+   'Medio', NULL, 'Contador normal.', 'Limpieza de rodillos y prueba de página.',
+   NULL, 0.00, 'Operativo'),
+  (7, 'OM-2026-0007', 17, '2026-05-06 09:50:00', 2, 'Correctivo',
+   3, 'Atasco de papel frecuente', 'Rodillos gastados', 'Alimentador',
+   'Medio', NULL, 'Atascos en bandeja 1.', 'Limpieza de rodillos; ajuste de bandeja.',
+   NULL, 40.00, 'Operativo'),
+  (8, 'OM-2026-0008', 18, '2026-05-29 13:00:00', 2, 'Correctivo',
+   9, 'No enciende', 'Posible falla de fuente/fusor', 'Fuente',
+   'Bajo', NULL, 'Equipo no responde. Pendiente repuesto.', 'Diagnóstico inicial; baja temporal de uso.',
+   NULL, 0.00, 'Dañado'),
+  (9, 'OM-2026-0009', 2, '2026-04-22 15:15:00', 2, 'Preventivo',
+   2, 'Actualización de SO', NULL, 'Software',
+   'Bajo', 45.0, 'Parches de seguridad aplicados.', 'Windows Update y reinicio verificado.',
+   NULL, 0.00, 'Operativo'),
+  (10, 'OM-2026-0010', 27, '2026-03-01 08:30:00', 2, 'Preventivo',
+   4, 'Revisión de switch de rack', NULL, 'Switch',
+   'Bajo', NULL, 'Puertos OK, sin errores de enlace.', 'Inspección visual y prueba de ping.',
+   NULL, 0.00, 'Operativo'),
+  (11, 'OM-2026-0011', 1, '2026-06-10 10:30:00', 2, 'Predictivo',
+   1, 'Alerta de riesgo medio (simulado)', NULL, 'Sistema',
+   'Bajo', 50.0, 'Seguimiento post-alerta ML.', 'Revisión de logs y temperatura.',
+   NULL, 0.00, 'Operativo'),
+  (12, 'OM-2026-0012', 35, '2026-05-20 12:00:00', 2, 'Evaluacion',
+   1, 'Puesta en servicio', NULL, 'CPU',
+   'Bajo', 38.0, 'Equipo nuevo verificado.', 'Imagen institucional e ingreso a dominio (simulado).',
+   NULL, 0.00, 'Operativo')
+ON DUPLICATE KEY UPDATE
+  tipo_mantenimiento = VALUES(tipo_mantenimiento),
+  categoria_falla_id = VALUES(categoria_falla_id),
+  diagnostico_texto = VALUES(diagnostico_texto),
+  actividades_realizadas = VALUES(actividades_realizadas),
+  estado_post_mantenimiento = VALUES(estado_post_mantenimiento),
+  fecha_intervencion = VALUES(fecha_intervencion);
+
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-06-10', horas_uso = 4200, errores_smart = 0, ultima_temp_cpu = 50.0 WHERE id = 1;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-04-22', horas_uso = 1800, errores_smart = 0 WHERE id = 2;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-05-18', horas_uso = 5100, errores_smart = 2, salud_bateria = 72.5, ultima_temp_cpu = 78.0 WHERE id = 4;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-01-15', horas_uso = 6200, errores_smart = 0, ultima_temp_cpu = 42.0 WHERE id = 6;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-02-20', horas_uso = 9800, errores_smart = 12, ultima_temp_cpu = 55.0 WHERE id = 7;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-03-05', horas_uso = 3500, errores_smart = 0 WHERE id = 8;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-04-08', contador_paginas = 12500 WHERE id = 16;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-05-06', contador_paginas = 48200 WHERE id = 17;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-05-29', contador_paginas = 91000 WHERE id = 18;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-03-01' WHERE id = 27;
+UPDATE v2_equipos SET fecha_ultimo_mantenimiento = '2026-05-20', horas_uso = 400, errores_smart = 0 WHERE id = 35;
 
 INSERT INTO v2_tickets (
   id, codigo, gerencia_id, area_id, motivo, descripcion, solicitante_nombre, estado
