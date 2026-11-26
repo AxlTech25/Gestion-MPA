@@ -28,8 +28,11 @@ RUN mkdir -p storage/login_throttle storage/ticket_throttle uploads/fichas_tecni
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/backend/api/v2
 
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Solo sites-available: el sed amplio sobre apache2.conf puede dejar 2 MPM cargados.
+RUN sed -ri -e 's!/var/www/html!/var/www/backend/api/v2!g' /etc/apache2/sites-available/*.conf \
+    && a2dismod mpm_event 2>/dev/null || true \
+    && a2dismod mpm_worker 2>/dev/null || true \
+    && a2enmod mpm_prefork
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

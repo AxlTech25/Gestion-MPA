@@ -3,6 +3,11 @@ set -euo pipefail
 
 PORT="${PORT:-80}"
 
+# Un solo MPM (prefork) — evita AH00534 en algunos hosts.
+a2dismod mpm_event >/dev/null 2>&1 || true
+a2dismod mpm_worker >/dev/null 2>&1 || true
+a2enmod mpm_prefork >/dev/null 2>&1 || true
+
 # Render / Railway inyectan PORT; Apache debe escucharlo.
 if [ -f /etc/apache2/ports.conf ]; then
   sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
