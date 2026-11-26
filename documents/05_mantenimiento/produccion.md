@@ -309,77 +309,89 @@ Si el servidor no tiene el repositorio Git, el rollback es **restaurar artefacto
 
 ---
 
-## Vercel (frontend) + Railway (API + MySQL)
+## Vercel (frontend) + Render (API + MySQL)
 
 Despliegue en dos plataformas. El ML queda fuera: `ML_SERVICE_URL` vacío.
 
 ```text
 Navegador → Vercel (React/Vite)
                 ↓ HTTPS
-         Railway API (PHP Apache) → Railway MySQL
+         Render API (PHP Apache) → Render MySQL (private service)
 ```
+
+> **Coste:** en Render, MySQL como *private service* + disco es de pago (plan starter). La API puede usar plan **free** (se duerme tras inactividad).
 
 ### Requisitos
 
-- Cuenta Vercel y Railway; repo en GitHub (`Gestion-MPA`).
+- Cuenta Vercel y Render; repo en GitHub (`AxlTech25/Gestion-MPA`).
 - Dump local de MySQL (p. ej. `gestion_equipos_mpa_v2 (1).sql`) — no va en Git.
-- Código con `backend/Dockerfile`, `backend/railway.toml` y `vercel.json`.
+- Código con [`render.yaml`](../../render.yaml), `backend/Dockerfile` y `vercel.json`.
 
-### 1. Railway — MySQL + API
+### 1. Render — Blueprint (MySQL + API)
 
-1. Crear proyecto (ej. `gestion-mpa`).
-2. Añadir plugin **MySQL**.
-3. Crear servicio a partir del directorio `backend/` (builder Dockerfile).
-4. Variables del servicio API (o referencias al plugin MySQL):
+1. En [Render Dashboard](https://dashboard.render.com/) → **New** → **Blueprint**.
+2. Conectar el repo `AxlTech25/Gestion-MPA` (branch `main`).
+3. Aplicar el Blueprint [`render.yaml`](../../render.yaml): crea `mysql` (private) y `sigemad-api` (web Docker).
+4. Esperar a que ambos servicios estén **Live**. Anote la URL pública del API (`https://sigemad-api-xxxx.onrender.com`).
+5. Healthcheck: `GET https://<api>/health.php` → JSON ok.
 
-| Variable | Valor |
+Variables del API (ya definidas en el Blueprint):
+
+| Variable | Origen |
 |----------|--------|
-| `MYSQLHOST` / `DB_HOST` | Host del plugin MySQL |
-| `MYSQLPORT` / `DB_PORT` | Puerto del plugin |
-| `MYSQLDATABASE` / `DB_NAME` | Nombre de la BD |
-| `MYSQLUSER` / `DB_USER` | Usuario |
-| `MYSQLPASSWORD` / `DB_PASS` | Contraseña |
-| `JWT_SECRET` | Cadena larga aleatoria (≥32) |
-| `CORS_ORIGINS` | URL exacta de Vercel, ej. `https://xxx.vercel.app` |
+| `DB_HOST` | host interno del servicio `mysql` |
+| `DB_PORT` | `3306` |
+| `DB_NAME` / `DB_USER` / `DB_PASS` | BD `gestion_equipos_mpa_v2` / user `sigemad` |
+| `JWT_SECRET` | generado por Render |
+| `CORS_ORIGINS` | `https://gestion-mpa.vercel.app` |
 | `ML_SERVICE_URL` | vacío |
 
-5. Generar dominio público del API. Healthcheck: `GET /health.php`.
-6. Importar el dump con `railway connect MySQL` o cliente `mysql` hacia el host/puerto del plugin.
-7. Si falta `v2_tickets`: `php backend/tools/migrate_tickets.php` (con env de BD apuntando a Railway).
-8. Rotar contraseñas de `v2_usuarios`:
+### 2. Importar el dump y rotar contraseñas
+
+MySQL no es público. Opciones:
+
+1. **Shell de Render** en el servicio `mysql` (o un one-off con cliente `mysql` en la red privada) e importar el `.sql`.
+2. Desplegar temporalmente [Adminer](https://www.adminer.org/) como Web Service free en el mismo workspace (puede *enviar* tráfico privado) e importar por UI; luego elimínelo.
+
+Tras el import:
 
 ```bash
+# Con DB_* apuntando al MySQL de Render (desde un one-off o shell con PHP)
+php backend/tools/migrate_tickets.php   # si falta v2_tickets
 php backend/tools/reset_user_passwords.php
 ```
 
-Guarde el listado `usuario → password` fuera del repo. No lo suba a Git ni al changelog.
+Guarde el listado `usuario → password` fuera del repo.
 
-### 2. Vercel — frontend
+### 3. Vercel — frontend
 
-1. Importar el mismo repo; root del frontend = raíz del proyecto.
-2. Variables de entorno de build:
+1. Proyecto ya creado: `eco-pfa/gestion-mpa` → https://gestion-mpa.vercel.app
+2. Actualizar variable de build:
 
 | Variable | Valor |
 |----------|--------|
-| `VITE_API_BASE_URL` | `https://<api-railway>.up.railway.app` (sin barra final) |
+| `VITE_API_BASE_URL` | `https://sigemad-api-xxxx.onrender.com` (sin barra final) |
 | `VITE_BASE_PATH` | `/` |
 
-3. Deploy. `vercel.json` hace el rewrite SPA a `index.html`.
+3. Redesplegar (`vercel deploy --prod` o redeploy en el dashboard).
 
-### 3. Cierre
+### 4. Cierre
 
-1. Confirmar `CORS_ORIGINS` con la URL final de Vercel (y redesplegar API si hace falta).
-2. Probar login con las claves rotadas, inventario y `/soporte`.
-3. `admin` / `admin123` solo aplica a laboratorio XAMPP, no a producción.
+1. Confirmar `CORS_ORIGINS` = URL de Vercel.
+2. Probar login con claves rotadas, inventario y `/soporte`.
+3. `admin` / `admin123` solo laboratorio XAMPP.
 
-### Checklist Vercel + Railway
+### Checklist Vercel + Render
 
-- [ ] MySQL en Railway e dump importado
-- [ ] API desplegada; `/health.php` responde 200
-- [ ] Contraseñas de usuarios rotadas y guardadas fuera del repo
-- [ ] Frontend en Vercel con `VITE_API_BASE_URL` absoluto
-- [ ] `CORS_ORIGINS` incluye la URL de Vercel
-- [ ] Login e inventario OK; tickets públicos OK
+- [ ] Blueprint aplicado; `mysql` y `sigemad-api` Live
+- [ ] Dump importado; tickets migrados si hace falta
+- [ ] Contraseñas rotadas y guardadas fuera del repo
+- [ ] `VITE_API_BASE_URL` apunta al API de Render; frontend redesplegado
+- [ ] Login, inventario y tickets OK
+
+### Alternativa Railway (si reactiva el plan)
+
+Queda `backend/Dockerfile` + `backend/railway.toml` por si más adelante usa Railway Hobby. El flujo preferido actual es **Render**.
 
 ---
 

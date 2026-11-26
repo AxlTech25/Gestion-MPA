@@ -5,7 +5,7 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
 **Stack:** React (Vite) · PHP API REST · MySQL · FastAPI (ML)
 
 **Metodología:** Prompt-Centered SDLC v1.2  
-**Versión actual:** 0.12.1 (deploy Vercel + Railway)
+**Versión actual:** 0.12.2 (deploy Vercel + Render)
 
 ---
 
@@ -353,7 +353,7 @@ El PDF de una sola ficha de mantenimiento sigue descargándose desde el detalle 
 | Contraseña | `admin123` (solo laboratorio XAMPP) |
 | Rol | Administrador |
 
-> En producción (Vercel + Railway) **no** use `admin123`. Tras importar la BD, ejecute `php backend/tools/reset_user_passwords.php` y guarde el listado fuera del repo. Tras 5 intentos fallidos de login el acceso se bloquea 15 minutos. Guía: [`documents/05_mantenimiento/produccion.md`](documents/05_mantenimiento/produccion.md#vercel-frontend--railway-api--mysql).
+> En producción (Vercel + Render) **no** use `admin123`. Tras importar la BD, ejecute `php backend/tools/reset_user_passwords.php` y guarde el listado fuera del repo. Tras 5 intentos fallidos de login el acceso se bloquea 15 minutos. Guía: [`documents/05_mantenimiento/produccion.md`](documents/05_mantenimiento/produccion.md#vercel-frontend--render-api--mysql).
 
 ### Permisos por rol
 

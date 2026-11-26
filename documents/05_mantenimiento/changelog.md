@@ -4,6 +4,16 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 
+## [0.12.2] - 2026-11-25 — Blueprint Render (API + MySQL)
+
+### Añadido
+- [`render.yaml`](../../render.yaml): MySQL private service + web `sigemad-api` (Docker `backend/`).
+- Docs de producción actualizadas a **Vercel + Render** (Railway queda como alternativa).
+
+### Qué probar
+- New → Blueprint en Render con el repo; `GET /health.php` en el API.
+- Actualizar `VITE_API_BASE_URL` en Vercel a la URL `*.onrender.com` y redesplegar.
+
 ## [0.12.1] - 2026-11-25 — Deploy Vercel + Railway
 
 ### Añadido
@@ -12,10 +22,10 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 - Soporte `db_port` y variables Railway `MYSQL*` en `LocalConfig` / `Database`.
 - `PATCH` en CORS; `vercel.json` y `.env.production.example` con API absoluta.
 - Script `backend/tools/reset_user_passwords.php` para rotar claves de `v2_usuarios` (salida solo en consola).
-- Sección Vercel+Railway en `documents/05_mantenimiento/produccion.md`.
+- Sección Vercel+Railway en `documents/05_mantenimiento/produccion.md` (sustituida en 0.12.2 por Render).
 
 ### Qué probar
-- Build local del Dockerfile o deploy en Railway; `/health.php` → JSON ok.
+- Build local del Dockerfile; `/health.php` → JSON ok.
 - Tras importar dump: rotar passwords y login con la nueva clave.
 - Frontend en Vercel llamando a la URL pública del API.
 

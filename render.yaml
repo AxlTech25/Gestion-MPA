@@ -1,0 +1,60 @@
+# Sigemad MPA — API PHP + MySQL en Render (frontend sigue en Vercel)
+# Dashboard: New → Blueprint → conectar repo AxlTech25/Gestion-MPA
+#
+# Coste aproximado: MySQL (private service + disco) es de pago;
+# la API puede ir en plan free (se duerme tras inactividad).
+
+services:
+  - type: pserv
+    name: mysql
+    runtime: image
+    plan: starter
+    region: oregon
+    image:
+      url: docker.io/library/mysql:8.0
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 1
+    envVars:
+      - key: MYSQL_DATABASE
+        value: gestion_equipos_mpa_v2
+      - key: MYSQL_USER
+        value: sigemad
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+
+  - type: web
+    name: sigemad-api
+    runtime: docker
+    plan: free
+    region: oregon
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health.php
+    envVars:
+      - key: DB_HOST
+        fromService:
+          name: mysql
+          type: pserv
+          property: host
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        value: gestion_equipos_mpa_v2
+      - key: DB_USER
+        value: sigemad
+      - key: DB_PASS
+        fromService:
+          name: mysql
+          type: pserv
+          envVarKey: MYSQL_PASSWORD
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://gestion-mpa.vercel.app
+      - key: ML_SERVICE_URL
+        value: ""

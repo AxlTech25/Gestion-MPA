@@ -3,7 +3,7 @@ set -euo pipefail
 
 PORT="${PORT:-80}"
 
-# Railway (y similares) inyectan PORT; Apache debe escucharlo.
+# Render / Railway inyectan PORT; Apache debe escucharlo.
 if [ -f /etc/apache2/ports.conf ]; then
   sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
 fi
