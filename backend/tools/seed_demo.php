@@ -1,10 +1,11 @@
 <?php
 /**
- * Aplica esquema (si hace falta) + seed demo con pocos equipos.
+ * Aplica esquema (si hace falta) + seed simulado (códigos 450…, áreas genéricas).
+ * No carga el inventario municipal real.
  *
  * Uso:
  *   php backend/tools/seed_demo.php
- *   php backend/tools/seed_demo.php --force   # reescribe el seed aunque ya haya equipos
+ *   php backend/tools/seed_demo.php --force   # reaplica el seed aunque ya haya equipos
  *
  * Requiere DB_* / MYSQL* o local.php apuntando a la BD destino.
  */
@@ -83,6 +84,6 @@ runSqlFile($conn, __DIR__ . '/../sql/v2_seed_demo.sql');
 
 $equipos = (int) $conn->query('SELECT COUNT(*) FROM v2_equipos')->fetchColumn();
 $tickets = (int) $conn->query('SELECT COUNT(*) FROM v2_tickets')->fetchColumn();
-echo "Listo: {$equipos} equipos, {$tickets} tickets demo.\n";
-echo "Login demo: admin / DemoMPA2026!Segura  (y tecnico / misma clave).\n";
-echo "Rote estas claves tras el deploy si el entorno es público.\n";
+echo "Listo: {$equipos} equipos, {$tickets} tickets simulados.\n";
+echo "Usuarios: admin, tecnico, practicante (claves fuertes del seed; no uses admin123).\n";
+echo "Si el entorno es público, rote con: php backend/tools/reset_user_passwords.php\n";
