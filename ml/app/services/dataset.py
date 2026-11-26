@@ -7,7 +7,7 @@ from typing import Any
 
 import pandas as pd
 
-from app.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, SCRIPTS_DIR
+from app.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER, SCRIPTS_DIR
 
 sys.path.insert(0, str(SCRIPTS_DIR))
 
@@ -75,11 +75,15 @@ def _connect():
 
     return pymysql.connect(
         host=DB_HOST,
+        port=DB_PORT,
         user=DB_USER,
         password=DB_PASSWORD,
         database=DB_NAME,
         charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor,
+        connect_timeout=10,
+        read_timeout=60,
+        write_timeout=60,
     )
 
 
