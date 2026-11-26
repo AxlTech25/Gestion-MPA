@@ -91,7 +91,7 @@ INSERT INTO v2_fichas_tecnicas (
   diagnostico, observaciones_evaluacion, fecha_evaluacion
 ) VALUES
   (1, 'FT-SIM-001', 'Intel Core i5-1235U', 'Windows 11 Pro', 'OEM',
-   'AA:BB:CC:11:22:01', '10.0.1.11', 'Office 365; Antivirus institucional', 'Sin fallas',
+   'AA:BB:CC:11:22:01', '10.0.1.11', 'Office 365, Antivirus institucional', 'Sin fallas',
    'No', 'Si', 'Puede continuar en servicio',
    'Equipo en buen estado. Sin alertas SMART.', 'Revisión rutinaria TI.', '2026-03-10 10:00:00'),
   (2, 'FT-SIM-002', 'Intel Core i5-1135G7', 'Windows 11 Pro', 'OEM',
@@ -107,7 +107,7 @@ INSERT INTO v2_fichas_tecnicas (
    'No', 'Si', 'Requiere reparación',
    'Sobrecalentamiento y ventilador ruidoso. En taller.', 'Pendiente cambio de pasta térmica.', '2026-05-20 16:00:00'),
   (6, 'FT-SIM-005', 'Intel Core i5-10500', 'Windows 10 Pro', 'OEM',
-   'AA:BB:CC:11:22:06', '10.0.2.31', 'Office 365; SIAP', 'Sin fallas',
+   'AA:BB:CC:11:22:06', '10.0.2.31', 'Office 365, SIAP', 'Sin fallas',
    'No', 'Si', 'Puede continuar en servicio',
    'PC de contabilidad estable.', NULL, '2026-01-22 14:20:00'),
   (7, 'FT-SIM-006', 'Intel Core i3-9100', 'Windows 10 Pro', 'OEM',
@@ -115,7 +115,7 @@ INSERT INTO v2_fichas_tecnicas (
    'Si', 'No', 'Se recomienda retirar del servicio',
    'Disco HDD con sectores defectuosos. Lentitud extrema.', 'Candidato a baja o reposición.', '2026-06-01 08:45:00'),
   (8, 'FT-SIM-007', 'Intel Core i5-12400', 'Windows 11 Pro', 'OEM',
-   'AA:BB:CC:11:22:08', '10.0.2.41', 'Office 365; Sistema de caja', 'Sin fallas',
+   'AA:BB:CC:11:22:08', '10.0.2.41', 'Office 365, Sistema de caja', 'Sin fallas',
    'No', 'Si', 'Puede continuar en servicio',
    'Equipo de tesorería OK.', NULL, '2026-03-28 13:10:00'),
   (16, 'FT-SIM-008', NULL, NULL, NULL,
@@ -135,7 +135,7 @@ INSERT INTO v2_fichas_tecnicas (
    'No', 'Si', 'Puede continuar en servicio',
    'Laptop de gerencia sin observaciones.', NULL, '2026-02-10 12:00:00'),
   (35, 'FT-SIM-012', 'Intel Core i7-12700', 'Windows 11 Pro', 'OEM',
-   'AA:BB:CC:11:22:35', '10.0.8.2', 'Office 365; AutoCAD viewer', 'Sin fallas',
+   'AA:BB:CC:11:22:35', '10.0.8.2', 'Office 365, AutoCAD viewer', 'Sin fallas',
    'No', 'Si', 'Puede continuar en servicio',
    'Equipo nuevo de obras.', NULL, '2026-05-12 11:00:00')
 ON DUPLICATE KEY UPDATE
