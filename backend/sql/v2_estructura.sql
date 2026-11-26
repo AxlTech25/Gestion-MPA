@@ -180,7 +180,8 @@ CREATE TABLE IF NOT EXISTS v2_catalogo_ficha (
 CREATE TABLE IF NOT EXISTS v2_categorias_falla (
   id INT PRIMARY KEY AUTO_INCREMENT,
   nombre VARCHAR(100) NOT NULL, -- Ej: "Fallo de Disco", "Sobrecalentamiento", "Software", "Mantenimiento Rutinario"
-  severidad ENUM('Baja', 'Media', 'Alta', 'Critica') DEFAULT 'Media'
+  severidad ENUM('Baja', 'Media', 'Alta', 'Critica') DEFAULT 'Media',
+  UNIQUE KEY uq_categoria_falla_nombre (nombre)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Insertamos algunas fallas comunes por defecto
@@ -256,6 +257,30 @@ CREATE TABLE IF NOT EXISTS v2_hojas_baja (
   FOREIGN KEY (equipo_id) REFERENCES v2_equipos(id),
   FOREIGN KEY (creado_por) REFERENCES v2_usuarios(id),
   FOREIGN KEY (validado_por) REFERENCES v2_usuarios(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 8. Tickets de soporte (formulario público + cola interna)
+CREATE TABLE IF NOT EXISTS v2_tickets (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  codigo VARCHAR(20) NOT NULL,
+  gerencia_id INT NOT NULL,
+  area_id INT NOT NULL,
+  motivo VARCHAR(80) NOT NULL,
+  descripcion VARCHAR(500) NULL,
+  solicitante_nombre VARCHAR(120) NULL,
+  estado ENUM('Abierto', 'En atencion', 'Resuelto', 'Cerrado') NOT NULL DEFAULT 'Abierto',
+  asignado_a INT NULL,
+  ip_origen VARCHAR(45) NULL,
+  creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  actualizado_en DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_tickets_codigo (codigo),
+  KEY idx_tickets_estado (estado),
+  KEY idx_tickets_area (area_id),
+  KEY idx_tickets_gerencia (gerencia_id),
+  KEY idx_tickets_creado (creado_en),
+  CONSTRAINT fk_tickets_gerencia FOREIGN KEY (gerencia_id) REFERENCES v2_gerencias(id),
+  CONSTRAINT fk_tickets_area FOREIGN KEY (area_id) REFERENCES v2_areas(id),
+  CONSTRAINT fk_tickets_asignado FOREIGN KEY (asignado_a) REFERENCES v2_usuarios(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Usuario administrador inicial (usuario: admin / contraseña: admin123)

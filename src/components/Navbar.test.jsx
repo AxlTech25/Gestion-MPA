@@ -30,6 +30,7 @@ describe('Navbar', () => {
     expect(screen.getByText('Cronograma').className).toContain('text-[#00a8cc]');
     expect(screen.getByText('Dashboard').className).toContain('text-slate-300');
     expect(screen.getByText('Reportes')).toBeTruthy();
+    expect(screen.getByText('Tickets')).toBeTruthy();
 
     screen.getByRole('button', { name: /salir/i }).click();
     expect(localStorage.getItem('token')).toBeNull();

@@ -309,4 +309,78 @@ Si el servidor no tiene el repositorio Git, el rollback es **restaurar artefacto
 
 ---
 
+## Vercel (frontend) + Railway (API + MySQL)
+
+Despliegue en dos plataformas. El ML queda fuera: `ML_SERVICE_URL` vacío.
+
+```text
+Navegador → Vercel (React/Vite)
+                ↓ HTTPS
+         Railway API (PHP Apache) → Railway MySQL
+```
+
+### Requisitos
+
+- Cuenta Vercel y Railway; repo en GitHub (`Gestion-MPA`).
+- Dump local de MySQL (p. ej. `gestion_equipos_mpa_v2 (1).sql`) — no va en Git.
+- Código con `backend/Dockerfile`, `backend/railway.toml` y `vercel.json`.
+
+### 1. Railway — MySQL + API
+
+1. Crear proyecto (ej. `gestion-mpa`).
+2. Añadir plugin **MySQL**.
+3. Crear servicio a partir del directorio `backend/` (builder Dockerfile).
+4. Variables del servicio API (o referencias al plugin MySQL):
+
+| Variable | Valor |
+|----------|--------|
+| `MYSQLHOST` / `DB_HOST` | Host del plugin MySQL |
+| `MYSQLPORT` / `DB_PORT` | Puerto del plugin |
+| `MYSQLDATABASE` / `DB_NAME` | Nombre de la BD |
+| `MYSQLUSER` / `DB_USER` | Usuario |
+| `MYSQLPASSWORD` / `DB_PASS` | Contraseña |
+| `JWT_SECRET` | Cadena larga aleatoria (≥32) |
+| `CORS_ORIGINS` | URL exacta de Vercel, ej. `https://xxx.vercel.app` |
+| `ML_SERVICE_URL` | vacío |
+
+5. Generar dominio público del API. Healthcheck: `GET /health.php`.
+6. Importar el dump con `railway connect MySQL` o cliente `mysql` hacia el host/puerto del plugin.
+7. Si falta `v2_tickets`: `php backend/tools/migrate_tickets.php` (con env de BD apuntando a Railway).
+8. Rotar contraseñas de `v2_usuarios`:
+
+```bash
+php backend/tools/reset_user_passwords.php
+```
+
+Guarde el listado `usuario → password` fuera del repo. No lo suba a Git ni al changelog.
+
+### 2. Vercel — frontend
+
+1. Importar el mismo repo; root del frontend = raíz del proyecto.
+2. Variables de entorno de build:
+
+| Variable | Valor |
+|----------|--------|
+| `VITE_API_BASE_URL` | `https://<api-railway>.up.railway.app` (sin barra final) |
+| `VITE_BASE_PATH` | `/` |
+
+3. Deploy. `vercel.json` hace el rewrite SPA a `index.html`.
+
+### 3. Cierre
+
+1. Confirmar `CORS_ORIGINS` con la URL final de Vercel (y redesplegar API si hace falta).
+2. Probar login con las claves rotadas, inventario y `/soporte`.
+3. `admin` / `admin123` solo aplica a laboratorio XAMPP, no a producción.
+
+### Checklist Vercel + Railway
+
+- [ ] MySQL en Railway e dump importado
+- [ ] API desplegada; `/health.php` responde 200
+- [ ] Contraseñas de usuarios rotadas y guardadas fuera del repo
+- [ ] Frontend en Vercel con `VITE_API_BASE_URL` absoluto
+- [ ] `CORS_ORIGINS` incluye la URL de Vercel
+- [ ] Login e inventario OK; tickets públicos OK
+
+---
+
 *Volver a [README.md](../../README.md) · [Arquitectura](../02_diseno/architecture.md)*

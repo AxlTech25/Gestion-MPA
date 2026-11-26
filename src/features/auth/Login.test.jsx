@@ -96,6 +96,12 @@ describe('Login', () => {
     await submit('ana', 'otra');
     expect(await screen.findByText('Usuario o contraseña incorrectos.')).toBeTruthy();
 
+    authService.login.mockRejectedValueOnce({
+      response: { status: 429, data: { message: 'Demasiados intentos fallidos. Intente de nuevo en 15 minuto(s).' } },
+    });
+    await submit('ana', 'otra');
+    expect(await screen.findByText(/Demasiados intentos fallidos/)).toBeTruthy();
+
     authService.login.mockRejectedValueOnce({ response: { status: 500, data: { message: 'Caído' } } });
     await submit('ana', 'otra');
     expect(await screen.findByText('Caído')).toBeTruthy();

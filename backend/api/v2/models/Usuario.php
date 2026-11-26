@@ -27,6 +27,9 @@ class Usuario {
     }
 
     public function create($data) {
+        if (!$this->passwordAceptable($data->password ?? null)) {
+            return false;
+        }
         $query = "INSERT INTO " . $this->table_name . " 
                  (nombre_completo, usuario, password_hash, rol) 
                  VALUES (:nombre_completo, :usuario, :password_hash, :rol)";
@@ -70,7 +73,10 @@ class Usuario {
             $fields[] = 'area_id = :area_id';
             $params[':area_id'] = $data->area_id;
         }
-        if (isset($data->password) && !empty($data->password)) {
+        if (isset($data->password) && $data->password !== '' && $data->password !== null) {
+            if (!$this->passwordAceptable($data->password)) {
+                return false;
+            }
             $fields[] = 'password_hash = :password_hash';
             $params[':password_hash'] = password_hash($data->password, PASSWORD_DEFAULT);
         }
@@ -113,6 +119,14 @@ class Usuario {
             return false;
         }
         return false;
+    }
+
+    public function passwordAceptable($password): bool {
+        if (!is_string($password)) {
+            return false;
+        }
+        $len = strlen($password);
+        return $len >= 8 && $len <= 200;
     }
 }
 ?>

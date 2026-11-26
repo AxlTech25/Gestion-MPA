@@ -15,6 +15,8 @@ import { FichaTecnicaPage } from './features/inventario/components/FichaTecnicaP
 import { CronogramaListPage } from './features/cronograma/components/CronogramaListPage';
 import { CronogramaMatrizPage } from './features/cronograma/components/CronogramaMatrizPage';
 import { ReportesPage } from './features/reportes/components/ReportesPage';
+import { TicketsPage } from './features/tickets/components/TicketsPage';
+import { SoportePublicoPage } from './features/tickets/components/SoportePublicoPage';
 
 // Login
 import Login from './features/auth/Login';
@@ -84,8 +86,9 @@ function App() {
         <AuthProvider>
             <Router basename={basename}>
                 <Routes>
-                    {/* Ruta pública */}
+                    {/* Rutas públicas */}
                     <Route path="/login" element={<Login />} />
+                    <Route path="/soporte" element={<SoportePublicoPage />} />
 
                     {/* Rutas privadas V2 */}
                     <Route
@@ -101,6 +104,7 @@ function App() {
                                         <Route path="/v2/mantenimiento" element={<MantenimientoPage />} />
                                         <Route path="/v2/cronograma/:id" element={<CronogramaMatrizPage />} />
                                         <Route path="/v2/cronograma" element={<CronogramaListPage />} />
+                                        <Route path="/v2/tickets" element={<TicketsPage />} />
                                         <Route
                                             path="/v2/reportes"
                                             element={

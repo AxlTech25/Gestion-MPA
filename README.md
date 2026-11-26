@@ -5,7 +5,7 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
 **Stack:** React (Vite) · PHP API REST · MySQL · FastAPI (ML)
 
 **Metodología:** Prompt-Centered SDLC v1.2  
-**Versión actual:** 0.11.5 (hoja técnica en una A4 y versiones en el reporte)
+**Versión actual:** 0.12.1 (deploy Vercel + Railway)
 
 ---
 
@@ -19,9 +19,10 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
   - [Ficha técnica](#4-ficha-técnica)
   - [Mantenimiento](#5-mantenimiento)
   - [Cronograma](#6-cronograma)
-  - [Configuración](#7-configuración)
-  - [Alertas predictivas (ML)](#8-alertas-predictivas-ml)
-  - [Reportes](#9-reportes)
+  - [Tickets de soporte](#7-tickets-de-soporte)
+  - [Configuración](#8-configuración)
+  - [Alertas predictivas (ML)](#9-alertas-predictivas-ml)
+  - [Reportes](#10-reportes)
 - [Roles y credenciales](#roles-y-credenciales)
 - [Documentación adicional](#documentación-adicional)
 - [Desarrollo](#desarrollo)
@@ -51,6 +52,7 @@ El marco de trabajo es la propuesta **Prompt-Centered SDLC v1.2** (en validació
      - `php backend/tools/migrate_gerencias.php` (0.10.7)
      - `php backend/tools/migrate_hoja_revision.php` (0.11.0, hoja de revisión técnica)
      - `php backend/tools/migrate_ficha_historial.php` (0.11.1, historial de la ficha)
+     - `php backend/tools/migrate_tickets.php` (0.12.0, tickets de soporte)
 
 2. **Backend PHP**
    ```bash
@@ -256,7 +258,28 @@ Marcar una celda **no** registra una ficha de mantenimiento.
 
 ---
 
-### 7. Configuración
+### 7. Tickets de soporte
+
+Canal rápido para pedir ayuda **sin iniciar sesión**.
+
+#### Formulario público
+
+1. Abra `/soporte` (también hay un enlace en la pantalla de login).
+2. Elija **Gerencia** → **Área** → **Motivo** (listas fijas).
+3. Nombre y detalle son opcionales.
+4. Al enviar, anote el código (`TK-AAAA-NNNN`) para consultar el estado en la misma página.
+
+#### Cola interna
+
+1. Con sesión iniciada, abra **Tickets** en el menú.
+2. Todos los roles pueden ver la lista y filtrar por estado.
+3. **Administrador** y **Técnico** pueden cambiar el estado (`Abierto` → `En atencion` → `Resuelto` / `Cerrado`).
+
+Requiere la tabla `v2_tickets` (`php backend/tools/migrate_tickets.php`).
+
+---
+
+### 8. Configuración
 
 Panel de administración organizacional (requiere rol **Administrador** en UI y en API).
 
@@ -279,7 +302,7 @@ Panel de administración organizacional (requiere rol **Administrador** en UI y 
 
 ---
 
-### 8. Alertas predictivas (ML)
+### 9. Alertas predictivas (ML)
 
 Funcionalidades que dependen del microservicio FastAPI en el puerto **8000**:
 
@@ -302,16 +325,17 @@ Más detalle en [`ml/README.md`](ml/README.md).
 
 ---
 
-### 9. Reportes
+### 10. Reportes
 
 Apartado para Administrador y Técnico. Cada botón descarga un PDF.
 
-Hay dos bloques. En cada uno se puede pedir un equipo o un año.
+Hay tres bloques: fichas técnicas, fichas de mantenimiento y ENAD.
 
-| Bloque | Por equipo | Por año |
-|--------|------------|---------|
+| Bloque | Por equipo | Por año / global |
+|--------|------------|------------------|
 | Fichas técnicas | Cada hoja de revisión que tuvo ese código, de la primera a la actual | La hoja vigente de cada equipo cuya fecha cae en el año elegido |
 | Fichas de mantenimiento | Cada ficha de mantenimiento de ese código | Las fichas de mantenimiento registradas en el año elegido |
+| ENAD / inventario digital | — | Un PDF con las tablas 14, 16, 20, 21 y 24 (procesador/SO, estados, red e impresoras) |
 
 El año se elige en un menú. Si el código no existe, no se descarga el archivo y la pantalla muestra «Equipo no encontrado». Un año sin fichas sí genera el PDF, con el aviso. El reporte por equipo reconstruye cada guardado como una hoja completa; la lista de antes y después sigue viéndose al pie de la ficha, no como tabla en el PDF. Una ficha que nunca se volvió a guardar sale en una sola hoja.
 
@@ -326,10 +350,10 @@ El PDF de una sola ficha de mantenimiento sigue descargándose desde el detalle 
 | Campo | Valor |
 |-------|-------|
 | Usuario | `admin` |
-| Contraseña | `admin123` |
+| Contraseña | `admin123` (solo laboratorio XAMPP) |
 | Rol | Administrador |
 
-> Cambie estas credenciales en entornos de producción.
+> En producción (Vercel + Railway) **no** use `admin123`. Tras importar la BD, ejecute `php backend/tools/reset_user_passwords.php` y guarde el listado fuera del repo. Tras 5 intentos fallidos de login el acceso se bloquea 15 minutos. Guía: [`documents/05_mantenimiento/produccion.md`](documents/05_mantenimiento/produccion.md#vercel-frontend--railway-api--mysql).
 
 ### Permisos por rol
 
@@ -375,7 +399,7 @@ npm run build
 #    - Carpeta backend/    →  {DocumentRoot}/backend/
 ```
 
-4. Importe `backend/sql/v2_estructura.sql` (instalación nueva) o ejecute las migraciones pendientes (`migrate_fase7.php`, `migrate_cronograma.php`, `migrate_gerencias.php`, `migrate_hoja_revision.php`, `migrate_ficha_historial.php`) sobre la BD existente.  
+4. Importe `backend/sql/v2_estructura.sql` (instalación nueva) o ejecute las migraciones pendientes (`migrate_fase7.php`, `migrate_cronograma.php`, `migrate_gerencias.php`, `migrate_hoja_revision.php`, `migrate_ficha_historial.php`, `migrate_tickets.php`) sobre la BD existente.  
 5. Active SSL y cambie la contraseña del usuario `admin`.
 
 > Si FastAPI no está desplegado, deje `ml_service_url` vacío. El resto del sistema funciona con normalidad.

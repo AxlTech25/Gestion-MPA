@@ -1,0 +1,14 @@
+vendor
+tests
+.phpunit.cache
+coverage-php
+storage/login_throttle/*
+!storage/login_throttle/.gitkeep
+storage/ticket_throttle/*
+!storage/ticket_throttle/.gitkeep
+uploads/fichas_tecnicas/*
+!uploads/fichas_tecnicas/.gitkeep
+api/v2/config/local.php
+api/v2/config/local.hostinger.php
+*.md
+.git

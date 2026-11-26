@@ -6,6 +6,7 @@ class Database {
     public static ?PDO $conexionDePrueba = null;
 
     private $host;
+    private $port;
     private $db_name;
     private $username;
     private $password;
@@ -13,6 +14,7 @@ class Database {
 
     public function __construct() {
         $this->host = LocalConfig::get('db_host', 'localhost');
+        $this->port = LocalConfig::get('db_port', '');
         $this->db_name = LocalConfig::get('db_name', 'gestion_equipos_mpa_v2');
         $this->username = LocalConfig::get('db_user', 'root');
         $this->password = LocalConfig::get('db_pass', '');
@@ -26,8 +28,12 @@ class Database {
 
         $this->conn = null;
         try {
+            $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->db_name . ';charset=utf8mb4';
+            if ($this->port !== null && $this->port !== '') {
+                $dsn .= ';port=' . (int) $this->port;
+            }
             $this->conn = new PDO(
-                "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8mb4",
+                $dsn,
                 $this->username,
                 $this->password
             );

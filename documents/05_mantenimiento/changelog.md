@@ -4,6 +4,71 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 
+## [0.12.1] - 2026-11-25 — Deploy Vercel + Railway
+
+### Añadido
+- `backend/Dockerfile` + `docker-entrypoint.sh` + `railway.toml` (PHP 8.2 Apache, DocumentRoot `api/v2`).
+- `GET /health.php` para healthcheck.
+- Soporte `db_port` y variables Railway `MYSQL*` en `LocalConfig` / `Database`.
+- `PATCH` en CORS; `vercel.json` y `.env.production.example` con API absoluta.
+- Script `backend/tools/reset_user_passwords.php` para rotar claves de `v2_usuarios` (salida solo en consola).
+- Sección Vercel+Railway en `documents/05_mantenimiento/produccion.md`.
+
+### Qué probar
+- Build local del Dockerfile o deploy en Railway; `/health.php` → JSON ok.
+- Tras importar dump: rotar passwords y login con la nueva clave.
+- Frontend en Vercel llamando a la URL pública del API.
+
+## [0.12.0] - 2026-11-22 — Tickets de soporte públicos
+
+### Añadido
+- Formulario público `/soporte` (sin login): Gerencia → Área → Motivo, nombre/detalle opcionales.
+- Código de seguimiento `TK-AAAA-NNNN` y consulta de estado en la misma página.
+- Cola interna `/v2/tickets` para usuarios del sistema; Admin/Técnico cambian estado.
+- API: `GET /tickets/catalogo`, `POST /tickets`, `GET /tickets?codigo=`, `GET /tickets`, `PATCH /tickets/{id}`.
+- Tabla `v2_tickets` + `php backend/tools/migrate_tickets.php`.
+- Límite de envíos por IP y honeypot anti-bots.
+
+### Qué probar
+- Abrir `/soporte` sin sesión, enviar una solicitud y anotar el código.
+- Consultar el código en el bloque inferior.
+- Entrar como técnico, abrir **Tickets**, filtrar y pasar un ticket a «En atencion».
+
+## [0.11.8] - 2026-11-22 — Catálogo de fallas en mantenimiento
+
+### Añadido
+- En Registrar mantenimiento, el selector de categoría/falla carga el catálogo desde la base.
+- Botón **Agregar falla** para registrar nuevas fallas (nombre + severidad) y reutilizarlas.
+- `GET/POST /mantenimientos/categorias-falla`.
+
+### Qué probar
+- Abrir una ficha de mantenimiento: debe listar las fallas existentes.
+- Agregar una falla nueva, guardarla y usarla en la intervención.
+
+## [0.11.7] - 2026-11-22 — Endurecimiento del login
+
+### Seguridad
+- Límite de intentos de login: tras 5 fallos (por IP y por usuario+IP) responde 429 y bloquea 15 minutos (`login_max_attempts`, `login_lockout_seconds`).
+- Verificación de contraseña a tiempo constante aunque el usuario no exista.
+- Mensajes de error de BD ya no se exponen al cliente.
+- Contraseñas de usuario nuevas/editadas: mínimo 8 y máximo 200 caracteres.
+- JWT incluye `nbf` además de `exp`.
+
+### Qué probar
+- 5 logins fallidos seguidos: mensaje de bloqueo y espera. Luego login correcto con credenciales válidas.
+- Crear usuario con contraseña de 7 caracteres: debe rechazarse.
+
+## [0.11.6] - 2026-11-22 — Catálogo de ficha y reporte ENAD
+
+### Añadido
+- Catálogo reutilizable en la ficha (`v2_catalogo_ficha`) para procesador, sistema operativo, software y tipo de impresora, con opción «Otro» que se guarda y se reutiliza.
+- En Reportes, bloque **ENAD / inventario digital**: un PDF con las tablas 14, 16, 20, 21 y 24 a partir del inventario y las fichas.
+- `GET /reportes/enad` → `enad_inventario_digital_{anio}.pdf`.
+
+### Qué probar
+- En una ficha de CPU/laptop, elegir SO/procesador/software del catálogo o «Otro»; al reabrir deben aparecer. Borrar solo entradas no predefinidas.
+- En Reportes, **Descargar PDF ENAD**: tablas 14/16 (CPU/laptop operativos por procesador y SO), 20 (estados), 21 (red) y 24 (impresoras).
+
 ## [0.11.5] - 2026-11-18 — Hoja técnica en una A4 y versiones en el reporte
 
 ### Cambiado

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Monitor, LogIn, Eye, EyeOff } from 'lucide-react';
+import { Monitor, LogIn, Eye, EyeOff, Headset } from 'lucide-react';
 import { authService } from './services/authService';
 
 const Login = () => {
@@ -33,6 +33,8 @@ const Login = () => {
         setError('No se pudo conectar con el servidor. Verifica que XAMPP (Apache + MySQL) esté activo y usa http://localhost:5173');
       } else if (err.response.status === 401) {
         setError('Usuario o contraseña incorrectos.');
+      } else if (err.response.status === 429) {
+        setError(err.response.data?.message || 'Demasiados intentos. Espere unos minutos e intente de nuevo.');
       } else {
         setError(err.response.data?.message || 'Error al iniciar sesión.');
       }
@@ -127,8 +129,14 @@ const Login = () => {
             </button>
           </form>
 
-          <p className="text-center text-slate-600 text-xs mt-6">
-            Departamento de TI · MPA v2.0
+          <p className="text-center text-slate-500 text-xs mt-6 space-y-2">
+            <Link
+              to="/soporte"
+              className="inline-flex items-center gap-1.5 text-cyan-400/90 hover:text-cyan-300 transition-colors"
+            >
+              <Headset size={14} /> ¿Necesita ayuda? Solicitar soporte
+            </Link>
+            <span className="block text-slate-600">Departamento de TI · MPA v2.0</span>
           </p>
         </div>
       </div>

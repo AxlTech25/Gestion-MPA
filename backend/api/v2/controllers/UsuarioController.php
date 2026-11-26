@@ -59,6 +59,10 @@ class UsuarioController {
                 $this->jsonError('Rol no válido. Use Administrador, Tecnico o Practicante.', 400);
                 return;
             }
+            if (!$this->usuario->passwordAceptable($data->password)) {
+                $this->jsonError('La contraseña debe tener entre 8 y 200 caracteres.', 400);
+                return;
+            }
             if ($this->usuario->create($data)) {
                 http_response_code(201);
                 echo json_encode(["success" => true, "message" => "Usuario creado exitosamente."]);
@@ -87,6 +91,12 @@ class UsuarioController {
                 $this->jsonError('No se puede cambiar el rol del último usuario Administrador.', 409);
                 return;
             }
+        }
+
+        if (isset($data->password) && $data->password !== '' && $data->password !== null
+            && !$this->usuario->passwordAceptable($data->password)) {
+            $this->jsonError('La contraseña debe tener entre 8 y 200 caracteres.', 400);
+            return;
         }
 
         if ($this->usuario->update($id, $data)) {

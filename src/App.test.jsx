@@ -56,6 +56,14 @@ vi.mock('./features/reportes/components/ReportesPage', () => ({
   ReportesPage: () => <div data-testid="reportes-page" />,
 }));
 
+vi.mock('./features/tickets/components/TicketsPage', () => ({
+  TicketsPage: () => <div data-testid="tickets-page" />,
+}));
+
+vi.mock('./features/tickets/components/SoportePublicoPage', () => ({
+  SoportePublicoPage: () => <div data-testid="soporte-page" />,
+}));
+
 function renderAt(path) {
   window.history.pushState({}, '', path);
   return render(<App />);
@@ -86,12 +94,19 @@ describe('App', () => {
     expect(screen.queryByTestId('navbar')).toBeNull();
   });
 
+  it('muestra el formulario público de soporte sin sesión', async () => {
+    renderAt('/soporte');
+    expect(await screen.findByTestId('soporte-page')).toBeTruthy();
+    expect(screen.queryByTestId('navbar')).toBeNull();
+  });
+
   it.each([
     ['/v2/dashboard', 'dashboard-page', false],
     ['/v2/inventario', 'inventario-page', false],
     ['/v2/ficha-tecnica', 'ficha-page', false],
     ['/v2/mantenimiento', 'mantenimiento-page', false],
     ['/v2/cronograma', 'cronograma-list-page', false],
+    ['/v2/tickets', 'tickets-page', false],
     ['/v2/reportes', 'reportes-page', false],
     ['/v2/cronograma/15', 'cronograma-matriz-page', true],
     ['/v2/cronograma/abc', 'cronograma-matriz-page', false],

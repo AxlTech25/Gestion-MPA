@@ -11,7 +11,8 @@ if (CorsConfig::handlePreflight()) {
 $request = isset($_GET['request']) ? explode('/', trim($_GET['request'], '/')) : [];
 $resource = $request[0] ?? null;
 
-$publicResources = ['auth'];
+// auth y tickets: endpoints públicos (crear/consultar) + privados con auth en el controlador
+$publicResources = ['auth', 'tickets'];
 
 $usuarioAuth = null;
 if (!in_array($resource, $publicResources, true)) {
@@ -38,6 +39,7 @@ switch ($resource) {
             'anios',
             'fichas-tecnicas-anio',
             'fichas-mantenimiento-anio',
+            'enad',
         ];
         if (isset($request[1]) && in_array($request[1], $reportesDeGestion, true)
             && !AuthMiddleware::tieneRol($usuarioAuth, 'Administrador', 'Tecnico')) {
@@ -73,6 +75,8 @@ switch ($resource) {
             $controller->fichasTecnicasAnio(urldecode($request[2]));
         } elseif (isset($request[1]) && $request[1] === 'fichas-mantenimiento-anio' && isset($request[2])) {
             $controller->fichasMantenimientoAnio(urldecode($request[2]));
+        } elseif (isset($request[1]) && $request[1] === 'enad') {
+            $controller->enad();
         } else {
             http_response_code(400);
             echo json_encode(["success" => false, "message" => "Ruta de reporte inválida."]);
@@ -109,6 +113,10 @@ switch ($resource) {
 
     case 'auth':
         require_once 'routes/auth.php';
+        break;
+
+    case 'tickets':
+        require_once 'routes/tickets.php';
         break;
 
     default:
