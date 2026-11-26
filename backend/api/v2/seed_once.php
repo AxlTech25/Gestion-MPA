@@ -51,16 +51,50 @@ function seed_run_sql_file(PDO $conn, string $path): void {
 try {
     $conn = (new Database())->getConnection();
     $sqlDir = dirname(__DIR__, 2) . '/sql';
+    $conn->exec('SET FOREIGN_KEY_CHECKS=0');
+
+    // Si un intento previo dejó tablas a medias, limpiar esquema v2_*.
+    if (!seed_table_exists($conn, 'v2_equipos')) {
+        $tables = $conn->query(
+            "SELECT TABLE_NAME FROM information_schema.TABLES
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME LIKE 'v2\\_%'"
+        )->fetchAll(PDO::FETCH_COLUMN);
+        foreach ($tables as $t) {
+            $conn->exec('DROP TABLE IF EXISTS `' . str_replace('`', '``', (string) $t) . '`');
+        }
+    }
 
     if (!seed_table_exists($conn, 'v2_equipos')) {
+        // v2_estructura.sql declara historial/cronograma antes que equipos/usuarios;
+        // MySQL 8 falla con 1824. Ordenamos: núcleo primero, luego el resto.
         $estructura = file_get_contents($sqlDir . '/v2_estructura.sql');
         if ($estructura === false) {
             throw new RuntimeException('No se pudo leer v2_estructura.sql');
         }
         $estructura = preg_replace('/^CREATE DATABASE.*$/mi', '', $estructura) ?? $estructura;
         $estructura = preg_replace('/^USE\s+\w+\s*;?\s*$/mi', '', $estructura) ?? $estructura;
-        $tmp = sys_get_temp_dir() . '/v2_estructura_seed_once_' . getmypid() . '.sql';
-        file_put_contents($tmp, $estructura);
+
+        $blocks = [];
+        if (preg_match_all('/CREATE TABLE IF NOT EXISTS\s+(\w+)\s*\((?:[^;]|\n)*?\)\s*ENGINE=InnoDB[^;]*;/is', $estructura, $m)) {
+            foreach ($m[0] as $i => $ddl) {
+                $blocks[$m[1][$i]] = $ddl;
+            }
+        }
+        $coreOrder = ['v2_gerencias', 'v2_areas', 'v2_usuarios', 'v2_equipos'];
+        foreach ($coreOrder as $table) {
+            if (isset($blocks[$table])) {
+                $conn->exec($blocks[$table]);
+                unset($blocks[$table]);
+            }
+        }
+        foreach ($blocks as $ddl) {
+            $conn->exec($ddl);
+        }
+
+        // Resto del archivo (INSERT, ALTER, vistas) sin los CREATE ya aplicados.
+        $resto = preg_replace('/CREATE TABLE IF NOT EXISTS\s+\w+\s*\((?:[^;]|\n)*?\)\s*ENGINE=InnoDB[^;]*;/is', '', $estructura) ?? $estructura;
+        $tmp = sys_get_temp_dir() . '/v2_estructura_resto_' . getmypid() . '.sql';
+        file_put_contents($tmp, $resto);
         try {
             seed_run_sql_file($conn, $tmp);
         } finally {
@@ -73,6 +107,7 @@ try {
     }
 
     seed_run_sql_file($conn, $sqlDir . '/v2_seed_demo.sql');
+    $conn->exec('SET FOREIGN_KEY_CHECKS=1');
 
     $equipos = (int) $conn->query('SELECT COUNT(*) FROM v2_equipos')->fetchColumn();
     $usuarios = (int) $conn->query('SELECT COUNT(*) FROM v2_usuarios')->fetchColumn();
@@ -87,6 +122,12 @@ try {
         'tickets' => $tickets,
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
+    try {
+        if (isset($conn) && $conn instanceof PDO) {
+            $conn->exec('SET FOREIGN_KEY_CHECKS=1');
+        }
+    } catch (Throwable $ignored) {
+    }
     http_response_code(500);
     echo json_encode([
         'success' => false,
