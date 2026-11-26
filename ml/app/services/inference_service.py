@@ -29,7 +29,10 @@ def _get_predictor():
         if not DEFAULT_MODEL.exists():
             _load_error = "model_not_found"
             return None
-        _predictor = RiesgoPredictor()
+        _predictor = RiesgoPredictor(
+            model_path=DEFAULT_MODEL,
+            metadata_path=METADATA_FILE,
+        )
         return _predictor
     except Exception as exc:
         _load_error = str(exc)
