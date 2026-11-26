@@ -4,6 +4,17 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 
+## [0.12.4] - 2026-11-25 — Despliegue Azure (estudiantes)
+
+### Añadido
+- Guía [`documents/05_mantenimiento/azure.md`](azure.md): App Service PHP + MySQL Flexible + seed demo + Vercel.
+- `DB_SSL` / soporte SSL en `Database.php` (Azure MySQL).
+- `backend/azure/startup.sh` y workflow `.github/workflows/azure-api.yml`.
+- `produccion.md` apunta a Azure como destino preferido.
+
+### Qué probar
+- Seguir `azure.md` en el portal; `/health.php` en App Service; seed demo; login.
+
 ## [0.12.3] - 2026-11-25 — Seed demo para Render (opción A)
 
 ### Añadido

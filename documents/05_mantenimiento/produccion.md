@@ -309,95 +309,26 @@ Si el servidor no tiene el repositorio Git, el rollback es **restaurar artefacto
 
 ---
 
-## Vercel (frontend) + Render (API + MySQL)
+## Vercel (frontend) + Azure (API + MySQL) — preferido
 
-Despliegue en dos plataformas. El ML queda fuera: `ML_SERVICE_URL` vacío.
+Guía completa: **[`azure.md`](azure.md)**.
 
 ```text
-Navegador → Vercel (React/Vite)
+Navegador → Vercel (React)
                 ↓ HTTPS
-         Render API (PHP Apache) → Render MySQL (private service)
+         Azure App Service (PHP) → Azure MySQL Flexible (seed demo)
 ```
 
-> **Coste:** en Render, MySQL como *private service* + disco es de pago (plan starter). La API puede usar plan **free** (se duerme tras inactividad).
+- Cuenta **Azure for Students** (crédito / capa free).
+- Datos: seed demo (`php backend/tools/seed_demo.php`), no el dump municipal.
+- Front ya en https://gestion-mpa.vercel.app — actualizar `VITE_API_BASE_URL` a `https://….azurewebsites.net`.
 
-### Requisitos
+### Alternativas (no preferidas ahora)
 
-- Cuenta Vercel y Render; repo en GitHub (`AxlTech25/Gestion-MPA`).
-- Dump local de MySQL (p. ej. `gestion_equipos_mpa_v2 (1).sql`) — no va en Git.
-- Código con [`render.yaml`](../../render.yaml), `backend/Dockerfile` y `vercel.json`.
-
-### 1. Render — Blueprint (MySQL + API)
-
-1. En [Render Dashboard](https://dashboard.render.com/) → **New** → **Blueprint**.
-2. Conectar el repo `AxlTech25/Gestion-MPA` (branch `main`).
-3. Aplicar el Blueprint [`render.yaml`](../../render.yaml): crea `mysql` (private) y `sigemad-api` (web Docker).
-4. Esperar a que ambos servicios estén **Live**. Anote la URL pública del API (`https://sigemad-api-xxxx.onrender.com`).
-5. Healthcheck: `GET https://<api>/health.php` → JSON ok.
-
-Variables del API (ya definidas en el Blueprint):
-
-| Variable | Origen |
-|----------|--------|
-| `DB_HOST` | host interno del servicio `mysql` |
-| `DB_PORT` | `3306` |
-| `DB_NAME` / `DB_USER` / `DB_PASS` | BD `gestion_equipos_mpa_v2` / user `sigemad` |
-| `JWT_SECRET` | generado por Render |
-| `CORS_ORIGINS` | `https://gestion-mpa.vercel.app` |
-| `ML_SERVICE_URL` | vacío |
-
-### 2. Datos: seed demo (recomendado) o dump completo
-
-**Opción A — seed demo (pocos equipos, sin dump municipal):**
-
-Con `DB_*` apuntando al MySQL de Render (shell one-off / job con PHP):
-
-```bash
-php backend/tools/seed_demo.php
-# o: php backend/tools/seed_demo.php --force
-```
-
-Carga esquema si falta + 8 equipos, 2 tickets, admin/técnico. Credenciales iniciales:
-
-| Usuario | Contraseña (demo) |
-|---------|-------------------|
-| `admin` | `DemoMPA2026!Segura` |
-| `tecnico` | `DemoMPA2026!Segura` |
-
-Rote con `php backend/tools/reset_user_passwords.php` si el sitio es público.
-
-**Opción B — dump municipal completo:** importar `gestion_equipos_mpa_v2 (1).sql` por shell/Adminer y luego rotar passwords (sin usar el seed).
-
-### 3. Vercel — frontend
-
-1. Proyecto ya creado: `eco-pfa/gestion-mpa` → https://gestion-mpa.vercel.app
-2. Actualizar variable de build:
-
-| Variable | Valor |
-|----------|--------|
-| `VITE_API_BASE_URL` | `https://sigemad-api-xxxx.onrender.com` (sin barra final) |
-| `VITE_BASE_PATH` | `/` |
-
-3. Redesplegar (`vercel deploy --prod` o redeploy en el dashboard).
-
-### 4. Cierre
-
-1. Confirmar `CORS_ORIGINS` = URL de Vercel.
-2. Probar login con claves rotadas, inventario y `/soporte`.
-3. `admin` / `admin123` solo laboratorio XAMPP.
-
-### Checklist Vercel + Render
-
-- [ ] Blueprint aplicado; `mysql` y `sigemad-api` Live
-- [ ] Dump importado; tickets migrados si hace falta
-- [ ] Contraseñas rotadas y guardadas fuera del repo
-- [ ] `VITE_API_BASE_URL` apunta al API de Render; frontend redesplegado
-- [ ] Login, inventario y tickets OK
-
-### Alternativa Railway (si reactiva el plan)
-
-Queda `backend/Dockerfile` + `backend/railway.toml` por si más adelante usa Railway Hobby. El flujo preferido actual es **Render**.
+- **Render:** [`render.yaml`](../../render.yaml) — MySQL private es de pago.
+- **Railway:** `backend/Dockerfile` + `railway.toml` — requiere plan con cuota libre.
+- **Apache clásico:** pasos 1–6 de este mismo documento.
 
 ---
 
-*Volver a [README.md](../../README.md) · [Arquitectura](../02_diseno/architecture.md)*
+*Volver a [README.md](../../README.md) · [Arquitectura](../02_diseno/architecture.md) · [Azure](azure.md)*
