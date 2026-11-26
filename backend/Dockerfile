@@ -1,8 +1,11 @@
 FROM php:8.2-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libzip-dev unzip git \
-    && docker-php-ext-install pdo pdo_mysql zip \
+    && apt-get install -y --no-install-recommends \
+        libzip-dev unzip git \
+        libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql zip gd \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
