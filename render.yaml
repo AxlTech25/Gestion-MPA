@@ -1,6 +1,10 @@
 # Sigemad MPA — API PHP + MySQL en Render (frontend sigue en Vercel)
 # Dashboard: New → Blueprint → conectar repo AxlTech25/Gestion-MPA
 #
+# Tras el primer deploy de MySQL, cargar datos demo (no el dump municipal):
+#   php backend/tools/seed_demo.php
+# (con DB_* del servicio api / red privada)
+#
 # Coste aproximado: MySQL (private service + disco) es de pago;
 # la API puede ir en plan free (se duerme tras inactividad).
 

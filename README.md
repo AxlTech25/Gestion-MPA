@@ -5,7 +5,7 @@ Sistema web para el inventario patrimonial, fichas técnicas, mantenimiento y an
 **Stack:** React (Vite) · PHP API REST · MySQL · FastAPI (ML)
 
 **Metodología:** Prompt-Centered SDLC v1.2  
-**Versión actual:** 0.12.2 (deploy Vercel + Render)
+**Versión actual:** 0.12.3 (seed demo Render)
 
 ---
 

@@ -4,6 +4,17 @@ Todas las modificaciones notables de este proyecto serán documentadas en este a
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 
+## [0.12.3] - 2026-11-25 — Seed demo para Render (opción A)
+
+### Añadido
+- `backend/sql/v2_seed_demo.sql`: 2 gerencias, 3 áreas, 8 equipos, 2 tickets, admin/técnico.
+- `backend/tools/seed_demo.php` (aplica estructura + seed; `--force` para reaplicar).
+- Docs: opción A = seed demo; opción B = dump completo.
+
+### Qué probar
+- `php backend/tools/seed_demo.php` contra una BD vacía → inventario con 8 equipos.
+- Login `admin` / `DemoMPA2026!Segura`.
+
 ## [0.12.2] - 2026-11-25 — Blueprint Render (API + MySQL)
 
 ### Añadido

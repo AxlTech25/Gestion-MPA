@@ -346,22 +346,27 @@ Variables del API (ya definidas en el Blueprint):
 | `CORS_ORIGINS` | `https://gestion-mpa.vercel.app` |
 | `ML_SERVICE_URL` | vacío |
 
-### 2. Importar el dump y rotar contraseñas
+### 2. Datos: seed demo (recomendado) o dump completo
 
-MySQL no es público. Opciones:
+**Opción A — seed demo (pocos equipos, sin dump municipal):**
 
-1. **Shell de Render** en el servicio `mysql` (o un one-off con cliente `mysql` en la red privada) e importar el `.sql`.
-2. Desplegar temporalmente [Adminer](https://www.adminer.org/) como Web Service free en el mismo workspace (puede *enviar* tráfico privado) e importar por UI; luego elimínelo.
-
-Tras el import:
+Con `DB_*` apuntando al MySQL de Render (shell one-off / job con PHP):
 
 ```bash
-# Con DB_* apuntando al MySQL de Render (desde un one-off o shell con PHP)
-php backend/tools/migrate_tickets.php   # si falta v2_tickets
-php backend/tools/reset_user_passwords.php
+php backend/tools/seed_demo.php
+# o: php backend/tools/seed_demo.php --force
 ```
 
-Guarde el listado `usuario → password` fuera del repo.
+Carga esquema si falta + 8 equipos, 2 tickets, admin/técnico. Credenciales iniciales:
+
+| Usuario | Contraseña (demo) |
+|---------|-------------------|
+| `admin` | `DemoMPA2026!Segura` |
+| `tecnico` | `DemoMPA2026!Segura` |
+
+Rote con `php backend/tools/reset_user_passwords.php` si el sitio es público.
+
+**Opción B — dump municipal completo:** importar `gestion_equipos_mpa_v2 (1).sql` por shell/Adminer y luego rotar passwords (sin usar el seed).
 
 ### 3. Vercel — frontend
 
