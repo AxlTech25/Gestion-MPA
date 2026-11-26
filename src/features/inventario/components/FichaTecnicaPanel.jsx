@@ -12,7 +12,16 @@ import { fichaTecnicaService } from '../services/fichaTecnicaService';
 import { mlService } from '../../ml/services/mlService';
 import { RiesgoBadge } from '../../ml/components/RiesgoBadge';
 
-const FICHAS_UPLOADS_URL = API_BASE_URL.replace(/\/api\/v2\/?$/, '/uploads/fichas_tecnicas');
+/** Base URL de imágenes: local con /api/v2 → /uploads/...; Railway (API en raíz) → /media/fichas. */
+function fichasUploadsBaseUrl(apiBase = API_BASE_URL) {
+  const base = String(apiBase || '').replace(/\/$/, '');
+  if (/\/api\/v2$/i.test(base)) {
+    return base.replace(/\/api\/v2$/i, '/uploads/fichas_tecnicas');
+  }
+  return `${base}/media/fichas`;
+}
+
+const FICHAS_UPLOADS_URL = fichasUploadsBaseUrl();
 
 function urlImagenFicha(fileName) {
   if (!fileName) return null;

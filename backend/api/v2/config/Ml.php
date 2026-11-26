@@ -22,7 +22,8 @@ class MlConfig {
     }
 
     public static function getTimeoutSeconds(): int {
-        return 90;
+        // Cold start Serverless en Railway; no superar timeouts típicos del edge (~60s).
+        return 45;
     }
 }
 ?>

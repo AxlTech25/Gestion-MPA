@@ -12,7 +12,8 @@ $request = isset($_GET['request']) ? explode('/', trim($_GET['request'], '/')) :
 $resource = $request[0] ?? null;
 
 // auth y tickets: endpoints públicos (crear/consultar) + privados con auth en el controlador
-$publicResources = ['auth', 'tickets'];
+// media: fotos de ficha (<img> no envía JWT)
+$publicResources = ['auth', 'tickets', 'media'];
 
 $usuarioAuth = null;
 if (!in_array($resource, $publicResources, true)) {
@@ -21,6 +22,17 @@ if (!in_array($resource, $publicResources, true)) {
 }
 
 switch ($resource) {
+    case 'media':
+        require_once __DIR__ . '/controllers/MediaController.php';
+        $media = new MediaController();
+        if (($request[1] ?? '') === 'fichas' && isset($request[2]) && $request[2] !== '') {
+            $media->fichaImagen(rawurldecode($request[2]));
+        } else {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Recurso media no encontrado.']);
+        }
+        break;
+
     case 'equipos':
         require_once 'routes/equipos.php';
         break;
